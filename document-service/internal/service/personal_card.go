@@ -17,10 +17,11 @@ var (
 )
 
 type PersonalCardService struct {
+	s3Client S3ClientInterface
 }
 
-func NewPersonalCardService() *PersonalCardService {
-	return &PersonalCardService{}
+func NewPersonalCardService(client S3ClientInterface) *PersonalCardService {
+	return &PersonalCardService{s3Client: client}
 }
 
 func (p *PersonalCardService) CreatePersonalCard(ListenerData *dto.FullListenerDataDTO) error {
