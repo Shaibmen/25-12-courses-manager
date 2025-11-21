@@ -19,7 +19,7 @@ func main() {
 
 	r := gin.Default()
 
-	s3Client := service.InitS3Client()
+	s3Client := service.MustInitS3Client()
 	personalCardService := service.NewPersonalCardService(s3Client)
 
 	personalCardHandler := handler.NewPersonalCardHandler(personalCardService)

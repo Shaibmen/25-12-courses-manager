@@ -13,13 +13,14 @@ import (
 type S3ClientInterface interface {
 	SendDocumentToS3(ctx context.Context, buffer bytes.Buffer, fileName string) error
 	GetDocumentFromS3(ctx context.Context, fileName string) ([]byte, error)
+	DeleteDocumentFromS3(ctx context.Context, fileName string) error
 }
 
 type S3Client struct {
 	client *minio.Client
 }
 
-func InitS3Client() S3Client {
+func MustInitS3Client() S3Client {
 
 	client, err := minio.New(os.Getenv("S3_ENDPOINT"), &minio.Options{
 		Creds:  credentials.NewStaticV4(os.Getenv("S3_LOGIN"), os.Getenv("S3_PASSWORD"), ""),
@@ -73,4 +74,18 @@ func (c S3Client) GetDocumentFromS3(ctx context.Context, fileName string) ([]byt
 	}
 
 	return buffer, nil
+}
+
+func (c S3Client) DeleteDocumentFromS3(ctx context.Context, fileName string) error {
+
+	err := c.client.RemoveObject(ctx,
+		os.Getenv("S3_BUCKET_NAME"),
+		fileName,
+		minio.RemoveObjectOptions{})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

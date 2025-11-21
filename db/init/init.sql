@@ -431,5 +431,3 @@ VALUES
  (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 4),
  (SELECT id_educationlistener FROM educationlistener LIMIT 1 OFFSET 4),
  (SELECT id_placework FROM placework LIMIT 1 OFFSET 4));
-
-

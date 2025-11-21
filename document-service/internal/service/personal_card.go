@@ -2,11 +2,10 @@ package service
 
 import (
 	"bytes"
+	"context"
 	"document-service/internal/domain/dto"
 	"fmt"
-	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/nguyenthenguyen/docx"
@@ -44,11 +43,10 @@ func (p *PersonalCardService) CreatePersonalCard(ListenerData *dto.FullListenerD
 	uniqueParam := ListenerData.Listener.SNILS
 	nameFile := "Личное-дело-" + ListenerData.ProgramEducation.NameProfEducation + "_" + uniqueParam + ".docx"
 
-	path := fmt.Sprintf("./personal_card/%s", nameFile)
-	err = os.WriteFile(path, buffer.Bytes(), 0644)
-	if err != nil {
-		return err
-	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	p.s3Client.SendDocumentToS3(ctx, buffer, nameFile)
 
 	return nil
 }
@@ -155,33 +153,55 @@ func replace(doc *docx.Docx, model *dto.FullListenerDataDTO) {
 
 func (p *PersonalCardService) ExistsPersonalCard(fileName string) ([]string, error) {
 
-	dir := "./personal_card"
+	// dir := "./personal_card"
 
-	files, err := os.ReadDir(dir)
+	// files, err := os.ReadDir(dir)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// for _, file := range files {
+	// 	if !file.IsDir() && strings.Contains(file.Name(), fileName) {
+	// 		matches = append(matches, file.Name())
+
+	// 	}
+	// }
+
+	// return matches, nil
+	// // _, err := os.Stat(fileName)
+	// // if err != nil {
+	// // 	return false, err
+	// // }
+
+	// // return true, nil
+	var matches []string
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	doc, err := p.s3Client.GetDocumentFromS3(ctx, fileName)
 	if err != nil {
-		return nil, err
+		return []string{}, err
 	}
 
-	var matches []string
-	for _, file := range files {
-		if !file.IsDir() && strings.Contains(file.Name(), fileName) {
-			matches = append(matches, file.Name())
-
-		}
+	if len(doc) > 0 {
+		matches = append(matches, fileName)
 	}
 
 	return matches, nil
-	// _, err := os.Stat(fileName)
-	// if err != nil {
-	// 	return false, err
-	// }
-
-	// return true, nil
 }
 
 func (p *PersonalCardService) DeletePersonalCard(fileName string) error {
 
-	err := os.Remove(fileName)
+	// err := os.Remove(fileName)
+	// if err != nil {
+	// 	return err
+	// }
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	err := p.s3Client.DeleteDocumentFromS3(ctx, fileName)
 	if err != nil {
 		return err
 	}
