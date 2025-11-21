@@ -107,11 +107,10 @@ func (l *ListenerRepo) ReadFullData(ctx context.Context, id uuid.UUID) (*entity.
 	query := `
 	select
 	l.*, 
-	p.place_birth, p.citizenship, p.gender, p.seria, p.number, p.passport_given, p.date_given, p.code,
 	r.mail_index, r.region, r.city, r.street, r.house, r.building, r.apartment
-	from listener as l
-	inner join passport p on l.id_passport = p.id_passport 
-	inner join registrationaddress r on l.id_regaddress = r.id_regaddress 
+	from listener as l 
+	inner join registrationaddress r on l.id_regaddress = r.id_regaddress
+
 	where id_listener = $1;`
 
 	rows, err := l.repo.QueryContext(ctx, query, id)
@@ -145,14 +144,8 @@ func (l *ListenerRepo) ReadFullData(ctx context.Context, id uuid.UUID) (*entity.
 			&data.ID_RegAddress,
 			&data.ID_EducationListener,
 			&data.ID_PlaceWork,
-			&data.Passport.PlaceBirth,
-			&data.Passport.Citizenship,
-			&data.Passport.Gender,
-			&data.Passport.Seria,
-			&data.Passport.Number,
-			&data.Passport.PassportGiven,
-			&data.Passport.DateGiven,
-			&data.Passport.Code,
+			&data.ID_Legalentity,
+			&data.ID_Contractor,
 			&data.RegistrationAddress.MailIndex,
 			&data.RegistrationAddress.Region,
 			&data.RegistrationAddress.City,

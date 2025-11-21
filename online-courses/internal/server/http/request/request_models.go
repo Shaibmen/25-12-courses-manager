@@ -69,10 +69,41 @@ type ListenerRequest struct {
 
 type FullListenerRequest struct {
 	Listener            ListenerRequest          `json:"listener" validate:"required"`
-	Passport            PassportRequest          `json:"passport" validate:"required"`
+	Passport            PassportRequest          `json:"passport" validate:"omitempty"`
 	RegistrationAddress RegAddressRequest        `json:"registration_address" validate:"required"`
 	EducationListener   EducationListenerRequest `json:"education" validate:"omitempty"`
 	PlaceWork           PlaceWorkRequest         `json:"placeWork" validate:"omitempty"`
+}
+
+type ContractorRequest struct {
+	FirstName     string `json:"first_name" validate:"required,max=255"`
+	SecondName    string `json:"second_name" validate:"required,max=255"`
+	MiddleName    string `json:"middle_name" validate:"required,max=255"`
+	Contact_phone string `json:"contact_phone" validate:"required,max=15"`
+	Email         string `json:"email" validate:"required,max=255"`
+}
+
+type FullContractorRequest struct {
+	Contractor ContractorRequest `json:"contractor" validate:"required"`
+	Passport   PassportRequest   `json:"passport" validate:"required"`
+	RegAddress RegAddressRequest `json:"reg_address" validate:"required"`
+}
+
+type LegalEntityRequest struct {
+	NameCompany string `json:"name_company" validate:"required,max=255"`
+	Inn         string `json:"inn" validate:"required,max=20"`
+	Kpp         string `json:"kpp" validate:"required,max=20"`
+	Ogrn        string `json:"ogrn" validate:"required,max=20"`
+	Phone       string `json:"phone" validate:"required,max=20"`
+	Email       string `json:"email" validate:"required,max=255"`
+	FirstName   string `json:"first_name" validate:"required,max=100"`
+	SecondName  string `json:"second_name" validate:"required,max=100"`
+	MiddleName  string `json:"middle_name" validate:"required,max=100"`
+}
+
+type FullLegalEntityRequest struct {
+	LegalEntity LegalEntityRequest `json:"legal_entity" validate:"required"`
+	RegAddress  RegAddressRequest  `json:"reg_address" validate:"required"`
 }
 
 type DivisionsEducationRequest struct {

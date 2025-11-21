@@ -109,15 +109,18 @@ func MapListenerEntityToDTO(entity *entity.Listener) *dto.FullListenerDataDTO {
 		ID_PlaceWork:         entity.ID_PlaceWork,
 	}
 
-	passport := dto.PassportDTO{
-		PlaceBirth:    entity.Passport.PlaceBirth,
-		Citizenship:   entity.Passport.Citizenship,
-		Gender:        entity.Passport.Gender,
-		Seria:         entity.Passport.Seria,
-		Number:        entity.Passport.Number,
-		PassportGiven: entity.Passport.PassportGiven,
-		DateGiven:     entity.Passport.DateGiven.String(),
-		Code:          entity.Passport.Code,
+	var passport *dto.PassportDTO
+	if entity.ID_Passport != nil {
+		passport = &dto.PassportDTO{
+			PlaceBirth:    entity.Passport.PlaceBirth,
+			Citizenship:   entity.Passport.Citizenship,
+			Gender:        entity.Passport.Gender,
+			Seria:         entity.Passport.Seria,
+			Number:        entity.Passport.Number,
+			PassportGiven: entity.Passport.PassportGiven,
+			DateGiven:     entity.Passport.DateGiven.String(),
+			Code:          entity.Passport.Code,
+		}
 	}
 
 	registratoinAddress := dto.RegistrationAddressDTO{
@@ -165,14 +168,18 @@ func MapListenerEntityToDTO(entity *entity.Listener) *dto.FullListenerDataDTO {
 
 func MapListenerReqToDto(request request.FullListenerRequest) (*dto.CreateListenerDTO, error) {
 
-	seriaPassport, err := strconv.Atoi(request.Passport.Seria)
-	if err != nil {
-		return &dto.CreateListenerDTO{}, err
-	}
+	var err error
+	var seriaPassport, numberPassport int
+	if request.Passport.Seria != "" {
+		seriaPassport, err = strconv.Atoi(request.Passport.Seria)
+		if err != nil {
+			return &dto.CreateListenerDTO{}, err
+		}
 
-	numberPassport, err := strconv.Atoi(request.Passport.Number)
-	if err != nil {
-		return &dto.CreateListenerDTO{}, err
+		numberPassport, err = strconv.Atoi(request.Passport.Number)
+		if err != nil {
+			return &dto.CreateListenerDTO{}, err
+		}
 	}
 
 	passport := dto.PassportDTO{

@@ -16,7 +16,6 @@ func LoggerMiddleware(logger *slog.Logger) gin.HandlerFunc {
 		var err *gin.Error
 		if len(c.Errors) > 0 {
 			err = c.Errors[0]
-
 			response := handlers_utils.DefineError(err)
 
 			c.JSON(response.Status, response.Message)

@@ -44,14 +44,18 @@ func (l *listenerService) CreateFullListener(ctx context.Context, models *dto.Cr
 
 	defer tx.Rollback()
 
-	passportID := uuid.New()
-	passport, err := mapping.MapPassportToEntity(models.Passport, passportID)
-	if err != nil {
-		return err
-	}
+	var passportID *uuid.UUID = nil
 
-	if err = l.passportRepo.CreateInTx(ctx, tx, passport); err != nil {
-		return err
+	if models.Passport != (dto.PassportDTO{}) {
+		passportID := uuid.New()
+		passport, err := mapping.MapPassportToEntity(models.Passport, passportID)
+		if err != nil {
+			return err
+		}
+
+		if err = l.passportRepo.CreateInTx(ctx, tx, passport); err != nil {
+			return err
+		}
 	}
 
 	var placeWorkID *uuid.UUID = nil
@@ -159,6 +163,14 @@ func (l *listenerService) ReadFullListener(ctx context.Context, id uuid.UUID) (*
 		result.PlaceWork = *placework
 	}
 
+	if result.ID_Passport != nil {
+		passport, err := l.passportRepo.Read(ctx, *result.ID_Passport)
+		if err != nil {
+			return nil, err
+		}
+		result.Passport = *passport
+	}
+
 	return mapping.MapListenerEntityToDTO(result), nil
 }
 
@@ -179,7 +191,7 @@ func (l *listenerService) UpdateListener(ctx context.Context, models *dto.Create
 		return err
 	}
 
-	passport, err := mapping.MapPassportToEntity(models.Passport, ids.ID_Passport)
+	passport, err := mapping.MapPassportToEntity(models.Passport, *ids.ID_Passport)
 	if err != nil {
 		return err
 	}
@@ -242,7 +254,7 @@ func (l *listenerService) DeleteListener(ctx context.Context, id uuid.UUID) erro
 		return err
 	}
 
-	if err = l.passportRepo.DeleteInTx(ctx, tx, ids.ID_Passport); err != nil {
+	if err = l.passportRepo.DeleteInTx(ctx, tx, *ids.ID_Passport); err != nil {
 		return err
 	}
 

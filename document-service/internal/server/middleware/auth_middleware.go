@@ -34,7 +34,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		requestBody, _ := json.Marshal(map[string]string{"token": token})
 
-		resp, err := http.Post("http://apiauth:8081/auth/v1/valid", "application/json", bytes.NewBuffer(requestBody))
+		resp, err := http.Post("http://localhost:8081/auth/v1/valid", "application/json", bytes.NewBuffer(requestBody))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, HttpResponse{Message: "invalid serivce"})
 			c.Abort()

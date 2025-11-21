@@ -112,6 +112,42 @@ func (ProgramEducation) TableName() string {
 	return "programeducation"
 }
 
+type LegalEntity struct {
+	ID_Legalentity      uuid.UUID
+	NameCompany         string
+	Inn                 string
+	Kpp                 string
+	Ogrn                string
+	Phone               string
+	Email               string
+	FirstName           string
+	SecondName          string
+	MiddleName          string
+	ID_RegAddress       uuid.UUID
+	RegistrationAddress RegistrationAddress
+}
+
+func (LegalEntity) TableName() string {
+	return "legal_entity"
+}
+
+type Contractor struct {
+	ID_Contractor       uuid.UUID
+	FirstName           string
+	SecondName          string
+	MiddleName          string
+	Contact_phone       string
+	Email               string
+	ID_Passport         *uuid.UUID
+	Passport            Passport
+	ID_RegAddress       uuid.UUID
+	RegistrationAddress RegistrationAddress
+}
+
+func (Contractor) TableName() string {
+	return "contractor"
+}
+
 type Listener struct {
 	ID_Listener          uuid.UUID
 	FirstName            string
@@ -121,7 +157,7 @@ type Listener struct {
 	SNILS                string
 	ContactPhone         string
 	Email                string
-	ID_Passport          uuid.UUID
+	ID_Passport          *uuid.UUID
 	Passport             Passport
 	ID_RegAddress        uuid.UUID
 	RegistrationAddress  RegistrationAddress
@@ -129,10 +165,26 @@ type Listener struct {
 	EducationListener    EducationListener
 	ID_PlaceWork         *uuid.UUID
 	PlaceWork            PlaceWork
+	ID_Legalentity       *uuid.UUID
+	LegalEntity          LegalEntity
+	ID_Contractor        *uuid.UUID
+	Contractor           Contractor
 }
 
 func (Listener) TableName() string {
 	return "listener"
+}
+
+type Executor struct {
+	ID_Executor uuid.UUID
+	Status      string
+	FirstName   string
+	SecondName  string
+	MiddleName  string
+}
+
+func (Executor) TableName() string {
+	return "executor"
 }
 
 type EnrollmentListener struct {
@@ -157,6 +209,8 @@ type EnrollmentListenerDetails struct {
 	StartDate         time.Time
 	EndDate           time.Time
 	CurrentPrice      float32
+	GroupNumber       string
+	TypeOfRetraining  string
 }
 
 type EnrollmentProgramDetails struct {

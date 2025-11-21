@@ -68,7 +68,7 @@ func (e *EnrollmentListenerHandler) CreateEnrollment(c *gin.Context) {
 
 	requestBody, _ := json.Marshal(info)
 
-	req, err := http.NewRequest("POST", "http://apidoc:8082/v1/doc/personal-card", bytes.NewBuffer(requestBody))
+	req, err := http.NewRequest("POST", "http://localhost:8082/v1/doc/personal-card", bytes.NewBuffer(requestBody))
 	if err != nil {
 		c.Error(err)
 		return

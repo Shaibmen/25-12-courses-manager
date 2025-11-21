@@ -92,6 +92,31 @@ CREATE TABLE IF NOT EXISTS programeducation (
     id_divisionseducation UUID REFERENCES divisionseducation(id_divisionseducation) not null
 );
 
+CREATE TABLE IF NOT EXISTS legal_entity (
+	id_legalentity uuid primary key,
+	name_company varchar(255) not null, 
+	inn varchar(12) not null,
+	kpp varchar(12) not null, 
+	ogrn varchar(15) not null,
+	phone varchar(20) not null, 
+	email varchar(255) not null,
+	first_name varchar(100) not null,
+    second_name varchar(100) not null,
+    middle_name varchar(100),
+	id_regaddress UUID REFERENCES registrationaddress(id_regaddress) not null
+);
+
+create table if not exists contractor (
+	id_contractor uuid primary key,
+	first_name varchar(100) not null,
+    second_name varchar(100) not null,
+    middle_name varchar(100),
+	contact_phone varchar(20) UNIQUE not null,
+    email varchar(50) UNIQUE not null,
+	id_passport UUID REFERENCES passport(id_passport),
+    id_regaddress UUID REFERENCES registrationaddress(id_regaddress) not null
+);
+
 CREATE TABLE IF NOT EXISTS listener (
     id_listener UUID PRIMARY KEY,
     first_name varchar(100) not null,
@@ -101,10 +126,12 @@ CREATE TABLE IF NOT EXISTS listener (
     snils varchar(14) UNIQUE not null,
     contact_phone varchar(20) UNIQUE not null,
     email varchar(50) UNIQUE not null,
-    id_passport UUID REFERENCES passport(id_passport) not null,
+    id_passport UUID REFERENCES passport(id_passport),
     id_regaddress UUID REFERENCES registrationaddress(id_regaddress) not null,
     id_educationlistener UUID REFERENCES educationlistener(id_educationlistener),
-    id_placework UUID REFERENCES placework(id_placework)
+    id_placework UUID REFERENCES placework(id_placework),
+	id_legalentity uuid references legal_entity(id_legalentity),
+	id_contractor uuid references contractor(id_contractor)
 );
 
 CREATE TABLE IF NOT EXISTS enrollmentlistener (
@@ -113,8 +140,18 @@ CREATE TABLE IF NOT EXISTS enrollmentlistener (
     start_date DATE not null,
     end_date DATE not null,
     current_price decimal(10,2) not null,
-    is_active  boolean not null, 
+    is_active  boolean not null,
+	group_number varchar(50),
+	type_of_retraining varchar(50),
     PRIMARY KEY (id_listener, id_programeducation)
+);
+
+create table if not exists executor (
+	id_executor uuid primary key,
+	status varchar(255) not null,
+	first_name varchar(100) not null,
+    second_name varchar(100) not null,
+    middle_name varchar(100)
 );
 
 

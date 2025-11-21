@@ -8,7 +8,7 @@ import (
 
 type ListenerIDDTO struct {
 	ID_Listener          uuid.UUID  `json:"id_listener"`
-	ID_Passport          uuid.UUID  `json:"id_passport"`
+	ID_Passport          *uuid.UUID `json:"id_passport"`
 	ID_RegAddress        uuid.UUID  `json:"id_reg_address"`
 	ID_EducationListener *uuid.UUID `json:"id_education_listener"`
 	ID_PlaceWork         *uuid.UUID `json:"id_placework"`
@@ -44,7 +44,7 @@ type RawOnlyListener struct {
 	SNILS                string     `json:"snils"`
 	ContactPhone         string     `json:"contact_phone"`
 	Email                string     `json:"email"`
-	ID_Passport          uuid.UUID  `json:"id_passport"`
+	ID_Passport          *uuid.UUID `json:"id_passport"`
 	ID_RegAddress        uuid.UUID  `json:"id_reg_address"`
 	ID_EducationListener *uuid.UUID `json:"id_education_listener"`
 	ID_PlaceWork         *uuid.UUID `json:"id_placework"`
@@ -96,7 +96,7 @@ type PlaceWorkDTO struct {
 
 type FullListenerDataDTO struct {
 	Listener            RawOnlyListener        `json:"listener"`
-	Passport            PassportDTO            `json:"passport"`
+	Passport            *PassportDTO           `json:"passport,omitempty"`
 	RegistrationAddress RegistrationAddressDTO `json:"regaddress"`
 	EducationListener   *EducationListenerDTO  `json:"education_listener,omitempty"`
 	PlaceWork           *PlaceWorkDTO          `json:"placework,omitempty"`
@@ -224,6 +224,38 @@ type ProgramEndingSoonDTO struct {
 	NameProfEducation string    `json:"name_prof_education"`
 	EndDate           time.Time `json:"end_date"`
 	TotalListeners    int       `json:"total_listeners"`
+}
+
+type ContractorDTO struct {
+	FirstName     string `json:"first_name"`
+	SecondName    string `json:"second_name"`
+	MiddleName    string `json:"middle_name"`
+	Contact_phone string `json:"contact_phone"`
+	Email         string `json:"email"`
+}
+
+type ContractorCreateDTO struct {
+	Contractor ContractorDTO
+	Passport   PassportDTO
+	RegAddress RegistrationAddressDTO
+}
+
+type LegalEntityDTO struct {
+	ID_Legalentity uuid.UUID
+	NameCompany    string
+	Inn            string
+	Kpp            string
+	Ogrn           string
+	Phone          string
+	Email          string
+	FirstName      string
+	SecondName     string
+	MiddleName     string
+}
+
+type LegalEntityCreateDTO struct {
+	LegalEntity LegalEntityDTO
+	RegAddress  RegistrationAddressDTO
 }
 
 type UserDashBoardDTO struct {
