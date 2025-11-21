@@ -46,7 +46,10 @@ func (p *PersonalCardService) CreatePersonalCard(ListenerData *dto.FullListenerD
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	p.s3Client.SendDocumentToS3(ctx, buffer, nameFile)
+	err = p.s3Client.SendDocumentToS3(ctx, buffer, nameFile)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -207,4 +210,19 @@ func (p *PersonalCardService) DeletePersonalCard(fileName string) error {
 	}
 
 	return nil
+}
+
+func (p *PersonalCardService) DownloadPersonalCard(fileName string) ([]byte, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	
+	doc, err := p.s3Client.GetDocumentFromS3(ctx, fileName)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return doc, nil
+
 }
