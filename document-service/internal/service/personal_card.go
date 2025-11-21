@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strconv"
 	"time"
+	"errors"
 
 	"github.com/nguyenthenguyen/docx"
 )
@@ -177,21 +178,19 @@ func (p *PersonalCardService) ExistsPersonalCard(fileName string) ([]string, err
 	// // }
 
 	// // return true, nil
-	var matches []string
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	doc, err := p.s3Client.GetDocumentFromS3(ctx, fileName)
+	documents, err := p.s3Client.GetDocumentListFromS3(ctx, fileName)
 	if err != nil {
 		return []string{}, err
 	}
 
-	if len(doc) > 0 {
-		matches = append(matches, fileName)
+	if len(documents) > 0 {
+		return documents, nil
+	} else {
+		return []string{}, errors.New("Не найдено ни одного документа")
 	}
-
-	return matches, nil
 }
 
 func (p *PersonalCardService) DeletePersonalCard(fileName string) error {
@@ -212,17 +211,15 @@ func (p *PersonalCardService) DeletePersonalCard(fileName string) error {
 	return nil
 }
 
-func (p *PersonalCardService) DownloadPersonalCard(fileName string) ([]byte, error) {
-
+func (p *PersonalCardService) DownloadPersonalCard(param string) ([]byte, error) {
+	
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	
-	doc, err := p.s3Client.GetDocumentFromS3(ctx, fileName)
+	document, err := p.s3Client.GetDocumentFromS3(ctx, param)
 	if err != nil {
 		return []byte{}, err
 	}
 
-	return doc, nil
-
+	return document, nil
 }
