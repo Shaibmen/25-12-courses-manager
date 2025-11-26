@@ -25,7 +25,7 @@ func (l *ContractorRepo) CreateInTx(ctx context.Context, tx database.Tx, m *enti
 
 	query :=
 		`
-	inser into legal_entity (id_contractor, first_name, second_name, middle_name, contact_phone, email, id_passport, id_regaddress)
+	insert into legal_entity (id_contractor, first_name, second_name, middle_name, contact_phone, email, id_passport, id_regaddress)
 	values ($1, $2, $3, $4, $5, $6, $7, $8)
 	`
 

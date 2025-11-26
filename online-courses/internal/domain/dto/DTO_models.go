@@ -251,6 +251,7 @@ type LegalEntityDTO struct {
 	FirstName      string
 	SecondName     string
 	MiddleName     string
+	ID_RegAddress  uuid.UUID
 }
 
 type LegalEntityCreateDTO struct {

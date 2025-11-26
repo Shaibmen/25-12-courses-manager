@@ -45,6 +45,8 @@ func main() {
 	backupRepo := pg.NewBackupRepo(db, cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.Host, Logger)
 	reportRepo := pg.NewReportRepo(db, Logger)
 	procedureRepo := pg.NewProcedureRepo(db, Logger)
+	contractorRepo := pg.NewContractorRepo(db, Logger)
+	legalEntityRepo := pg.NewLegalEntity(db, Logger)
 
 	go func() {
 		for {
@@ -74,6 +76,8 @@ func main() {
 	dashboardService := service.NewDashboardService(dashboardRepo)
 	backupService := service.NewBackupService(backupRepo)
 	reportService := service.NewRepostService(reportRepo)
+	contractorService := service.NewContractorService(db, contractorRepo, passportRepo, registrationAddressRepo)
+	legalEntityService := service.NewLegalEntityService(db, legalEntityRepo, registrationAddressRepo)
 
 	listenerHanlder := handlers.NewListenerHandler(listenerSevice)
 	divisionsHandler := handlers.NewDivisionsEducationHandler(divisionsService)
@@ -84,6 +88,8 @@ func main() {
 	dashboardHandler := handlers.NewDashboardHandler(dashboardService)
 	backupHandler := handlers.NewBackupHandler(backupService)
 	reportHandler := handlers.NewReportHandler(reportService)
+	contractorHandler := handlers.NewContractHandler(contractorService)
+	legalEntityHandler := handlers.NewLegalEntityHandler(legalEntityService)
 
 	r := gin.Default()
 
@@ -98,6 +104,8 @@ func main() {
 		dashboardHandler,
 		backupHandler,
 		reportHandler,
+		contractorHandler,
+		legalEntityHandler,
 		Logger)
 
 	r.Run(":8080")

@@ -14,12 +14,11 @@ import (
 type LegalEntityService struct {
 	db             database.DB
 	service        repository.LegalEntityRepository
-	passportRepo   repository.PassportRepository
 	regAddressRepo repository.RegistrationAddressRepository
 }
 
-func NewLegalEntityService(db database.DB, service repository.LegalEntityRepository, passport repository.PassportRepository, regAddress repository.RegistrationAddressRepository) *LegalEntityService {
-	return &LegalEntityService{db: db, service: service, passportRepo: passport, regAddressRepo: regAddress}
+func NewLegalEntityService(db database.DB, service repository.LegalEntityRepository, regAddress repository.RegistrationAddressRepository) *LegalEntityService {
+	return &LegalEntityService{db: db, service: service, regAddressRepo: regAddress}
 }
 
 func (l *LegalEntityService) Create(ctx context.Context, dto dto.LegalEntityCreateDTO) error {
@@ -38,9 +37,9 @@ func (l *LegalEntityService) Create(ctx context.Context, dto dto.LegalEntityCrea
 		return err
 	}
 
-	contractID := uuid.New()
-	contractEntity := &entity.LegalEntity{
-		ID_Legalentity: contractID,
+	legalEntityID := uuid.New()
+	legalEntity := &entity.LegalEntity{
+		ID_Legalentity: legalEntityID,
 		NameCompany:    dto.LegalEntity.NameCompany,
 		Inn:            dto.LegalEntity.Inn,
 		Kpp:            dto.LegalEntity.Kpp,
@@ -53,7 +52,7 @@ func (l *LegalEntityService) Create(ctx context.Context, dto dto.LegalEntityCrea
 		ID_RegAddress:  regAddressID,
 	}
 
-	if err = l.service.CreateInTx(ctx, tx, contractEntity); err != nil {
+	if err = l.service.CreateInTx(ctx, tx, legalEntity); err != nil {
 		return err
 	}
 
@@ -85,6 +84,7 @@ func (l *LegalEntityService) Read(ctx context.Context, page int, filter string) 
 			FirstName:      l.FirstName,
 			SecondName:     l.SecondName,
 			MiddleName:     l.MiddleName,
+			ID_RegAddress:  l.ID_RegAddress,
 		})
 	}
 
@@ -106,12 +106,11 @@ func (l *LegalEntityService) Update(ctx context.Context, dto *dto.LegalEntityCre
 
 	regAddress := mapping.MapRegistrationAddressToEntity(dto.RegAddress, *regAddressID)
 	if err = l.regAddressRepo.UpdateInTx(ctx, tx, regAddress); err != nil {
+
 		return err
 	}
-
-	legalEntityID := uuid.New()
 	legalEntity := entity.LegalEntity{
-		ID_Legalentity: legalEntityID,
+		ID_Legalentity: id,
 		NameCompany:    dto.LegalEntity.NameCompany,
 		Inn:            dto.LegalEntity.Inn,
 		Kpp:            dto.LegalEntity.Kpp,
@@ -124,6 +123,7 @@ func (l *LegalEntityService) Update(ctx context.Context, dto *dto.LegalEntityCre
 	}
 
 	if err = l.service.UpdateInTx(ctx, tx, legalEntity); err != nil {
+
 		return err
 	}
 
@@ -146,11 +146,11 @@ func (l *LegalEntityService) Delete(ctx context.Context, legalEntityID uuid.UUID
 		return err
 	}
 
-	if err = l.regAddressRepo.DeleteInTx(ctx, tx, *regAddressID); err != nil {
+	if err = l.service.DeleteInTx(ctx, tx, legalEntityID); err != nil {
 		return err
 	}
 
-	if err = l.service.DeleteInTx(ctx, tx, legalEntityID); err != nil {
+	if err = l.regAddressRepo.DeleteInTx(ctx, tx, *regAddressID); err != nil {
 		return err
 	}
 

@@ -3,11 +3,11 @@ package handlers
 import (
 	"context"
 	"net/http"
-	"online-courses/internal/domain/dto"
 	"online-courses/internal/domain/service"
+	"online-courses/internal/mapping"
+	utils "online-courses/internal/server/http/handlers/handlers_utils"
 	"online-courses/internal/server/http/models"
 	"online-courses/internal/server/http/request"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -30,51 +30,10 @@ func (con *ContractHandler) CreateContract(c *gin.Context) {
 		return
 	}
 
-	passportSeria, err := strconv.Atoi(request.Passport.Seria)
+	dto, err := mapping.MapContcratorReqToDTO(request)
 	if err != nil {
 		c.Error(err)
 		return
-	}
-
-	passportNumber, err := strconv.Atoi(request.Passport.Number)
-	if err != nil {
-		c.Error(err)
-		return
-	}
-
-	mainIndex, err := strconv.Atoi(request.RegAddress.MailIndex)
-	if err != nil {
-		c.Error(err)
-		return
-	}
-
-	dto := &dto.ContractorCreateDTO{
-		Contractor: dto.ContractorDTO{
-			FirstName:     request.Contractor.FirstName,
-			SecondName:    request.Contractor.SecondName,
-			MiddleName:    request.Contractor.MiddleName,
-			Contact_phone: request.Contractor.Contact_phone,
-			Email:         request.Contractor.Email,
-		},
-		Passport: dto.PassportDTO{
-			PlaceBirth:    request.Passport.PlaceBirth,
-			Citizenship:   request.Passport.Citizenship,
-			Gender:        request.Passport.Gender,
-			Seria:         passportSeria,
-			Number:        passportNumber,
-			PassportGiven: request.Passport.PassportGiven,
-			DateGiven:     request.Passport.DateGiven,
-			Code:          request.Passport.Code,
-		},
-		RegAddress: dto.RegistrationAddressDTO{
-			MailIndex: mainIndex,
-			Region:    request.RegAddress.Region,
-			City:      request.RegAddress.City,
-			Street:    request.RegAddress.Street,
-			House:     request.RegAddress.House,
-			Building:  request.RegAddress.Building,
-			Apartment: request.RegAddress.Apartment,
-		},
 	}
 
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
@@ -86,4 +45,45 @@ func (con *ContractHandler) CreateContract(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, models.HttpResponse{Message: "заказчик создан"})
+}
+
+func (con *ContractHandler) UpdateContractor(c *gin.Context) {
+
+	id, err := utils.ParseUUID(c, "id")
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	var request request.FullContractorRequest
+
+	dto, err := mapping.MapContcratorReqToDTO(request)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+	defer cancel()
+
+	if err = con.handler.UpdateInTx(ctx, dto, id); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (con *ContractHandler) Delete(c *gin.Context) {
+	id, err := utils.ParseUUID(c, "id")
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+	defer cancel()
+
+	if err = con.handler.Delete(ctx, id); err != nil {
+		c.Error(err)
+		return
+	}
+
 }

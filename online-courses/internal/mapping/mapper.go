@@ -240,6 +240,85 @@ func MapListenerReqToDto(request request.FullListenerRequest) (*dto.CreateListen
 	}, err
 }
 
+func MapContcratorReqToDTO(request request.FullContractorRequest) (*dto.ContractorCreateDTO, error) {
+	passportSeria, err := strconv.Atoi(request.Passport.Seria)
+	if err != nil {
+		return nil, err
+	}
+
+	passportNumber, err := strconv.Atoi(request.Passport.Number)
+	if err != nil {
+		return nil, err
+	}
+
+	mainIndex, err := strconv.Atoi(request.RegAddress.MailIndex)
+	if err != nil {
+		return nil, err
+	}
+
+	dto := &dto.ContractorCreateDTO{
+		Contractor: dto.ContractorDTO{
+			FirstName:     request.Contractor.FirstName,
+			SecondName:    request.Contractor.SecondName,
+			MiddleName:    request.Contractor.MiddleName,
+			Contact_phone: request.Contractor.Contact_phone,
+			Email:         request.Contractor.Email,
+		},
+		Passport: dto.PassportDTO{
+			PlaceBirth:    request.Passport.PlaceBirth,
+			Citizenship:   request.Passport.Citizenship,
+			Gender:        request.Passport.Gender,
+			Seria:         passportSeria,
+			Number:        passportNumber,
+			PassportGiven: request.Passport.PassportGiven,
+			DateGiven:     request.Passport.DateGiven,
+			Code:          request.Passport.Code,
+		},
+		RegAddress: dto.RegistrationAddressDTO{
+			MailIndex: mainIndex,
+			Region:    request.RegAddress.Region,
+			City:      request.RegAddress.City,
+			Street:    request.RegAddress.Street,
+			House:     request.RegAddress.House,
+			Building:  request.RegAddress.Building,
+			Apartment: request.RegAddress.Apartment,
+		},
+	}
+
+	return dto, nil
+}
+
+func LegalEntityFullMappping(request request.FullLegalEntityRequest) (*dto.LegalEntityCreateDTO, error) {
+	mailIndex, err := strconv.Atoi(request.RegAddress.MailIndex)
+	if err != nil {
+		return nil, err
+	}
+
+	data := &dto.LegalEntityCreateDTO{
+		LegalEntity: dto.LegalEntityDTO{
+			NameCompany: request.LegalEntity.NameCompany,
+			Inn:         request.LegalEntity.Inn,
+			Kpp:         request.LegalEntity.Kpp,
+			Ogrn:        request.LegalEntity.Ogrn,
+			Phone:       request.LegalEntity.Phone,
+			Email:       request.LegalEntity.Email,
+			FirstName:   request.LegalEntity.FirstName,
+			SecondName:  request.LegalEntity.SecondName,
+			MiddleName:  request.LegalEntity.MiddleName,
+		},
+		RegAddress: dto.RegistrationAddressDTO{
+			MailIndex: mailIndex,
+			Region:    request.RegAddress.Region,
+			City:      request.RegAddress.City,
+			Street:    request.RegAddress.Street,
+			House:     request.RegAddress.House,
+			Building:  request.RegAddress.Building,
+			Apartment: request.RegAddress.Apartment,
+		},
+	}
+	return data, nil
+}
+
 // func MapUpdateListenerReqToDto(request request.FullListenerRequest) (*dto.CreateListenerDTO, error) {
 
 // 	seria, err := strconv.Atoi(request.Passport.Seria)

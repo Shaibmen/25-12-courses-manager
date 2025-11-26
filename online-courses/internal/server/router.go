@@ -20,6 +20,8 @@ func SetupRoutes(server *gin.Engine,
 	dashboardHandler *handlers.DashboardHandler,
 	backupHandler *handlers.BackupHandler,
 	reportHandler *handlers.ReportHandler,
+	contractorHandler *handlers.ContractHandler,
+	legalEntityHandler *handlers.LegalEntityHandler,
 	Logger *slog.Logger) {
 
 	server.Use(cors.New(cors.Config{
@@ -109,5 +111,23 @@ func SetupRoutes(server *gin.Engine,
 			report.GET("/period", middleware.RoleProtecteMiddleware("accountant"), reportHandler.ReportPeriod)
 			report.GET("/expensive", middleware.RoleProtecteMiddleware("accountant"), reportHandler.MostExpensiveProgram)
 		}
+
+		contractor := api.Group("/contractor")
+		{
+
+			contractor.POST("/", middleware.RoleProtecteMiddleware("worker"), contractorHandler.CreateContract)
+			contractor.DELETE("/:id", middleware.RoleProtecteMiddleware("worker"), contractorHandler.Delete)
+			contractor.PUT("/:id", middleware.RoleProtecteMiddleware("worker"), contractorHandler.UpdateContractor)
+		}
+
+		legalEntity := api.Group("/legalentity")
+		{
+
+			legalEntity.POST("/", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.CreateLegalEntity)
+			legalEntity.DELETE("/:id", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.DeleteLegalEntity)
+			legalEntity.GET("/", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.ReadLegalEntity) // :page
+			legalEntity.PUT("/:id", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.UpdateLegalEntity)
+		}
+
 	}
 }

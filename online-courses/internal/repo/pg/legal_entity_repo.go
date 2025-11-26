@@ -3,6 +3,7 @@ package pg
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log/slog"
 	"online-courses/internal/apperrors"
 	"online-courses/internal/database"
@@ -17,7 +18,7 @@ type LegalEntityRepo struct {
 	logger *slog.Logger
 }
 
-func NewLegitEntity(db database.DB, logger *slog.Logger) *LegalEntityRepo {
+func NewLegalEntity(db database.DB, logger *slog.Logger) *LegalEntityRepo {
 	return &LegalEntityRepo{repo: db, logger: logger}
 }
 
@@ -25,11 +26,11 @@ func (l *LegalEntityRepo) CreateInTx(ctx context.Context, tx database.Tx, m *ent
 
 	query :=
 		`
-	inser into legal_entity (id_legalentity, name_company, inn, kpp, ogrn, phone, email, first_name, second_name, middle_name, id_regaddress)
+	insert into legal_entity (id_legalentity, name_company, inn, kpp, ogrn, phone, email, first_name, second_name, middle_name, id_regaddress)
 	values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 	`
-
-	_, err := l.repo.ExecContext(ctx, query, m.ID_Legalentity, m.NameCompany, m.Inn, m.Kpp, m.Ogrn, m.Phone, m.Email, m.FirstName, m.SecondName, m.MiddleName, m.ID_RegAddress)
+	fmt.Println(m.ID_RegAddress)
+	_, err := tx.ExecContext(ctx, query, m.ID_Legalentity, m.NameCompany, m.Inn, m.Kpp, m.Ogrn, m.Phone, m.Email, m.FirstName, m.SecondName, m.MiddleName, m.ID_RegAddress)
 	if err != nil {
 		return repoutils.HandleRepoErr(err)
 	}
@@ -42,7 +43,7 @@ func (l *LegalEntityRepo) Read(ctx context.Context, page int, filter string) ([]
 	query :=
 		`
 	select 
-	l.name_company, l.inn, l.kpp, l.ogrn, l.phone, l.email, l.first_name, l.second_name, l.middle_name
+	l.*
 	from legal_entity as l
 	where ($1::text is null or name_company ilike '%' || $1::text || '%' )
 	LIMIT $2 OFFSET $3
@@ -62,6 +63,7 @@ func (l *LegalEntityRepo) Read(ctx context.Context, page int, filter string) ([]
 	for rows.Next() {
 		var data entity.LegalEntity
 		if err = rows.Scan(
+			&data.ID_Legalentity,
 			&data.NameCompany,
 			&data.Inn,
 			&data.Kpp,
@@ -71,6 +73,7 @@ func (l *LegalEntityRepo) Read(ctx context.Context, page int, filter string) ([]
 			&data.FirstName,
 			&data.SecondName,
 			&data.MiddleName,
+			&data.ID_RegAddress,
 		); err != nil {
 			return nil, repoutils.HandleRepoErr(err)
 		}
@@ -97,24 +100,25 @@ func (l *LegalEntityRepo) UpdateInTx(ctx context.Context, tx database.Tx, m enti
 	}
 
 	if !exists {
+
 		return apperrors.ErrNoExists
 	}
 
 	query := `
-	update contractor 
+	update legal_entity 
 	set
 	name_company = coalesce($1, name_company),
-	inn = coalesce($1, inn),
-	kpp = coalesce($1, kpp),
-	ogrn = coalesce($1, ogrn),
-	phone = coalesce($4, phone),
-	email = coalesce($4, email),
-	first_name = coalesce($1, first_name),
-	second_name = coalesce($2, second_name),
-	middle_name = coalesce($3, middle_name),
-	where id_legalentity = $5;`
+	inn = coalesce($2, inn),
+	kpp = coalesce($3, kpp),
+	ogrn = coalesce($4, ogrn),
+	phone = coalesce($5, phone),
+	email = coalesce($6, email),
+	first_name = coalesce($7, first_name),
+	second_name = coalesce($8, second_name),
+	middle_name = coalesce($9, middle_name)
+	where id_legalentity = $10;`
 
-	if _, err := tx.ExecContext(ctx, query); err != nil {
+	if _, err := tx.ExecContext(ctx, query, m.NameCompany, m.Inn, m.Kpp, m.Ogrn, m.Phone, m.Email, m.FirstName, m.SecondName, m.MiddleName, m.ID_Legalentity); err != nil {
 
 		l.logger.Error("database error",
 			"operation", "update_legal_entity",
@@ -174,14 +178,14 @@ func (c *LegalEntityRepo) FindById(ctx context.Context, id uuid.UUID) (*uuid.UUI
 	}
 
 	if !exists {
+
 		return nil, repoutils.HandleRepoErr(sql.ErrNoRows)
 	}
 
-	query := "SELECT id_regaddress FROM contractor WHERE legal_entity = $1"
+	query := "SELECT id_regaddress FROM legal_entity WHERE id_legalentity = $1"
 
 	rows, err := c.repo.QueryContext(ctx, query, id)
 	if err != nil {
-
 		c.logger.Error("database error",
 			"operation", "find_by_id_legalentity",
 			"legal_entity", id,
