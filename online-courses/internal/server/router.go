@@ -115,7 +115,7 @@ func SetupRoutes(server *gin.Engine,
 		contractor := api.Group("/contractor")
 		{
 
-			contractor.POST("/", middleware.RoleProtecteMiddleware("worker"), contractorHandler.CreateContract)
+			contractor.POST("/:id", middleware.RoleProtecteMiddleware("worker"), contractorHandler.CreateContract)
 			contractor.DELETE("/:id", middleware.RoleProtecteMiddleware("worker"), contractorHandler.Delete)
 			contractor.PUT("/:id", middleware.RoleProtecteMiddleware("worker"), contractorHandler.UpdateContractor)
 		}
@@ -126,6 +126,7 @@ func SetupRoutes(server *gin.Engine,
 			legalEntity.POST("/", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.CreateLegalEntity)
 			legalEntity.DELETE("/:id", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.DeleteLegalEntity)
 			legalEntity.GET("/", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.ReadLegalEntity) // :page
+			legalEntity.GET("/details/:id", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.ReadFullData)
 			legalEntity.PUT("/:id", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.UpdateLegalEntity)
 		}
 

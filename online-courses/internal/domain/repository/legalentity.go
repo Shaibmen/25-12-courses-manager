@@ -13,5 +13,6 @@ type LegalEntityRepository interface {
 	Read(ctx context.Context, page int, filter string) ([]entity.LegalEntity, error)
 	UpdateInTx(ctx context.Context, tx database.Tx, m entity.LegalEntity) error
 	DeleteInTx(ctx context.Context, tx database.Tx, id uuid.UUID) error
+	ReadFullData(ctx context.Context, id uuid.UUID) (*entity.LegalEntity, error)
 	FindById(ctx context.Context, id uuid.UUID) (*uuid.UUID, error)
 }

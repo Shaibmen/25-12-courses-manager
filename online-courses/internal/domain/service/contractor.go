@@ -8,7 +8,7 @@ import (
 )
 
 type ContractorService interface {
-	Create(ctx context.Context, dto *dto.ContractorCreateDTO) error
+	Create(ctx context.Context, dto *dto.ContractorCreateDTO, idListener uuid.UUID) error
 	UpdateInTx(ctx context.Context, dto *dto.ContractorCreateDTO, id uuid.UUID) error
 	Delete(ctx context.Context, contractID uuid.UUID) error
 }

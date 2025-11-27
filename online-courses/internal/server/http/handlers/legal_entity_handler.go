@@ -114,3 +114,22 @@ func (l *LegalEntityHandler) DeleteLegalEntity(c *gin.Context) {
 		return
 	}
 }
+
+func (l *LegalEntityHandler) ReadFullData(c *gin.Context) {
+	id, err := utils.ParseUUID(c, "id")
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 1*time.Second)
+	defer cancel()
+
+	data, err := l.handler.ReadFullData(ctx, id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, models.HttpResponseWithData{Data: data})
+}

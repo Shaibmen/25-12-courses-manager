@@ -3,7 +3,6 @@ package pg
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log/slog"
 	"online-courses/internal/apperrors"
 	"online-courses/internal/database"
@@ -26,8 +25,8 @@ func (e *enrollmentListenerRepo) Create(ctx context.Context, model entity.Enroll
 
 	query :=
 		`
-	insert into enrollmentlistener (id_listener, id_programeducation, start_date, end_date, current_price, is_active)
-	values ($1, $2, $3, $4, $5, $6)
+	insert into enrollmentlistener (id_listener, id_programeducation, start_date, end_date, current_price, is_active, group_number, type_of_retraining)
+	values ($1, $2, $3, $4, $5, $6, $7, $8)
 	`
 
 	if _, err := e.repo.ExecContext(ctx,
@@ -38,6 +37,8 @@ func (e *enrollmentListenerRepo) Create(ctx context.Context, model entity.Enroll
 		model.EndDate,
 		model.CurrentPrice,
 		model.Is_active,
+		model.Group,
+		model.TypeOfRetraining,
 	); err != nil {
 
 		e.logger.Error("database error",
@@ -62,7 +63,7 @@ func (e *enrollmentListenerRepo) Read(ctx context.Context, page int, filter stri
 	e.id_listener,	 
 	l.first_name, l.second_name, l.middle_name,
 	p.name_prof_education,
-	e.start_date, e.end_date, e.current_price
+	e.start_date, e.end_date, e.current_price, e.group_number, e.type_of_retraining
 	from enrollmentlistener as e
 	inner join listener l on e.id_listener = l.id_listener
 	inner join programeducation p on e.id_programeducation = p.id_programeducation
@@ -98,6 +99,8 @@ func (e *enrollmentListenerRepo) Read(ctx context.Context, page int, filter stri
 			&enrollment.StartDate,
 			&enrollment.EndDate,
 			&enrollment.CurrentPrice,
+			&enrollment.Group,
+			&enrollment.TypeOfRetraining,
 		); err != nil {
 
 			e.logger.Error("database error",
@@ -142,8 +145,10 @@ func (e *enrollmentListenerRepo) Update(ctx context.Context, idListener, idProgr
 	id_programeducation = coalesce($1, id_programeducation),
 	start_date = coalesce($2, start_date),
 	end_date = coalesce($3, end_date),
-	current_price = coalesce($4, current_price)
-	where id_listener = $5 and id_programeducation = $6
+	current_price = coalesce($4, current_price),
+	group_number = coalesce($5, group_number),
+	type_of_retraining = coalesce($6, type_of_retraining)
+	where id_listener = $7 and id_programeducation = $8
 	`
 	if _, err := e.repo.ExecContext(
 		ctx,
@@ -152,6 +157,8 @@ func (e *enrollmentListenerRepo) Update(ctx context.Context, idListener, idProgr
 		model.StartDate,
 		model.EndDate,
 		model.CurrentPrice,
+		model.Group,
+		model.TypeOfRetraining,
 		idListener,
 		idProgram,
 	); err != nil {
@@ -224,7 +231,7 @@ func (e *enrollmentListenerRepo) ReadDetailListener(ctx context.Context, id uuid
 	query :=
 		`
 	select 
-	e.id_listener, e.id_programeducation, e.current_price,
+	e.id_listener, e.id_programeducation, e.current_price, e.group_number, e.type_of_retraining,
 	p.name_prof_education, p.time_education, p.individual_price, p.group_price, p.campus_price, educ.type_name , d.divisions ,
 	e.start_date, e.end_date
 	from enrollmentlistener as e
@@ -256,6 +263,8 @@ func (e *enrollmentListenerRepo) ReadDetailListener(ctx context.Context, id uuid
 			&enrollment.ID_Listener,
 			&enrollment.ID_ProgramEducation,
 			&enrollment.CurrentPrice,
+			&enrollment.Group,
+			&enrollment.TypeOfRetraining,
 			&enrollment.NameProfEducation,
 			&enrollment.TimeEducation,
 			&enrollment.IndividualPrice,
@@ -314,7 +323,7 @@ func (e *enrollmentListenerRepo) ReadByProgram(ctx context.Context, id uuid.UUID
 	e.id_listener,	 
 	l.first_name, l.second_name, l.middle_name,
 	p.name_prof_education,
-	e.start_date, e.end_date, e.current_price
+	e.start_date, e.end_date, e.current_price, e.group_number, e.type_of_retraining
 	from enrollmentlistener as e
 	inner join listener l on e.id_listener = l.id_listener
 	inner join programeducation p on e.id_programeducation = p.id_programeducation
@@ -343,6 +352,8 @@ func (e *enrollmentListenerRepo) ReadByProgram(ctx context.Context, id uuid.UUID
 			&enrollment.StartDate,
 			&enrollment.EndDate,
 			&enrollment.CurrentPrice,
+			&enrollment.Group,
+			&enrollment.TypeOfRetraining,
 		); err != nil {
 
 			e.logger.Error("database error",
@@ -523,6 +534,6 @@ func (e *enrollmentListenerRepo) GetListenerFIO(ctx context.Context, listenerID 
 			return nil, repoutils.HandleRepoErr(err)
 		}
 	}
-	fmt.Println(fio)
+
 	return &fio, nil
 }

@@ -58,13 +58,15 @@ type ProgramEducationRequest struct {
 }
 
 type ListenerRequest struct {
-	FirstName    string `json:"first_name" validate:"required,max=50"`
-	SecondName   string `json:"second_name" validate:"required,max=50"`
-	MiddleName   string `json:"middle_name" validate:"max=50"`
-	DateOfBirth  string `json:"date_of_birth" validate:"required"`
-	SNILS        string `json:"snils" validate:"required,len=14"`
-	ContactPhone string `json:"contact_phone" validate:"required,len=12"`
-	Email        string `json:"email" validate:"required,max=50,email"`
+	FirstName      string    `json:"first_name" validate:"required,max=50"`
+	SecondName     string    `json:"second_name" validate:"required,max=50"`
+	MiddleName     string    `json:"middle_name" validate:"max=50"`
+	DateOfBirth    string    `json:"date_of_birth" validate:"required"`
+	SNILS          string    `json:"snils" validate:"required,len=14"`
+	ContactPhone   string    `json:"contact_phone" validate:"required,len=12"`
+	Email          string    `json:"email" validate:"required,max=50,email"`
+	ID_LegalEntity uuid.UUID `json:"id_legalentity"`
+	ID_Contractor  uuid.UUID `json:"id_contractor"`
 }
 
 type FullListenerRequest struct {
@@ -120,6 +122,8 @@ type EnrollmentListenerRequest struct {
 	EndDate             string    `json:"end_date" validate:"required"`
 	CurrentPrice        float32   `json:"current_price" validate:"required"`
 	Is_active           bool      `json:"is_active" validate:"required"`
+	Group               string    `json:"group"`
+	TypeOfRetraining    string    `json:"type_of_retraining"`
 }
 
 type EnrollemenUpdateRequest struct {
@@ -127,6 +131,8 @@ type EnrollemenUpdateRequest struct {
 	StartDate           string    `json:"start_date" validate:"required"`
 	EndDate             string    `json:"end_date" validate:"required"`
 	CurrentPrice        float32   `json:"current_price" validate:"required"`
+	Group               string    `json:"group" validate:"required"`
+	TypeOfRetraining    string    `json:"type_of_retraining" validate:"required"`
 }
 
 type CreateCardRequest struct {

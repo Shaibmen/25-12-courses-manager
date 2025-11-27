@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type ListenerHandler struct {
@@ -45,10 +46,20 @@ func (h *ListenerHandler) CreateListenerHandler(c *gin.Context) {
 		return
 	}
 
+	var idLegal *uuid.UUID = nil
+	if request.Listener.ID_LegalEntity != uuid.Nil {
+		idLegal = &request.Listener.ID_LegalEntity
+	}
+
+	var idContractor *uuid.UUID = nil
+	if request.Listener.ID_Contractor != uuid.Nil {
+		idContractor = &request.Listener.ID_Contractor
+	}
+
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 1*time.Second)
 	defer cancel()
 
-	if err := h.handler.CreateFullListener(ctx, dto); err != nil {
+	if err := h.handler.CreateFullListener(ctx, dto, idLegal, idContractor); err != nil {
 		c.Error(err)
 		return
 

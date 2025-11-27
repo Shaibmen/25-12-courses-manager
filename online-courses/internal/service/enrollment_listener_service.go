@@ -37,6 +37,8 @@ func (e *enrollmentListenerService) Create(ctx context.Context, model dto.Enroll
 		EndDate:             *endDate,
 		CurrentPrice:        model.CurrentPrice,
 		Is_active:           model.Is_active,
+		Group:               model.Group,
+		TypeOfRetraining:    model.TypeOfRetraining,
 	}
 
 	if err := e.service.Create(ctx, entity); err != nil {
@@ -65,6 +67,8 @@ func (e *enrollmentListenerService) Read(ctx context.Context, page int, filter s
 			StartDate:         i.StartDate.String(),
 			EndDate:           i.EndDate.String(),
 			CurrentPrice:      i.CurrentPrice,
+			Group:             i.Group,
+			TypeOfRetraining:  i.TypeOfRetraining,
 		})
 	}
 
@@ -89,6 +93,8 @@ func (e *enrollmentListenerService) Update(ctx context.Context, idListener, idPr
 		StartDate:           *startDate,
 		EndDate:             *endDate,
 		CurrentPrice:        model.CurrentPrice,
+		Group:               model.Group,
+		TypeOfRetraining:    model.TypeOfRetraining,
 	}
 
 	if err := e.service.Update(ctx, idListener, idProgram, entity); err != nil {
@@ -129,6 +135,8 @@ func (e *enrollmentListenerService) ReadDetailListener(ctx context.Context, id u
 			StartDate:           i.StartDate.String(),
 			EndDate:             i.EndDate.String(),
 			CurrentPrice:        i.CurrentPrice,
+			Group:               i.Group,
+			TypeOfRetraining:    i.TypeOfRetraining,
 		})
 
 	}
@@ -155,6 +163,8 @@ func (e *enrollmentListenerService) ReadByProgram(ctx context.Context, id uuid.U
 			StartDate:         i.StartDate.String(),
 			EndDate:           i.EndDate.String(),
 			CurrentPrice:      i.CurrentPrice,
+			Group:             i.Group,
+			TypeOfRetraining:  i.TypeOfRetraining,
 		})
 	}
 

@@ -21,7 +21,7 @@ func NewLegalEntityService(db database.DB, service repository.LegalEntityReposit
 	return &LegalEntityService{db: db, service: service, regAddressRepo: regAddress}
 }
 
-func (l *LegalEntityService) Create(ctx context.Context, dto dto.LegalEntityCreateDTO) error {
+func (l *LegalEntityService) Create(ctx context.Context, dto dto.LegalEntityFullDTO) error {
 
 	tx, err := l.db.BeginTx(ctx)
 	if err != nil {
@@ -91,7 +91,7 @@ func (l *LegalEntityService) Read(ctx context.Context, page int, filter string) 
 	return dtoList, nil
 }
 
-func (l *LegalEntityService) Update(ctx context.Context, dto *dto.LegalEntityCreateDTO, id uuid.UUID) error {
+func (l *LegalEntityService) Update(ctx context.Context, dto *dto.LegalEntityFullDTO, id uuid.UUID) error {
 	tx, err := l.db.BeginTx(ctx)
 	if err != nil {
 		return err
@@ -159,4 +159,39 @@ func (l *LegalEntityService) Delete(ctx context.Context, legalEntityID uuid.UUID
 	}
 
 	return nil
+}
+
+func (l *LegalEntityService) ReadFullData(ctx context.Context, id uuid.UUID) (*dto.LegalEntityFullDTO, error) {
+
+	result, err := l.service.ReadFullData(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	dto := dto.LegalEntityFullDTO{
+		LegalEntity: dto.LegalEntityDTO{
+			ID_Legalentity: result.ID_Legalentity,
+			NameCompany:    result.NameCompany,
+			Inn:            result.Inn,
+			Kpp:            result.Kpp,
+			Ogrn:           result.Ogrn,
+			Phone:          result.Phone,
+			Email:          result.Email,
+			FirstName:      result.FirstName,
+			SecondName:     result.SecondName,
+			MiddleName:     result.MiddleName,
+			ID_RegAddress:  result.ID_RegAddress,
+		},
+		RegAddress: dto.RegistrationAddressDTO{
+			MailIndex: result.RegistrationAddress.MailIndex,
+			Region:    result.RegistrationAddress.Region,
+			City:      result.RegistrationAddress.City,
+			Street:    result.RegistrationAddress.Street,
+			House:     result.RegistrationAddress.House,
+			Building:  result.RegistrationAddress.Building,
+			Apartment: result.RegistrationAddress.Apartment,
+		},
+	}
+
+	return &dto, nil
 }

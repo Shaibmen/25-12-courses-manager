@@ -16,13 +16,14 @@ type ContractorService struct {
 	service        repository.ContractorRepository
 	passportRepo   repository.PassportRepository
 	regAddressRepo repository.RegistrationAddressRepository
+	listenerRepo   repository.ListenerRepository
 }
 
-func NewContractorService(db database.DB, service repository.ContractorRepository, passportRepo repository.PassportRepository, regAddress repository.RegistrationAddressRepository) *ContractorService {
-	return &ContractorService{db: db, service: service, passportRepo: passportRepo, regAddressRepo: regAddress}
+func NewContractorService(db database.DB, service repository.ContractorRepository, listenerRepo repository.ListenerRepository, passportRepo repository.PassportRepository, regAddress repository.RegistrationAddressRepository) *ContractorService {
+	return &ContractorService{db: db, service: service, listenerRepo: listenerRepo, passportRepo: passportRepo, regAddressRepo: regAddress}
 }
 
-func (c *ContractorService) Create(ctx context.Context, dto *dto.ContractorCreateDTO) error {
+func (c *ContractorService) Create(ctx context.Context, dto *dto.ContractorCreateDTO, idListener uuid.UUID) error {
 
 	tx, err := c.db.BeginTx(ctx)
 	if err != nil {
@@ -41,8 +42,8 @@ func (c *ContractorService) Create(ctx context.Context, dto *dto.ContractorCreat
 		return err
 	}
 
-	regAdderess := uuid.New()
-	regAddress := mapping.MapRegistrationAddressToEntity(dto.RegAddress, regAdderess)
+	regAddressID := uuid.New()
+	regAddress := mapping.MapRegistrationAddressToEntity(dto.RegAddress, regAddressID)
 
 	if err = c.regAddressRepo.CreateInTx(ctx, tx, regAddress); err != nil {
 		return err
@@ -58,7 +59,11 @@ func (c *ContractorService) Create(ctx context.Context, dto *dto.ContractorCreat
 		Email:         dto.Contractor.Email,
 	}
 
-	if err = c.service.CreateInTx(ctx, tx, entityContractor, passportID, regAdderess); err != nil {
+	if err = c.service.CreateInTx(ctx, tx, entityContractor, passport.ID_Passport, regAddress.ID_RegAddress); err != nil {
+		return err
+	}
+
+	if err = c.listenerRepo.UpdateContractor(ctx, tx, idListener, &idContractor); err != nil {
 		return err
 	}
 
@@ -129,15 +134,15 @@ func (c *ContractorService) Delete(ctx context.Context, contractID uuid.UUID) er
 		return err
 	}
 
+	if err = c.service.DeleteInTx(ctx, tx, contractID); err != nil {
+		return err
+	}
+
 	if err := c.passportRepo.DeleteInTx(ctx, tx, *passportID); err != nil {
 		return err
 	}
 
 	if err = c.regAddressRepo.DeleteInTx(ctx, tx, *regAddressID); err != nil {
-		return err
-	}
-
-	if err = c.service.DeleteInTx(ctx, tx, contractID); err != nil {
 		return err
 	}
 

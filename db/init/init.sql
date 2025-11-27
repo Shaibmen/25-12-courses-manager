@@ -141,8 +141,8 @@ CREATE TABLE IF NOT EXISTS enrollmentlistener (
     end_date DATE not null,
     current_price decimal(10,2) not null,
     is_active  boolean not null,
-	group_number varchar(50),
-	type_of_retraining varchar(50),
+	group_number varchar(50) not null,
+	type_of_retraining varchar(50) not null,
     PRIMARY KEY (id_listener, id_programeducation)
 );
 
@@ -470,3 +470,11 @@ VALUES
  (SELECT id_placework FROM placework LIMIT 1 OFFSET 4));
 
 
+ALTER TABLE listener DROP CONSTRAINT listener_id_contractor_fkey;
+
+
+ALTER TABLE listener 
+ADD CONSTRAINT listener_id_contractor_fkey 
+FOREIGN KEY (id_contractor) 
+REFERENCES contractor(id_contractor) 
+ON DELETE SET NULL;

@@ -12,6 +12,8 @@ type ListenerIDDTO struct {
 	ID_RegAddress        uuid.UUID  `json:"id_reg_address"`
 	ID_EducationListener *uuid.UUID `json:"id_education_listener"`
 	ID_PlaceWork         *uuid.UUID `json:"id_placework"`
+	ID_LegalEntity       *uuid.UUID `json:"id_legalentity"`
+	ID_Contractor        *uuid.UUID `json:"id_contractor"`
 }
 
 type ListenerDTO struct {
@@ -100,6 +102,7 @@ type FullListenerDataDTO struct {
 	RegistrationAddress RegistrationAddressDTO `json:"regaddress"`
 	EducationListener   *EducationListenerDTO  `json:"education_listener,omitempty"`
 	PlaceWork           *PlaceWorkDTO          `json:"placework,omitempty"`
+	Contractor          *ContractorCreateDTO   `json:"contractor,omitempty"`
 }
 
 type CreateListenerDTO struct {
@@ -132,12 +135,14 @@ type ProgramEducationDTO struct {
 }
 
 type EnrollmentListenerDTO struct {
-	ID_Listener  uuid.UUID `json:"id_distener"`
-	ID_Program   uuid.UUID `json:"id_drogram"`
-	StartDate    string    `json:"start_date"`
-	EndDate      string    `json:"end_date"`
-	CurrentPrice float32   `json:"current_price"`
-	Is_active    bool      `json:"is_active"`
+	ID_Listener      uuid.UUID `json:"id_distener"`
+	ID_Program       uuid.UUID `json:"id_drogram"`
+	StartDate        string    `json:"start_date"`
+	EndDate          string    `json:"end_date"`
+	CurrentPrice     float32   `json:"current_price"`
+	Is_active        bool      `json:"is_active"`
+	Group            string    `json:"group"`
+	TypeOfRetraining string    `json:"type_of_retraining"`
 }
 
 type EnrollmentListenerDetailsDTO struct {
@@ -149,6 +154,8 @@ type EnrollmentListenerDetailsDTO struct {
 	StartDate         string    `json:"start_date"`
 	EndDate           string    `json:"end_date"`
 	CurrentPrice      float32   `json:"current_price"`
+	Group             string    `json:"group"`
+	TypeOfRetraining  string    `json:"type_of_retraining"`
 }
 
 type EnrollmentProgramDetailsDTO struct {
@@ -164,6 +171,8 @@ type EnrollmentProgramDetailsDTO struct {
 	StartDate           string    `json:"start_date"`
 	EndDate             string    `json:"end_date"`
 	CurrentPrice        float32   `json:"current_price"`
+	Group               string    `json:"group"`
+	TypeOfRetraining    string    `json:"type_of_retraining"`
 }
 
 type ProgramEducationToCardDTO struct {
@@ -227,11 +236,12 @@ type ProgramEndingSoonDTO struct {
 }
 
 type ContractorDTO struct {
-	FirstName     string `json:"first_name"`
-	SecondName    string `json:"second_name"`
-	MiddleName    string `json:"middle_name"`
-	Contact_phone string `json:"contact_phone"`
-	Email         string `json:"email"`
+	ID_Contractor uuid.UUID `json:"id_contractor"`
+	FirstName     string    `json:"first_name"`
+	SecondName    string    `json:"second_name"`
+	MiddleName    string    `json:"middle_name"`
+	Contact_phone string    `json:"contact_phone"`
+	Email         string    `json:"email"`
 }
 
 type ContractorCreateDTO struct {
@@ -254,7 +264,7 @@ type LegalEntityDTO struct {
 	ID_RegAddress  uuid.UUID
 }
 
-type LegalEntityCreateDTO struct {
+type LegalEntityFullDTO struct {
 	LegalEntity LegalEntityDTO
 	RegAddress  RegistrationAddressDTO
 }

@@ -22,7 +22,11 @@ func NewContractHandler(handler service.ContractorService) *ContractHandler {
 }
 
 func (con *ContractHandler) CreateContract(c *gin.Context) {
-
+	id, err := utils.ParseUUID(c, "id")
+	if err != nil {
+		c.Error(err)
+		return
+	}
 	var request request.FullContractorRequest
 
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -39,7 +43,7 @@ func (con *ContractHandler) CreateContract(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
 	defer cancel()
 
-	if err = con.handler.Create(ctx, dto); err != nil {
+	if err = con.handler.Create(ctx, dto, id); err != nil {
 		c.Error(err)
 		return
 	}
@@ -54,7 +58,13 @@ func (con *ContractHandler) UpdateContractor(c *gin.Context) {
 		c.Error(err)
 		return
 	}
+
 	var request request.FullContractorRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.Error(err)
+		return
+	}
 
 	dto, err := mapping.MapContcratorReqToDTO(request)
 	if err != nil {

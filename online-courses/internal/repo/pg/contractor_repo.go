@@ -25,11 +25,11 @@ func (l *ContractorRepo) CreateInTx(ctx context.Context, tx database.Tx, m *enti
 
 	query :=
 		`
-	insert into legal_entity (id_contractor, first_name, second_name, middle_name, contact_phone, email, id_passport, id_regaddress)
+	insert into contractor (id_contractor, first_name, second_name, middle_name, contact_phone, email, id_passport, id_regaddress)
 	values ($1, $2, $3, $4, $5, $6, $7, $8)
 	`
 
-	_, err := l.repo.ExecContext(ctx, query, m.ID_Contractor, m.FirstName, m.SecondName, m.MiddleName, m.Contact_phone, m.Email, m.ID_Passport, m.ID_RegAddress, idPassport, idRegAddress)
+	_, err := tx.ExecContext(ctx, query, m.ID_Contractor, m.FirstName, m.SecondName, m.MiddleName, m.Contact_phone, m.Email, idPassport, idRegAddress)
 	if err != nil {
 
 		l.logger.Error("database error",
@@ -72,10 +72,10 @@ func (c *ContractorRepo) UpdateInTx(ctx context.Context, tx database.Tx, contrac
 	second_name = coalesce($2, second_name),
 	middle_name = coalesce($3, middle_name),
 	contact_phone = coalesce($4, contact_phone),
-	email = coalesce($4, email),
-	where id_contractor = $5;`
+	email = coalesce($5, email)
+	where id_contractor = $6;`
 
-	if _, err := tx.ExecContext(ctx, query); err != nil {
+	if _, err := tx.ExecContext(ctx, query, contractor.FirstName, contractor.SecondName, contractor.MiddleName, contractor.Contact_phone, contractor.Email, contractor.ID_Contractor); err != nil {
 
 		c.logger.Error("database error",
 			"operation", "update_contractor",

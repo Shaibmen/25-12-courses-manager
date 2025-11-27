@@ -3,7 +3,6 @@ package pg
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log/slog"
 	"online-courses/internal/apperrors"
 	"online-courses/internal/database"
@@ -29,7 +28,7 @@ func (l *LegalEntityRepo) CreateInTx(ctx context.Context, tx database.Tx, m *ent
 	insert into legal_entity (id_legalentity, name_company, inn, kpp, ogrn, phone, email, first_name, second_name, middle_name, id_regaddress)
 	values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 	`
-	fmt.Println(m.ID_RegAddress)
+
 	_, err := tx.ExecContext(ctx, query, m.ID_Legalentity, m.NameCompany, m.Inn, m.Kpp, m.Ogrn, m.Phone, m.Email, m.FirstName, m.SecondName, m.MiddleName, m.ID_RegAddress)
 	if err != nil {
 		return repoutils.HandleRepoErr(err)
@@ -169,6 +168,78 @@ func (l *LegalEntityRepo) DeleteInTx(ctx context.Context, tx database.Tx, id uui
 	}
 
 	return nil
+}
+
+func (c *LegalEntityRepo) ReadFullData(ctx context.Context, id uuid.UUID) (*entity.LegalEntity, error) {
+
+	exists, err := repoutils.Exists(ctx, c.repo, "legal_entity", "id_legalentity", id)
+	if err != nil {
+		return nil, repoutils.HandleRepoErr(err)
+	}
+
+	if !exists {
+		return nil, repoutils.HandleRepoErr(sql.ErrNoRows)
+	}
+
+	query :=
+		`
+	select 
+	l.*,
+	r.mail_index, r.region, r.city, r.street, r.house, r.building, r.apartment
+	from legal_entity as l
+	inner join registrationaddress r on l.id_regaddress = r.id_regaddress
+	where id_legalentity = $1
+	`
+
+	rows, err := c.repo.QueryContext(ctx, query, id)
+	if err != nil {
+
+		c.logger.Error("database error",
+			"operation", "read_full_legal_entity",
+			"id_legal_entity", id,
+			"type", "query",
+			"err", err,
+		)
+
+		return nil, repoutils.HandleRepoErr(err)
+	}
+	defer rows.Close()
+
+	var data entity.LegalEntity
+
+	for rows.Next() {
+		if err = rows.Scan(
+			&data.ID_Legalentity,
+			&data.NameCompany,
+			&data.Inn,
+			&data.Kpp,
+			&data.Ogrn,
+			&data.Phone,
+			&data.Email,
+			&data.FirstName,
+			&data.SecondName,
+			&data.MiddleName,
+			&data.ID_RegAddress,
+			&data.RegistrationAddress.MailIndex,
+			&data.RegistrationAddress.Region,
+			&data.RegistrationAddress.City,
+			&data.RegistrationAddress.Street,
+			&data.RegistrationAddress.House,
+			&data.RegistrationAddress.Building,
+			&data.RegistrationAddress.Apartment,
+		); err != nil {
+
+			c.logger.Error("database error",
+				"operation", "read_mapping_full_legal_entity",
+				"id_legalentity", id,
+				"type", "query",
+				"err", err,
+			)
+
+			return nil, repoutils.HandleRepoErr(err)
+		}
+	}
+	return &data, nil
 }
 
 func (c *LegalEntityRepo) FindById(ctx context.Context, id uuid.UUID) (*uuid.UUID, error) {

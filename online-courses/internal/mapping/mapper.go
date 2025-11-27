@@ -232,7 +232,15 @@ func MapListenerReqToDto(request request.FullListenerRequest) (*dto.CreateListen
 	}
 
 	return &dto.CreateListenerDTO{
-		Listener:            dto.ListenerDTO(request.Listener),
+		Listener: dto.ListenerDTO{
+			FirstName:    request.Listener.FirstName,
+			SecondName:   request.Listener.SecondName,
+			MiddleName:   request.Listener.MiddleName,
+			DateOfBirth:  request.Listener.DateOfBirth,
+			SNILS:        request.Listener.SNILS,
+			ContactPhone: request.Listener.ContactPhone,
+			Email:        request.Listener.Email,
+		},
 		Passport:            passport,
 		RegistrationAddress: regAddress,
 		EducationListener:   educaitonListener,
@@ -288,13 +296,13 @@ func MapContcratorReqToDTO(request request.FullContractorRequest) (*dto.Contract
 	return dto, nil
 }
 
-func LegalEntityFullMappping(request request.FullLegalEntityRequest) (*dto.LegalEntityCreateDTO, error) {
+func LegalEntityFullMappping(request request.FullLegalEntityRequest) (*dto.LegalEntityFullDTO, error) {
 	mailIndex, err := strconv.Atoi(request.RegAddress.MailIndex)
 	if err != nil {
 		return nil, err
 	}
 
-	data := &dto.LegalEntityCreateDTO{
+	data := &dto.LegalEntityFullDTO{
 		LegalEntity: dto.LegalEntityDTO{
 			NameCompany: request.LegalEntity.NameCompany,
 			Inn:         request.LegalEntity.Inn,

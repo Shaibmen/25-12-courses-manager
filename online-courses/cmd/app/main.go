@@ -76,7 +76,7 @@ func main() {
 	dashboardService := service.NewDashboardService(dashboardRepo)
 	backupService := service.NewBackupService(backupRepo)
 	reportService := service.NewRepostService(reportRepo)
-	contractorService := service.NewContractorService(db, contractorRepo, passportRepo, registrationAddressRepo)
+	contractorService := service.NewContractorService(db, contractorRepo, listenerRepo, passportRepo, registrationAddressRepo)
 	legalEntityService := service.NewLegalEntityService(db, legalEntityRepo, registrationAddressRepo)
 
 	listenerHanlder := handlers.NewListenerHandler(listenerSevice)
