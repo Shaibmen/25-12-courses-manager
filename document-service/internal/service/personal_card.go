@@ -77,16 +77,16 @@ func replaceFIZ(doc *docx.Docx, model *dto.FullListenerDataDTO) {
 
 	switch model.Passport.Gender {
 	case "Мужской":
-		doc.Replace("MUZH" /*"мужской ☐"*/, "мужской ☒", -1)
-		doc.Replace("ZHEN", "женский ☐", -1)
+		doc.Replace("MUZH" /*"мужской ☐"*/, "мужской [x]", -1)
+		doc.Replace("ZHEN", "женский [ ]", -1)
 		log.Println("Мужской пол")
 	case "Женский":
-		doc.Replace("MUZH", "мужской ☐", -1)
-		doc.Replace("ZHEN", "женский ☒", -1)
+		doc.Replace("MUZH", "мужской [ ]", -1)
+		doc.Replace("ZHEN", "женский [x]", -1)
 		log.Println("Женский пол")
 	default:
-		doc.Replace("MUZH", "мужской ☐", -1)
-		doc.Replace("ZHEN", "женский ☐", -1)
+		doc.Replace("MUZH", "мужской [ ]", -1)
+		doc.Replace("ZHEN", "женский [ ]", -1)
 		log.Println("другой пол:", model.Passport.Gender)
 	}
 
@@ -116,26 +116,26 @@ func replaceFIZ(doc *docx.Docx, model *dto.FullListenerDataDTO) {
 		// doc.Replace("SPROF", "среднее профессиональное ☐", -1)
 		// doc.Replace("VISH", "высшее ☐", -1)
 		log.Println("Среднее образование")
-		doc.Replace("PACANI", "среднее ☒ среднее профессиональное ☐ высшее ☐", -1)
+		doc.Replace("PACANI", "среднее [x] среднее профессиональное [ ] высшее [ ]", -1)
 	case "Среднее специальное":
 		// doc.Replace("SREDN", "среднее ☐", -1)
 		// doc.Replace("SPROF", "среднее профессиональное ☒", -1)
 		// doc.Replace("VISH", "высшее ☐", -1)
 		log.Println("Среднее профессиональное образование")
-		doc.Replace("PACANI", "среднее ☐ среднее профессиональное ☒ высшее ☐", -1)
+		doc.Replace("PACANI", "среднее [ ] среднее профессиональное [x] высшее [ ]", -1)
 	case "Бакалавр", "Магистр", "Кандидат наук":
 		// doc.Replace("SREDN", "среднее ☐", -1)
 		// doc.Replace("SPROF", "среднее профессиональное ☐", -1)
 		// doc.Replace("VISH", "высшее ☒", -1)
 		log.Println("Высшее образование")
-		doc.Replace("PACANI", "среднее ☐ среднее профессиональное ☐ высшее ☒", -1)
+		doc.Replace("PACANI", "среднее [ ] среднее профессиональное [ ] высшее [x]", -1)
 	default:
 		log.Println("Другой тип образования:", model.EducationListener.LevelEducation)
-		doc.Replace("PACANI", "среднее ☐ среднее профессиональное ☐ высшее ☐", -1)
+		doc.Replace("PACANI", "среднее [ ] среднее профессиональное [ ] высшее [ ]", -1)
 	}
 
 	if model.EducationListener != (dto.EducationListenerDTO{}) {
-		doc.Replace("DIPLOM", "диплом ☒", -1)
+		doc.Replace("DIPLOM", "диплом [x]", -1)
 		doc.Replace("DIPS", model.EducationListener.DiplomSeria, -1)
 		doc.Replace("DIPN", model.EducationListener.DiplomNumber, -1)
 		dmy, _ := time.Parse(time.RFC3339, model.EducationListener.DateGiven)
@@ -149,7 +149,7 @@ func replaceFIZ(doc *docx.Docx, model *dto.FullListenerDataDTO) {
 		doc.Replace("INSTITUTION", model.EducationListener.EducationalInstitution, -1)
 		// doc.Replace("Speciality", model.EducationListener.Speciality, -1)
 	} else {
-		doc.Replace("DIPLOM", "диплом ☐", -1) // диплом ☐
+		doc.Replace("DIPLOM", "диплом [ ]", -1) // диплом ☐
 		doc.Replace("DIPS", "_______", -1)
 		doc.Replace("DIPN", "_______", -1)
 		doc.Replace("IPD", "_______", -1)
