@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"strings"
-	"io"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -27,7 +27,7 @@ func MustInitS3Client() S3Client {
 
 	client, err := minio.New(os.Getenv("S3_ENDPOINT"), &minio.Options{
 		Creds:  credentials.NewStaticV4(os.Getenv("S3_LOGIN"), os.Getenv("S3_PASSWORD"), ""),
-		Secure: false, // поменять
+		Secure: false,
 	})
 
 	if err != nil {

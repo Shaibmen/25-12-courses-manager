@@ -33,7 +33,7 @@ func (p *PersonalCardService) CreatePersonalCard(ListenerData *dto.FullListenerD
 	defer r.Close()
 
 	doc := r.Editable()
-	replace(doc, ListenerData)
+	replaceFIZ(doc, ListenerData)
 
 	var buffer bytes.Buffer
 	err = doc.Write(&buffer)
@@ -55,7 +55,7 @@ func (p *PersonalCardService) CreatePersonalCard(ListenerData *dto.FullListenerD
 	return nil
 }
 
-func replace(doc *docx.Docx, model *dto.FullListenerDataDTO) {
+func replaceFIZ(doc *docx.Docx, model *dto.FullListenerDataDTO) {
 	doc.Replace("}}", "", -1)
 	doc.Replace("{{", "", -1)
 	doc.Replace("ProgramEducation", model.ProgramEducation.NameProfEducation, -1)
