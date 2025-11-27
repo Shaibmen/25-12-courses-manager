@@ -11,7 +11,9 @@ import (
 	"github.com/nguyenthenguyen/docx"
 )
 
-var zayavleniePath = "./internal/documents/zayavlenie.docx"
+var zayavlenieFourteenPath = "./internal/documents/zayavlenie-fourteen.docx"
+var zayavlenieEighteenPath = "./internal/documents/zayavlenie-eighteen.docx"
+var zayavlenieBelowEighteenPath = "./internal/documents/zayavlenie-below-eighteen.docx"
 
 type ZayavlenieService struct {
 	s3Client S3ClientInterface
@@ -21,22 +23,49 @@ func NewZayavlenieService(client S3ClientInterface) *ZayavlenieService {
 	return &ZayavlenieService{client}
 }
 
-func (s *ZayavlenieService) CreateZayavlenie(zayavlenieData *dto.ZayavlenieDTO, dogovorType string) error {
+func (s *ZayavlenieService) CreateZayavlenie(zayavlenieData *dto.ZayavlenieDTO, dogovorType string, centerType string) error {
 
-	r, err := docx.ReadDocxFile(personalCardPath)
-	if err != nil {
-		return err
-	}
-	defer r.Close()
+	var doc *docx.Docx
+	var err error
 
-	doc := r.Editable()
+	doc.Replace("DIVISONEDUCATION", zayavlenieData.ProgramEducation.DivisionEducation, -1)
+
 	switch dogovorType {
-	case "betweenEighteen":
+	case "belowEighteen":
+
+		r, err := docx.ReadDocxFile(zayavlenieBelowEighteenPath)
+		if err != nil {
+			return err
+		}
+		defer r.Close()
+
+		doc := r.Editable()
+
 		replaceZayavlenieBetweenEighteen(doc, zayavlenieData)
+
 	case "fourteen":
-		replaceZayavlenieFourteen(doc, zayavlenieData)
+
+		r, err := docx.ReadDocxFile(zayavlenieFourteenPath)
+		if err != nil {
+			return err
+		}
+		defer r.Close()
+
+		doc := r.Editable()
+
+		replaceZayavlenieBetweenEighteen(doc, zayavlenieData)
+
 	case "eighteen":
-		replaceZayavlenieEighteen(doc, zayavlenieData)
+
+		r, err := docx.ReadDocxFile(zayavlenieEighteenPath)
+		if err != nil {
+			return err
+		}
+		defer r.Close()
+
+		doc := r.Editable()
+
+		replaceZayavlenieBetweenEighteen(doc, zayavlenieData)
 	}
 
 	var buffer bytes.Buffer
@@ -92,9 +121,10 @@ func replaceZayavlenieBetweenEighteen(doc *docx.Docx, model *dto.ZayavlenieDTO) 
 	contractorFio := model.Contractor.SecondName + " " + model.Contractor.FirstName + " " + model.Contractor.MiddleName
 	doc.Replace("CONTRACTORFIO", contractorFio, -1)
 
-	doc.Replace("SERIAE NUMBERE", model.Contractor.Passport.Seria, -1)
+	doc.Replace("SERIAE", model.Contractor.Passport.Seria, -1)
+	doc.Replace("NUMBERE", model.Contractor.Passport.Number, -1)
 	doc.Replace("GIVENE", model.Contractor.Passport.PassportGiven, -1)
-	doc.Replace("DATEGIVENS", model.Contractor.Passport.DateGiven, -1)
+	doc.Replace("DATEGIVENE", model.Contractor.Passport.DateGiven, -1)
 
 	doc.Replace("PHONEE", model.Contractor.Contact_phone, -1)
 	doc.Replace("EMAILE", model.Contractor.Email, -1)
@@ -111,6 +141,10 @@ func replaceZayavlenieBetweenEighteen(doc *docx.Docx, model *dto.ZayavlenieDTO) 
 			doc.Replace(tempVar, "[x]", -1)
 		}
 	}
+
+	doc.Replace("TYPEOFTRAINING", model.ProgramEducation.EducationType, -1)
+	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
+	doc.Replace("HOUR", strconv.Itoa(model.ProgramEducation.TimeEducation), -1)
 }
 
 func replaceZayavlenieFourteen(doc *docx.Docx, model *dto.ZayavlenieDTO) {
