@@ -92,9 +92,19 @@ type ContractorRequest struct {
 	Email               string            `json:"email"`
 }
 
-type Zayavlenie struct {
+type ExecutorRequest struct {
+	Status             string `json:"status"`
+	ExecutorName       string `json:"executor_name"`
+	ExecutorSurname    string `json:"executor_surname"`
+	ExecutorMiddlename string `json:"executor_middlename"`
+}
+
+type ZayavlenieRequest struct {
 	ProgramEducation ProgramEducationRequest `json:"program_education"`
 	Listener         ListenerRequest         `json:"listener"`
 	Contractor       ContractorRequest       `json:"contractor"`
+	Executor         ExecutorRequest         `json:"executor"`
+	Passport         PassportRequest         `json:"passport"`
+	Registration     RegAddressRequest       `json:"reg_address"`
 	Variant          int                     `json:"variant"`
 }

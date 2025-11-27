@@ -75,9 +75,19 @@ type ContractorDTO struct {
 	Email               string
 }
 
+type ExecutorDTO struct {
+	Status             string
+	ExecutorName       string
+	ExecutorSurname    string
+	ExecutorMiddlename string
+}
+
 type ZayavlenieDTO struct {
 	ProgramEducation ProgramEducationDTO
-	Listener         ListenerDTO
+	ListenerData     ListenerDTO
 	Contractor       ContractorDTO
+	Executor         ExecutorDTO
+	Passport         PassportDTO
+	Registration     RegistrationAddressDTO
 	Variant          int
 }

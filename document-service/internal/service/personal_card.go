@@ -6,7 +6,8 @@ import (
 	"document-service/internal/domain/dto"
 	"errors"
 	"fmt"
-	"log"
+
+	// "log"
 	"strconv"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 )
 
 var (
-	templatePath = "./internal/documents/personal-card.docx"
+	personalCardPath = "./internal/documents/personal-card.docx"
 )
 
 type PersonalCardService struct {
@@ -27,14 +28,14 @@ func NewPersonalCardService(client S3ClientInterface) *PersonalCardService {
 
 func (p *PersonalCardService) CreatePersonalCard(ListenerData *dto.FullListenerDataDTO) error {
 
-	r, err := docx.ReadDocxFile(templatePath)
+	r, err := docx.ReadDocxFile(personalCardPath)
 	if err != nil {
 		return err
 	}
 	defer r.Close()
 
 	doc := r.Editable()
-	replaceFIZ(doc, ListenerData)
+	replaceFIZ(doc, ListenerData) // сделать так же проверку на юрика
 
 	var buffer bytes.Buffer
 	err = doc.Write(&buffer)
@@ -79,15 +80,15 @@ func replaceFIZ(doc *docx.Docx, model *dto.FullListenerDataDTO) {
 	case "Мужской":
 		doc.Replace("MUZH" /*"мужской ☐"*/, "мужской [x]", -1)
 		doc.Replace("ZHEN", "женский [ ]", -1)
-		log.Println("Мужской пол")
+		// log.Println("Мужской пол")
 	case "Женский":
 		doc.Replace("MUZH", "мужской [ ]", -1)
 		doc.Replace("ZHEN", "женский [x]", -1)
-		log.Println("Женский пол")
+		// log.Println("Женский пол")
 	default:
 		doc.Replace("MUZH", "мужской [ ]", -1)
 		doc.Replace("ZHEN", "женский [ ]", -1)
-		log.Println("другой пол:", model.Passport.Gender)
+		// log.Println("другой пол:", model.Passport.Gender)
 	}
 
 	doc.Replace("SERIA", model.Passport.Seria, -1)
@@ -115,22 +116,22 @@ func replaceFIZ(doc *docx.Docx, model *dto.FullListenerDataDTO) {
 		// doc.Replace("SREDN", "среднее ☒", -1)
 		// doc.Replace("SPROF", "среднее профессиональное ☐", -1)
 		// doc.Replace("VISH", "высшее ☐", -1)
-		log.Println("Среднее образование")
+		// log.Println("Среднее образование")
 		doc.Replace("PACANI", "среднее [x] среднее профессиональное [ ] высшее [ ]", -1)
 	case "Среднее специальное":
 		// doc.Replace("SREDN", "среднее ☐", -1)
 		// doc.Replace("SPROF", "среднее профессиональное ☒", -1)
 		// doc.Replace("VISH", "высшее ☐", -1)
-		log.Println("Среднее профессиональное образование")
+		// log.Println("Среднее профессиональное образование")
 		doc.Replace("PACANI", "среднее [ ] среднее профессиональное [x] высшее [ ]", -1)
 	case "Бакалавр", "Магистр", "Кандидат наук":
 		// doc.Replace("SREDN", "среднее ☐", -1)
 		// doc.Replace("SPROF", "среднее профессиональное ☐", -1)
 		// doc.Replace("VISH", "высшее ☒", -1)
-		log.Println("Высшее образование")
+		// log.Println("Высшее образование")
 		doc.Replace("PACANI", "среднее [ ] среднее профессиональное [ ] высшее [x]", -1)
 	default:
-		log.Println("Другой тип образования:", model.EducationListener.LevelEducation)
+		// log.Println("Другой тип образования:", model.EducationListener.LevelEducation)
 		doc.Replace("PACANI", "среднее [ ] среднее профессиональное [ ] высшее [ ]", -1)
 	}
 
