@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"document-service/internal/domain/dto"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -235,4 +236,45 @@ func replaceZayavlenieEighteen(doc *docx.Docx, model *dto.ZayavlenieDTO) {
 			doc.Replace(tempVar, "[x]", -1)
 		}
 	}
+}
+
+func (s *ZayavlenieService) ExistsZayavlenie(fileName string) ([]string, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	documents, err := s.s3Client.GetDocumentListFromS3(ctx, fileName)
+	if err != nil {
+		return []string{}, err
+	}
+
+	if len(documents) > 0 {
+		return documents, nil
+	} else {
+		return []string{}, errors.New("Не найдено ни одного документа")
+	}
+}
+
+func (s *ZayavlenieService) DeleteZayavlenie(fileName string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	err := s.s3Client.DeleteDocumentFromS3(ctx, fileName)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *ZayavlenieService) DownloadZayavlenie(param string) ([]byte, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	document, err := s.s3Client.GetDocumentFromS3(ctx, param)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return document, nil
 }

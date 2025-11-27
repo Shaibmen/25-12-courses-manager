@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"document-service/internal/domain/dto"
+	"errors"
 	"fmt"
 	"time"
 
@@ -97,7 +98,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 	}
 
 	uniqueParam := dogovor.ListenerData.SNILS
-	nameFile := "Личное-дело-" + dogovor.ProgramEducation.NameProfEducation + "_" + uniqueParam + ".docx"
+	nameFile := "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + uniqueParam + ".docx"
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -295,4 +296,45 @@ func replaceDO3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("APARTMENTE", model.Contractor.RegistrationAddress.Apartment, -1)
 	doc.Replace("PHONEE", model.Contractor.Contact_phone, -1)
 	doc.Replace("EMAILE", model.Contractor.Email, -1)
+}
+
+func (s *DogovorService) ExistsDogovor(fileName string) ([]string, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	documents, err := s.s3client.GetDocumentListFromS3(ctx, fileName)
+	if err != nil {
+		return []string{}, err
+	}
+
+	if len(documents) > 0 {
+		return documents, nil
+	} else {
+		return []string{}, errors.New("Не найдено ни одного документа")
+	}
+}
+
+func (s *DogovorService) DeleteDogovor(fileName string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	err := s.s3client.DeleteDocumentFromS3(ctx, fileName)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *DogovorService) DownloadDogovor(param string) ([]byte, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	document, err := s.s3client.GetDocumentFromS3(ctx, param)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return document, nil
 }

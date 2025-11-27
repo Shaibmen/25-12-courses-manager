@@ -112,6 +112,7 @@ type ZayavlenieRequest struct {
 	Passport         PassportRequest         `json:"passport"`
 	Registration     RegAddressRequest       `json:"reg_address"`
 	Variant          int                     `json:"variant"`
+	DogovorType      string                  `json:"dogovor_type"`
 }
 
 type DogovorRequest struct {
@@ -126,4 +127,5 @@ type DogovorRequest struct {
 	OptionDocument   string                    `json:"opt_document"`
 	OptionPrice      string                    `json:"opt_price"`
 	Price            float32                   `json:"price"`
+	DogovorType      string                    `json:"dogovor_type"`
 }
