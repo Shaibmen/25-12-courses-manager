@@ -75,12 +75,17 @@ type FullListenerRequest struct {
 // 	Email               string
 // }
 
-// type Zayavlenie struct {
-// 	ProgramEducation ProgramEducationRequest
-// 	Listener         ListenerRequest
-// 	Contractor       ContractorRequest
-// 	Variant          int
-// }
+//	type Zayavlenie struct {
+//		ProgramEducation ProgramEducationRequest
+//		Listener         ListenerRequest
+//		Contractor       ContractorRequest
+//		Variant          int
+//	}
+type EnrollmentListenerRequest struct {
+	StartDate    string  `json:"start_date"`
+	EndDate      string  `json:"end_date"`
+	CurrentPrice float32 `json:"current_price"`
+}
 
 type ContractorRequest struct {
 	Passport            PassportRequest   `json:"passport"`
@@ -107,4 +112,18 @@ type ZayavlenieRequest struct {
 	Passport         PassportRequest         `json:"passport"`
 	Registration     RegAddressRequest       `json:"reg_address"`
 	Variant          int                     `json:"variant"`
+}
+
+type DogovorRequest struct {
+	ProgramEducation ProgramEducationRequest   `json:"program_education"`
+	ListenerData     ListenerRequest           `json:"listener"`
+	Contractor       ContractorRequest         `json:"contractor"`
+	Executor         ExecutorRequest           `json:"executor"`
+	Passport         PassportRequest           `json:"passport"`
+	Registration     RegAddressRequest         `json:"reg_address"`
+	Enrollment       EnrollmentListenerRequest `json:"enrollment_listener"`
+	OptionNagruzka   string                    `json:"opion_nagruz"`
+	OptionDocument   string                    `json:"opt_document"`
+	OptionPrice      string                    `json:"opt_price"`
+	Price            float32                   `json:"price"`
 }

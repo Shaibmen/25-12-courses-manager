@@ -15,6 +15,12 @@ var zayavlenieFourteenPath = "./internal/documents/zayavlenie-fourteen.docx"
 var zayavlenieEighteenPath = "./internal/documents/zayavlenie-eighteen.docx"
 var zayavlenieBelowEighteenPath = "./internal/documents/zayavlenie-below-eighteen.docx"
 
+const (
+	BELOW_EIGHTEEN = "belowEighteen"
+	FOURTEEN       = "belowFourteen"
+	EIGHTEEN       = "eighteen"
+)
+
 type ZayavlenieService struct {
 	s3Client S3ClientInterface
 }
@@ -23,7 +29,7 @@ func NewZayavlenieService(client S3ClientInterface) *ZayavlenieService {
 	return &ZayavlenieService{client}
 }
 
-func (s *ZayavlenieService) CreateZayavlenie(zayavlenieData *dto.ZayavlenieDTO, dogovorType string, centerType string) error {
+func (s *ZayavlenieService) CreateZayavlenie(zayavlenieData *dto.ZayavlenieDTO, dogovorType string) error {
 
 	var doc *docx.Docx
 	var err error
@@ -31,7 +37,7 @@ func (s *ZayavlenieService) CreateZayavlenie(zayavlenieData *dto.ZayavlenieDTO, 
 	doc.Replace("DIVISONEDUCATION", zayavlenieData.ProgramEducation.DivisionEducation, -1)
 
 	switch dogovorType {
-	case "belowEighteen":
+	case BELOW_EIGHTEEN:
 
 		r, err := docx.ReadDocxFile(zayavlenieBelowEighteenPath)
 		if err != nil {
@@ -43,7 +49,7 @@ func (s *ZayavlenieService) CreateZayavlenie(zayavlenieData *dto.ZayavlenieDTO, 
 
 		replaceZayavlenieBetweenEighteen(doc, zayavlenieData)
 
-	case "fourteen":
+	case FOURTEEN:
 
 		r, err := docx.ReadDocxFile(zayavlenieFourteenPath)
 		if err != nil {
@@ -55,7 +61,7 @@ func (s *ZayavlenieService) CreateZayavlenie(zayavlenieData *dto.ZayavlenieDTO, 
 
 		replaceZayavlenieBetweenEighteen(doc, zayavlenieData)
 
-	case "eighteen":
+	case EIGHTEEN:
 
 		r, err := docx.ReadDocxFile(zayavlenieEighteenPath)
 		if err != nil {

@@ -1,5 +1,7 @@
 package dto
 
+import "time"
+
 type ListenerDTO struct {
 	FirstName    string
 	SecondName   string
@@ -65,6 +67,12 @@ type FullListenerDataDTO struct {
 	ProgramEducation    ProgramEducationDTO
 }
 
+type EnrollmentListenerDTO struct {
+	StartDate    time.Time
+	EndDate      time.Time
+	CurrentPrice float32
+}
+
 type ContractorDTO struct {
 	Passport            PassportDTO
 	RegistrationAddress RegistrationAddressDTO
@@ -90,4 +98,17 @@ type ZayavlenieDTO struct {
 	Passport         PassportDTO
 	Registration     RegistrationAddressDTO
 	Variant          int
+}
+
+type DogovorDTO struct {
+	ProgramEducation ProgramEducationDTO
+	ListenerData     ListenerDTO
+	Contractor       ContractorDTO
+	Executor         ExecutorDTO
+	Passport         PassportDTO
+	Registration     RegistrationAddressDTO
+	Enrollment       EnrollmentListenerDTO
+	OptionNagruzka   string
+	OptionDocument   string
+	OptionPrice      string
 }
