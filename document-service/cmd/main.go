@@ -21,12 +21,16 @@ func main() {
 
 	s3Client := service.MustInitS3Client()
 	personalCardService := service.NewPersonalCardService(s3Client)
+	zayavlenieService := service.NewZayavlenieService(s3Client)
+	dogovorService := service.NewDogovorService(s3Client)
 
 	personalCardHandler := handler.NewPersonalCardHandler(personalCardService)
+	zayavlenieHandler := handler.NewZayavlenieHandler(zayavlenieService)
+	dogovorHandler := handler.NewDogovorHandler(dogovorService)
 
 	if _, err := os.Stat("./personal_card"); os.IsNotExist(err) {
 		os.MkdirAll("./personal_card", 0755)
 	}
 
-	server.MustServerInit(r, cfg.PORT, personalCardHandler)
+	server.MustServerInit(r, cfg.PORT, personalCardHandler, zayavlenieHandler, dogovorHandler)
 }

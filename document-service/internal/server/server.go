@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func MustServerInit(r *gin.Engine, port string, PersonalCard *handler.PersonalCardHandler) {
+func MustServerInit(r *gin.Engine, port string, personalCard *handler.PersonalCardHandler, zayavlenie *handler.ZayavlenieHandler, dogovor *handler.DogovoreHandler) {
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8081"},
@@ -24,11 +24,20 @@ func MustServerInit(r *gin.Engine, port string, PersonalCard *handler.PersonalCa
 	{
 		api.Use(middleware.AuthMiddleware())
 
-		api.POST("personal-card", PersonalCard.CreatePersonalCard)
+		api.POST("personal-card", personalCard.CreatePersonalCard)
+		api.GET("exists", personalCard.ExistsPersonalCard)
+		api.GET("download", personalCard.DownloadPersonalCard)
+		api.DELETE("delete", personalCard.DeletePersonalCard)
 
-		api.GET("exists", PersonalCard.ExistsPersonalCard)
-		api.GET("download", PersonalCard.DownloadPersonalCard)
-		api.DELETE("delete", PersonalCard.DeletePersonalCard)
+		api.POST("zayavlenie", zayavlenie.CreateZayavlenie)
+		api.GET("zayavlenie-exists", zayavlenie.ExistsZayavlenie)
+		api.GET("zayavlenie-download", zayavlenie.DownloadZayavlenie)
+		api.DELETE("zayavlenie-delete", zayavlenie.DeleteZayavlenie)
+
+		api.POST("dogovor", dogovor.CreateDogovor)
+		api.GET("dogovor-exists", dogovor.ExistsDogovor)
+		api.GET("dogovor-download", dogovor.DownloadDogovor)
+		api.DELETE("dogovor-delete", dogovor.DeleteDogovor)
 	}
 
 	r.Run(port)
