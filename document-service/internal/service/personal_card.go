@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"context"
 	"document-service/internal/domain/dto"
+	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
-	"errors"
+
 	"github.com/nguyenthenguyen/docx"
 )
 
@@ -75,9 +77,17 @@ func replaceFIZ(doc *docx.Docx, model *dto.FullListenerDataDTO) {
 
 	switch model.Passport.Gender {
 	case "Мужской":
-		doc.Replace("мужской ☐", "мужской ☒", -1)
+		doc.Replace("MUZH" /*"мужской ☐"*/, "мужской ☒", -1)
+		doc.Replace("ZHEN", "женский ☐", -1)
+		log.Println("Мужской пол")
 	case "Женский":
-		doc.Replace("женский ☐", "женский ☒", -1)
+		doc.Replace("MUZH", "мужской ☐", -1)
+		doc.Replace("ZHEN", "женский ☒", -1)
+		log.Println("Женский пол")
+	default:
+		doc.Replace("MUZH", "мужской ☐", -1)
+		doc.Replace("ZHEN", "женский ☐", -1)
+		log.Println("другой пол:", model.Passport.Gender)
 	}
 
 	doc.Replace("SERIA", model.Passport.Seria, -1)
@@ -102,31 +112,47 @@ func replaceFIZ(doc *docx.Docx, model *dto.FullListenerDataDTO) {
 
 	switch model.EducationListener.LevelEducation {
 	case "Среднее":
-		doc.Replace("среднее ☐", "среднее ☒", -1)
-	case "Среднее профессиональное":
-		doc.Replace("среднее профессиональное ☐", "среднее профессиональное ☒", -1)
-	case "Высшее":
-		doc.Replace("высшее ☐", "высшее ☒", -1)
+		// doc.Replace("SREDN", "среднее ☒", -1)
+		// doc.Replace("SPROF", "среднее профессиональное ☐", -1)
+		// doc.Replace("VISH", "высшее ☐", -1)
+		log.Println("Среднее образование")
+		doc.Replace("PACANI", "среднее ☒ среднее профессиональное ☐ высшее ☐", -1)
+	case "Среднее специальное":
+		// doc.Replace("SREDN", "среднее ☐", -1)
+		// doc.Replace("SPROF", "среднее профессиональное ☒", -1)
+		// doc.Replace("VISH", "высшее ☐", -1)
+		log.Println("Среднее профессиональное образование")
+		doc.Replace("PACANI", "среднее ☐ среднее профессиональное ☒ высшее ☐", -1)
+	case "Бакалавр", "Магистр", "Кандидат наук":
+		// doc.Replace("SREDN", "среднее ☐", -1)
+		// doc.Replace("SPROF", "среднее профессиональное ☐", -1)
+		// doc.Replace("VISH", "высшее ☒", -1)
+		log.Println("Высшее образование")
+		doc.Replace("PACANI", "среднее ☐ среднее профессиональное ☐ высшее ☒", -1)
+	default:
+		log.Println("Другой тип образования:", model.EducationListener.LevelEducation)
+		doc.Replace("PACANI", "среднее ☐ среднее профессиональное ☐ высшее ☐", -1)
 	}
 
 	if model.EducationListener != (dto.EducationListenerDTO{}) {
-		doc.Replace("диплом ☐", "диплом ☒", -1)
+		doc.Replace("DIPLOM", "диплом ☒", -1)
 		doc.Replace("DIPS", model.EducationListener.DiplomSeria, -1)
 		doc.Replace("DIPN", model.EducationListener.DiplomNumber, -1)
 		dmy, _ := time.Parse(time.RFC3339, model.EducationListener.DateGiven)
 		// if err == nil {
-		doc.Replace("DIPD", fmt.Sprintf("%02d.%02d.%02d", dmy.Day(), dmy.Month(), dmy.Year()), -1)
-			// doc.Replace("MDip", fmt.Sprintf("%02d", dmy.Month()), -1)
-			// doc.Replace("YDip", fmt.Sprintf("%d", dmy.Year()), -1)
+		doc.Replace("IPD", fmt.Sprintf("%02d.%02d.%02d", dmy.Day(), dmy.Month(), dmy.Year()), -1)
+		// doc.Replace("MDip", fmt.Sprintf("%02d", dmy.Month()), -1)
+		// doc.Replace("YDip", fmt.Sprintf("%d", dmy.Year()), -1)
 		// }
 		doc.Replace("DIPC", model.EducationListener.City, -1)
 		doc.Replace("DIPR", model.EducationListener.Region, -1)
 		doc.Replace("INSTITUTION", model.EducationListener.EducationalInstitution, -1)
 		// doc.Replace("Speciality", model.EducationListener.Speciality, -1)
 	} else {
+		doc.Replace("DIPLOM", "диплом ☐", -1) // диплом ☐
 		doc.Replace("DIPS", "_______", -1)
 		doc.Replace("DIPN", "_______", -1)
-		doc.Replace("DIPD", "_______", -1)
+		doc.Replace("IPD", "_______", -1)
 		doc.Replace("MDip", "_______", -1)
 		doc.Replace("YDip", "_______", -1)
 
@@ -209,7 +235,7 @@ func (p *PersonalCardService) DeletePersonalCard(fileName string) error {
 }
 
 func (p *PersonalCardService) DownloadPersonalCard(param string) ([]byte, error) {
-	
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
