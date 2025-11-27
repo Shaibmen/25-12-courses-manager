@@ -64,3 +64,37 @@ type FullListenerRequest struct {
 	PlaceWork           PlaceWorkRequest         `json:"placeWork" validate:"omitempty"`
 	ProgramEducation    ProgramEducationRequest  `json:"program_education" validate:"required"`
 }
+
+// type ContractorRequest struct {
+// 	Passport            PassportRequest
+// 	RegistrationAddress RegAddressRequest
+// 	FirstName           string
+// 	SecondName          string
+// 	MiddleName          string
+// 	Contact_phone       string
+// 	Email               string
+// }
+
+// type Zayavlenie struct {
+// 	ProgramEducation ProgramEducationRequest
+// 	Listener         ListenerRequest
+// 	Contractor       ContractorRequest
+// 	Variant          int
+// }
+
+type ContractorRequest struct {
+	Passport            PassportRequest   `json:"passport"`
+	RegistrationAddress RegAddressRequest `json:"registration_address"`
+	FirstName           string            `json:"first_name"`
+	SecondName          string            `json:"second_name"`
+	MiddleName          string            `json:"middle_name"`
+	Contact_phone       string            `json:"contact_phone"`
+	Email               string            `json:"email"`
+}
+
+type Zayavlenie struct {
+	ProgramEducation ProgramEducationRequest `json:"program_education"`
+	Listener         ListenerRequest         `json:"listener"`
+	Contractor       ContractorRequest       `json:"contractor"`
+	Variant          int                     `json:"variant"`
+}
