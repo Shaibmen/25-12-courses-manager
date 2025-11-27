@@ -8,12 +8,11 @@ import (
 	"strconv"
 	"time"
 	"errors"
-
 	"github.com/nguyenthenguyen/docx"
 )
 
 var (
-	templatePath = "./internal/documents/personal_card.docx"
+	templatePath = "./internal/documents/personal-card.docx"
 )
 
 type PersonalCardService struct {
@@ -56,25 +55,23 @@ func (p *PersonalCardService) CreatePersonalCard(ListenerData *dto.FullListenerD
 }
 
 func replaceFIZ(doc *docx.Docx, model *dto.FullListenerDataDTO) {
-	doc.Replace("}}", "", -1)
-	doc.Replace("{{", "", -1)
-	doc.Replace("ProgramEducation", model.ProgramEducation.NameProfEducation, -1)
-	doc.Replace("TypeOfEducation", model.ProgramEducation.EducationType, -1)
-	doc.Replace("Hour", strconv.Itoa(model.ProgramEducation.TimeEducation), -1)
+	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
+	doc.Replace("TYPEOFRETRAINING", model.ProgramEducation.EducationType, -1)
+	doc.Replace("HOUR", strconv.Itoa(model.ProgramEducation.TimeEducation), -1)
 
 	fio := model.Listener.SecondName + " " + model.Listener.FirstName + " " + model.Listener.MiddleName
 
-	doc.Replace("FIO", fio, -1)
+	doc.Replace("LISTENERFIO", fio, -1)
 
 	dob, err := time.Parse(time.RFC3339, model.Listener.DateOfBirth)
 	if err == nil {
-		doc.Replace("DateBirth", fmt.Sprintf("%02d", dob.Day()), -1)
-		doc.Replace("MonthBirth", fmt.Sprintf("%02d", dob.Month()), -1)
-		doc.Replace("YearBirth", fmt.Sprintf("%d", dob.Year()), -1)
+		doc.Replace("BIRTHD", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
+		// doc.Replace("", fmt.Sprintf("%02d", dob.Month()), -1)
+		// doc.Replace("YearBirth", fmt.Sprintf("%d", dob.Year()), -1)
 	}
 
-	doc.Replace("City", model.Passport.PlaceBirth, -1)
-	doc.Replace("Citizenship", model.Passport.Citizenship, -1)
+	doc.Replace("CITY", model.Passport.PlaceBirth, -1)
+	doc.Replace("CITIZENSHIP", model.Passport.Citizenship, -1)
 
 	switch model.Passport.Gender {
 	case "Мужской":
@@ -83,25 +80,25 @@ func replaceFIZ(doc *docx.Docx, model *dto.FullListenerDataDTO) {
 		doc.Replace("женский ☐", "женский ☒", -1)
 	}
 
-	doc.Replace("Seria", model.Passport.Seria, -1)
-	doc.Replace("Number", model.Passport.Number, -1)
-	doc.Replace("WhoGiven", model.Passport.PassportGiven, -1)
+	doc.Replace("SERIA", model.Passport.Seria, -1)
+	doc.Replace("NUMBER", model.Passport.Number, -1)
+	doc.Replace("GIVEN", model.Passport.PassportGiven, -1)
 
 	given, err := time.Parse(time.RFC3339, model.Passport.DateGiven)
 	if err == nil {
-		doc.Replace("WhenGiven", given.Format("02.01.2006"), -1)
+		doc.Replace("PASSPORTD", given.Format("02.01.2006"), -1)
 	}
 
-	doc.Replace("MainIndex", model.RegistrationAddress.MailIndex, -1)
-	doc.Replace("Region", model.RegistrationAddress.Region, -1)
-	doc.Replace("City", model.RegistrationAddress.City, -1)
-	doc.Replace("Street", model.RegistrationAddress.Street, -1)
-	doc.Replace("House", model.RegistrationAddress.House, -1)
-	doc.Replace("Building", model.RegistrationAddress.Building, -1)
-	doc.Replace("Appartaments", model.RegistrationAddress.Apartment, -1)
+	doc.Replace("INDEX", model.RegistrationAddress.MailIndex, -1)
+	doc.Replace("REGION", model.RegistrationAddress.Region, -1)
+	doc.Replace("CITY", model.RegistrationAddress.City, -1)
+	doc.Replace("STREET", model.RegistrationAddress.Street, -1)
+	doc.Replace("HOUSE", model.RegistrationAddress.House, -1)
+	doc.Replace("BUILDING", model.RegistrationAddress.Building, -1)
+	doc.Replace("APARTMENT", model.RegistrationAddress.Apartment, -1)
 	doc.Replace("SNILS", model.Listener.SNILS, -1)
-	doc.Replace("Phone", model.Listener.ContactPhone, -1)
-	doc.Replace("Email", model.Listener.Email, -1)
+	doc.Replace("PHONE", model.Listener.ContactPhone, -1)
+	doc.Replace("EMAIL", model.Listener.Email, -1)
 
 	switch model.EducationListener.LevelEducation {
 	case "Среднее":
@@ -114,44 +111,44 @@ func replaceFIZ(doc *docx.Docx, model *dto.FullListenerDataDTO) {
 
 	if model.EducationListener != (dto.EducationListenerDTO{}) {
 		doc.Replace("диплом ☐", "диплом ☒", -1)
-		doc.Replace("SDip", model.EducationListener.DiplomSeria, -1)
-		doc.Replace("NDip", model.EducationListener.DiplomNumber, -1)
-		dmy, err := time.Parse(time.RFC3339, model.Listener.DateOfBirth)
-		if err == nil {
-			doc.Replace("DDip", fmt.Sprintf("%02d", dmy.Day()), -1)
-			doc.Replace("MDip", fmt.Sprintf("%02d", dmy.Month()), -1)
-			doc.Replace("YDip", fmt.Sprintf("%d", dmy.Year()), -1)
-		}
-		doc.Replace("CDip", model.EducationListener.City, -1)
-		doc.Replace("RDip", model.EducationListener.Region, -1)
-		doc.Replace("WhoDip", model.EducationListener.EducationalInstitution, -1)
-		doc.Replace("Speciality", model.EducationListener.Speciality, -1)
+		doc.Replace("DIPS", model.EducationListener.DiplomSeria, -1)
+		doc.Replace("DIPN", model.EducationListener.DiplomNumber, -1)
+		dmy, _ := time.Parse(time.RFC3339, model.EducationListener.DateGiven)
+		// if err == nil {
+		doc.Replace("DIPD", fmt.Sprintf("%02d.%02d.%02d", dmy.Day(), dmy.Month(), dmy.Year()), -1)
+			// doc.Replace("MDip", fmt.Sprintf("%02d", dmy.Month()), -1)
+			// doc.Replace("YDip", fmt.Sprintf("%d", dmy.Year()), -1)
+		// }
+		doc.Replace("DIPC", model.EducationListener.City, -1)
+		doc.Replace("DIPR", model.EducationListener.Region, -1)
+		doc.Replace("INSTITUTION", model.EducationListener.EducationalInstitution, -1)
+		// doc.Replace("Speciality", model.EducationListener.Speciality, -1)
 	} else {
-		doc.Replace("SDip", "_______", -1)
-		doc.Replace("NDip", "_______", -1)
-		doc.Replace("DDip", "_______", -1)
+		doc.Replace("DIPS", "_______", -1)
+		doc.Replace("DIPN", "_______", -1)
+		doc.Replace("DIPD", "_______", -1)
 		doc.Replace("MDip", "_______", -1)
 		doc.Replace("YDip", "_______", -1)
 
-		doc.Replace("CDip", "_______", -1)
-		doc.Replace("RDip", "_______", -1)
-		doc.Replace("WhoDip", "_______", -1)
-		doc.Replace("Speciality", "_______", -1)
+		doc.Replace("DIPC", "_______", -1)
+		doc.Replace("DIPR", "_______", -1)
+		doc.Replace("INSTITUTION", "_______", -1)
+		// doc.Replace("Speciality", "_______", -1)
 	}
 
 	if model.PlaceWork != (dto.PlaceWorkDTO{}) {
-		doc.Replace("PlaceWork", model.PlaceWork.NameCompany, -1)
-		doc.Replace("Post", model.PlaceWork.JobTitle, -1)
-		doc.Replace("AllP", strconv.Itoa(model.PlaceWork.AllExperience), -1)
-		doc.Replace("OnP", strconv.Itoa(model.PlaceWork.JobTitleExpirience), -1)
+		doc.Replace("NAMECOM", model.PlaceWork.NameCompany, -1)
+		doc.Replace("JOBTITLE", model.PlaceWork.JobTitle, -1)
+		doc.Replace("AEXP", strconv.Itoa(model.PlaceWork.AllExperience), -1)
+		doc.Replace("JEXP", strconv.Itoa(model.PlaceWork.JobTitleExpirience), -1)
 	} else {
-		doc.Replace("PlaceWork", "_______", -1)
-		doc.Replace("Post", "_______", -1)
-		doc.Replace("AllP", "_______", -1)
-		doc.Replace("OnP", "_______", -1)
+		doc.Replace("NAMECOM", "_______", -1)
+		doc.Replace("JOBTITLE", "_______", -1)
+		doc.Replace("AEXP", "_______", -1)
+		doc.Replace("JEXP", "_______", -1)
 	}
 
-	doc.Replace("Division", model.ProgramEducation.DivisionEducation, -1)
+	// doc.Replace("Division", model.ProgramEducation.DivisionEducation, -1)
 
 }
 
