@@ -175,6 +175,14 @@ func (Listener) TableName() string {
 	return "listener"
 }
 
+type ListenerLegalEntity struct {
+	ID_Listener uuid.UUID
+	FirstName   string
+	SecondName  string
+	MiddleName  string
+	SNILS       string
+}
+
 type Executor struct {
 	ID_Executor uuid.UUID
 	Status      string

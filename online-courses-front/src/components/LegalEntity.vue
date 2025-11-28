@@ -32,20 +32,20 @@
         </thead>
         <tbody>
           <tr v-for="l in legalList" :key="l.ID_Legalentity">
-            <td :title="l.NameCompany">{{ l.NameCompany }}</td>
-            <td>{{ l.Inn }}</td>
-            <td>{{ l.Kpp }}</td>
-            <td>{{ l.Ogrn }}</td>
-            <td>{{ l.Phone }}</td>
-            <td>{{ l.Email }}</td>
+            <td :title="l.NameCompany">{{ l.name_company }}</td>
+            <td>{{ l.inn }}</td>
+            <td>{{ l.kpp }}</td>
+            <td>{{ l.ogrn }}</td>
+            <td>{{ l.phone }}</td>
+            <td>{{ l.email }}</td>
             <td>
-              {{ l.SecondName }} {{ l.FirstName }} {{ l.MiddleName || '' }}
+              {{ l.second_name }} {{ l.first_name }} {{ l.middle_name || '' }}
             </td>
             <td style="white-space: nowrap;">
               <div style="display: flex; gap: 8px;">
-                <button class="btn btn-success btn-sm" @click="viewEntity(l.ID_Legalentity)">Подробнее</button>
-                <button class="btn btn-warning btn-sm" @click="editEntity(l.ID_Legalentity)">Изменить</button>
-                <button class="btn btn-danger btn-sm" @click="deleteEntity(l.ID_Legalentity)">Удалить</button>
+                <button class="btn btn-success btn-sm" @click="viewEntity(l.id_legalentity)">Подробнее</button>
+                <button class="btn btn-warning btn-sm" @click="editEntity(l.id_legalentity)">Изменить</button>
+                <button class="btn btn-danger btn-sm" @click="deleteEntity(l.id_legalentity)">Удалить</button>
               </div>
             </td>
           </tr>

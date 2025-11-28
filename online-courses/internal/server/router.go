@@ -22,6 +22,7 @@ func SetupRoutes(server *gin.Engine,
 	reportHandler *handlers.ReportHandler,
 	contractorHandler *handlers.ContractHandler,
 	legalEntityHandler *handlers.LegalEntityHandler,
+	executerHandler *handlers.ExecutorHandler,
 	Logger *slog.Logger) {
 
 	server.Use(cors.New(cors.Config{
@@ -48,6 +49,7 @@ func SetupRoutes(server *gin.Engine,
 			listener.GET("/", middleware.RoleProtecteMiddleware("worker"), listenerHandler.GetListener) // :page
 			listener.GET("/details/:id", middleware.RoleProtecteMiddleware("worker"), listenerHandler.GetFullListener)
 			listener.PUT("/:id", middleware.RoleProtecteMiddleware("worker"), listenerHandler.UpdateListener)
+			listener.GET("/legalentity/:id", middleware.RoleProtecteMiddleware("worker"), listenerHandler.FindByLegalEntity)
 		}
 
 		divisions := api.Group("/divisions")
@@ -128,6 +130,13 @@ func SetupRoutes(server *gin.Engine,
 			legalEntity.GET("/", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.ReadLegalEntity) // :page
 			legalEntity.GET("/details/:id", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.ReadFullData)
 			legalEntity.PUT("/:id", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.UpdateLegalEntity)
+		}
+
+		executer := api.Group("/executer")
+		{
+			executer.POST("/", middleware.RoleProtecteMiddleware("worker"), executerHandler.CreateExecutor)
+			executer.DELETE("/:id", middleware.RoleProtecteMiddleware("worker"), executerHandler.DeleteExecutor)
+			executer.GET("/", middleware.RoleProtecteMiddleware("worker"), executerHandler.ReadExecutor)
 		}
 
 	}

@@ -167,3 +167,22 @@ func (h *ListenerHandler) DeleteListenerHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, models.HttpResponse{Message: "слушатель удалён"})
 
 }
+
+func (l *ListenerHandler) FindByLegalEntity(c *gin.Context) {
+	id, err := utils.ParseUUID(c, "id")
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 1*time.Second)
+	defer cancel()
+
+	data, err := l.handler.FindByLegalEntity(ctx, id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, models.HttpResponseWithData{Data: data})
+}

@@ -106,9 +106,9 @@
 
             <div v-if="contractor">
               <h5 class="card-title mb-2">Текущий заказчик</h5>
-              <p><strong>ФИО:</strong> {{ contractor.Contractor.second_name }} {{ contractor.Contractor.first_name }} {{ contractor.Contractor.middle_name }}</p>
-              <p><strong>Телефон:</strong> {{ contractor.Contractor.contact_phone }}</p>
-              <p><strong>Email:</strong> {{ contractor.Contractor.email }}</p>
+              <p><strong>ФИО:</strong> {{ contractor.contractor.second_name }} {{ contractor.contractor.first_name }} {{ contractor.contractor.middle_name }}</p>
+              <p><strong>Телефон:</strong> {{ contractor.contractor.contact_phone }}</p>
+              <p><strong>Email:</strong> {{ contractor.contractor.email }}</p>
             </div>
 
             <button type="button" @click="openContractorModal" class="btn btn-primary">
@@ -365,7 +365,13 @@ const confirmModal = ref(null)
 
 
 const confirmDeleteContractor = () => {
-  if (!contractor.value || !contractor.value.Contractor) return
+  contractor.value = data.data.contractor
+  ? {
+      Contractor: data.data.contractor.contractor,
+      Passport: data.data.contractor.passport,
+      RegAddress: data.data.contractor.reg_address
+    }
+  : null
 
   const id_contractor = contractor.value.Contractor.id_contractor
 

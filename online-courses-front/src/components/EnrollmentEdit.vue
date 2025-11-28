@@ -30,6 +30,22 @@
             <option :value="program.campus_price">Кампус: {{ program.campus_price }}</option>
           </select>
         </div>
+        <div class="d-flex gap-3 align-items-center mb-3" style="padding-top: 15px;">
+        <div>
+          <label>Группа:</label>
+          <input type="text" v-model="group" class="form-control" />
+        </div>
+
+        <div>
+          <label>Тип обучения:</label>
+          <select v-model="typeOfRetraining" class="form-select">
+            <option value="Повышение квалификации">Повышение квалификации</option>
+            <option value="Профессиональная переподготовка">Профессиональная переподготовка</option>
+            <option value="Дополнительное образование">Дополнительное образование</option>
+          </select>
+        </div>
+      </div>
+
       </div>
 
       <div class="d-flex gap-3">
@@ -61,6 +77,9 @@ const program = ref({ individual_price: 0, group_price: 0, campus_price: 0, name
 const currentPrice = ref(0)
 const startDate = ref('')
 const endDate = ref('')
+const group = ref('')
+const typeOfRetraining = ref('')
+
 
 const token = localStorage.getItem('access_token')
 
@@ -85,13 +104,14 @@ const loadData = async () => {
     startDate.value = enrollment.start_date.substring(0, 10)
     endDate.value = enrollment.end_date.substring(0, 10)
     currentPrice.value = enrollment.current_price || program.value.individual_price
+    group.value = enrollment.group || ''
+    typeOfRetraining.value = enrollment.type_of_retraining || ''
   } catch (err) {
     toast.error(err.message)
   } finally {
     loading.value = false
   }
 }
-
 const save = async () => {
   loading.value = true
   try {
@@ -99,7 +119,9 @@ const save = async () => {
       id_program: idProgram,
       start_date: startDate.value,
       end_date: endDate.value,
-      current_price: Number(currentPrice.value)
+      current_price: Number(currentPrice.value),
+      group: group.value,
+      type_of_retraining: typeOfRetraining.value
     }
 
     const res = await fetch(`${API_URL_CORE}/enrollment/${idStudent}/${idProgram}`, {
@@ -120,6 +142,7 @@ const save = async () => {
     loading.value = false
   }
 }
+
 
 const goBack = () => router.push(`/enrollment/details/${idStudent}`)
 

@@ -436,3 +436,54 @@ func (l *ListenerRepo) UpdateContractor(ctx context.Context, tx database.Tx, idL
 
 	return nil
 }
+
+func (l *ListenerRepo) FindByLegalEntity(ctx context.Context, id uuid.UUID) ([]entity.ListenerLegalEntity, error) {
+
+	query :=
+		`
+	select
+	l.id_listener, l.first_name, l.second_name, middle_name, l.snils
+	from listener as l 
+	where id_legalentity = $1;
+	`
+
+	rows, err := l.repo.QueryContext(ctx, query, id)
+	if err != nil {
+
+		l.logger.Error("database error",
+			"operation", "find_by_legal_entity_listener",
+			"id_legalentity", id,
+			"type", "query",
+			"err", err,
+		)
+
+		return nil, repoutils.HandleRepoErr(err)
+	}
+	defer rows.Close()
+
+	var listeners []entity.ListenerLegalEntity
+
+	for rows.Next() {
+		var list entity.ListenerLegalEntity
+
+		if err = rows.Scan(
+			&list.ID_Listener,
+			&list.FirstName,
+			&list.SecondName,
+			&list.MiddleName,
+			&list.SNILS,
+		); err != nil {
+
+			l.logger.Error("database error",
+				"operation", "read_mapping_listener",
+				"type", "query",
+				"err", err,
+			)
+
+			return nil, repoutils.HandleRepoErr(err)
+		}
+		listeners = append(listeners, list)
+	}
+
+	return listeners, nil
+}

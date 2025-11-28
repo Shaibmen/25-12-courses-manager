@@ -108,6 +108,13 @@ type FullLegalEntityRequest struct {
 	RegAddress  RegAddressRequest  `json:"reg_address" validate:"required"`
 }
 
+type ExecutorRequest struct {
+	Status     string `json:"status" validate:"required"`
+	FirstName  string `json:"first_name" validate:"required"`
+	SecondName string `json:"second_name" validate:"required"`
+	MiddleName string `json:"middle_name" validate:"required"`
+}
+
 type DivisionsEducationRequest struct {
 	Divisions string `json:"divisions" validate:"required,max=100"`
 }

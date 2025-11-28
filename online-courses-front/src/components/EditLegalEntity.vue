@@ -108,7 +108,6 @@ const formatIndex = () => {
   regAddress.value.mail_index = (regAddress.value.mail_index || '').replace(/\D/g, '').slice(0, 6)
 }
 
-
 const loadLegalEntity = async () => {
   try {
     loading.value = true
@@ -118,27 +117,31 @@ const loadLegalEntity = async () => {
     if (!res.ok) throw new Error(`Ошибка загрузки (${res.status})`)
     const data = await res.json()
 
+
+    const le = data.data.legal_entity
+    const addr = data.data.reg_address
+
     legalEntity.value = {
-      name_company: data.data.LegalEntity.NameCompany || '',
-      inn: data.data.LegalEntity.Inn || '',
-      kpp: data.data.LegalEntity.Kpp || '',
-      ogrn: data.data.LegalEntity.Ogrn || '',
-      phone: data.data.LegalEntity.Phone || '',
-      email: data.data.LegalEntity.Email || '',
-      first_name: data.data.LegalEntity.FirstName || '',
-      second_name: data.data.LegalEntity.SecondName || '',
-      middle_name: data.data.LegalEntity.MiddleName || ''
+      name_company: le.name_company || '',
+      inn: le.inn || '',
+      kpp: le.kpp || '',
+      ogrn: le.ogrn || '',
+      phone: le.phone || '',
+      email: le.email || '',
+      first_name: le.first_name || '',
+      second_name: le.second_name || '',
+      middle_name: le.middle_name || ''
     }
 
-   regAddress.value = {
-  mail_index: (data.data.RegAddress.mail_index || '').toString(),
-  region: data.data.RegAddress.region || '',
-  city: data.data.RegAddress.city || '',
-  street: data.data.RegAddress.street || '',
-  house: data.data.RegAddress.house || '',
-  building: data.data.RegAddress.building || '',
-  apartment: data.data.RegAddress.apartment || ''
-}
+    regAddress.value = {
+      mail_index: (addr.mail_index || '').toString(),
+      region: addr.region || '',
+      city: addr.city || '',
+      street: addr.street || '',
+      house: addr.house || '',
+      building: addr.building || '',
+      apartment: addr.apartment || ''
+    }
 
   } catch (err) {
     toast.error(err.message || 'Ошибка при загрузке данных')
@@ -146,6 +149,7 @@ const loadLegalEntity = async () => {
     loading.value = false
   }
 }
+
 
 const updateLegalEntity = async () => {
   if (!emailValid.value) {

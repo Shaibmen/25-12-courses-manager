@@ -112,6 +112,13 @@ type CreateListenerDTO struct {
 	EducationListener   EducationListenerDTO   `json:"education_listener"`
 	PlaceWork           PlaceWorkDTO           `json:"placework"`
 }
+type ListenerLegalEntity struct {
+	ID_Listener uuid.UUID `json:"id_listener"`
+	FirstName   string    `json:"first_name"`
+	SecondName  string    `json:"second_name"`
+	MiddleName  string    `json:"middle_name"`
+	SNILS       string    `json:"snils"`
+}
 
 type DivisionsDTO struct {
 	ID_DivisionsEducation uuid.UUID `json:"id_divisionsEducation"`
@@ -245,28 +252,36 @@ type ContractorDTO struct {
 }
 
 type ContractorCreateDTO struct {
-	Contractor ContractorDTO
-	Passport   PassportDTO
-	RegAddress RegistrationAddressDTO
+	Contractor ContractorDTO          `json:"contractor"`
+	Passport   PassportDTO            `json:"passport"`
+	RegAddress RegistrationAddressDTO `json:"reg_address"`
 }
 
 type LegalEntityDTO struct {
-	ID_Legalentity uuid.UUID
-	NameCompany    string
-	Inn            string
-	Kpp            string
-	Ogrn           string
-	Phone          string
-	Email          string
-	FirstName      string
-	SecondName     string
-	MiddleName     string
-	ID_RegAddress  uuid.UUID
+	ID_Legalentity uuid.UUID `json:"id_legalentity"`
+	NameCompany    string    `json:"name_company"`
+	Inn            string    `json:"inn"`
+	Kpp            string    `json:"kpp"`
+	Ogrn           string    `json:"ogrn"`
+	Phone          string    `json:"phone"`
+	Email          string    `json:"email"`
+	FirstName      string    `json:"first_name"`
+	SecondName     string    `json:"second_name"`
+	MiddleName     string    `json:"middle_name"`
+	ID_RegAddress  uuid.UUID `json:"id_regaddress"`
 }
 
 type LegalEntityFullDTO struct {
-	LegalEntity LegalEntityDTO
-	RegAddress  RegistrationAddressDTO
+	LegalEntity LegalEntityDTO         `json:"legal_entity"`
+	RegAddress  RegistrationAddressDTO `json:"reg_address"`
+}
+
+type ExecutorDTO struct {
+	ID_Executor uuid.UUID `json:"id_executor"`
+	Status      string    `json:"status"`
+	FirstName   string    `json:"first_name"`
+	SecondName  string    `json:"second_name"`
+	MiddleName  string    `json:"middle_name"`
 }
 
 type UserDashBoardDTO struct {

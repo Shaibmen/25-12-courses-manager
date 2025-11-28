@@ -10,21 +10,21 @@
         <div class="col-md-4">
           <div class="card p-3 shadow-sm">
             <h5 class="card-title mb-3">Компания</h5>
-            <p><strong>Название:</strong> {{ legalEntity.name_company }}</p>
-            <p><strong>ИНН:</strong> {{ legalEntity.inn }}</p>
-            <p><strong>КПП:</strong> {{ legalEntity.kpp }}</p>
-            <p><strong>ОГРН:</strong> {{ legalEntity.ogrn }}</p>
-            <p><strong>Телефон:</strong> {{ legalEntity.phone }}</p>
-            <p><strong>Email:</strong> {{ legalEntity.email }}</p>
+            <p><strong>Название:</strong> {{ legal_entity.name_company}}</p>
+            <p><strong>ИНН:</strong> {{ legal_entity.inn }}</p>
+            <p><strong>КПП:</strong> {{ legal_entity.kpp }}</p>
+            <p><strong>ОГРН:</strong> {{ legal_entity.ogrn }}</p>
+            <p><strong>Телефон:</strong> {{ legal_entity.phone }}</p>
+            <p><strong>Email:</strong> {{ legal_entity.email }}</p>
           </div>
         </div>
 
          <div class="col-md-4">
           <div class="card p-3 shadow-sm">
             <h5 class="card-title mb-3">Представитель</h5>
-            <p><strong>Имя:</strong> {{ legalEntity.first_name }}</p>
-            <p><strong>Фамилия:</strong> {{ legalEntity.second_name }}</p>
-            <p><strong>Отчество:</strong> {{ legalEntity.middle_name || '—' }}</p>
+            <p><strong>Имя:</strong> {{ legal_entity.first_name }}</p>
+            <p><strong>Фамилия:</strong> {{ legal_entity.second_name }}</p>
+            <p><strong>Отчество:</strong> {{ legal_entity.middle_name || '—' }}</p>
           </div>
         </div>
 
@@ -33,18 +33,25 @@
         <div class="col-md-4">
           <div class="card p-3 shadow-sm">
             <h5 class="card-title mb-3">Адрес регистрации</h5>
-            <p><strong>Почтовый индекс:</strong> {{ regAddress.mail_index }}</p>
-            <p><strong>Регион:</strong> {{ regAddress.region }}</p>
-            <p><strong>Город:</strong> {{ regAddress.city }}</p>
-            <p><strong>Улица:</strong> {{ regAddress.street }}</p>
-            <p><strong>Дом:</strong> {{ regAddress.house }}</p>
-            <p><strong>Корпус:</strong> {{ regAddress.building }}</p>
-            <p><strong>Квартира:</strong> {{ regAddress.apartment }}</p>
+            <p><strong>Почтовый индекс:</strong> {{ reg_address.mail_index }}</p>
+            <p><strong>Регион:</strong> {{ reg_address.region }}</p>
+            <p><strong>Город:</strong> {{ reg_address.city }}</p>
+            <p><strong>Улица:</strong> {{ reg_address.street }}</p>
+            <p><strong>Дом:</strong> {{ reg_address.house }}</p>
+            <p><strong>Корпус:</strong> {{ reg_address.building }}</p>
+            <p><strong>Квартира:</strong> {{ reg_address.apartment }}</p>
           </div>
         </div>
 
 <div class="col-12 d-flex justify-content-between">
-    <button type="button" class="btn btn-success mt-2">Добавить слушателя</button>
+          <button 
+        type="button" 
+        class="btn btn-success mt-2"
+        @click="goCreateListener"
+      >
+        Добавить слушателя
+      </button>
+
        <button @click="goBack" class="btn btn-secondary">Назад</button>
       </div>
          <div class="col-12 d-flex justify-content-between">
@@ -56,7 +63,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -70,8 +76,16 @@ const id = route.params.id
 const token = localStorage.getItem('access_token')
 
 const loading = ref(true)
-const legalEntity = ref({})
-const regAddress = ref({})
+const legal_entity = ref({})
+const reg_address = ref({})
+
+const goCreateListener = () => {
+  router.push({
+    path: '/listeners/create',
+    query: { id_legalentity: legal_entity.value.id_legalentity }
+  })
+}
+
 
 const loadDetails = async () => {
   try {
@@ -79,24 +93,29 @@ const loadDetails = async () => {
       headers: { Authorization: `Bearer ${token}` }
     })
     if (!res.ok) throw new Error(`Ошибка загрузки (${res.status})`)
-    const data = await res.json()
-    const le = data.data.LegalEntity
-    const ra = data.data.RegAddress
 
-    legalEntity.value = {
-      name_company: le.NameCompany || '',
-      inn: le.Inn || '',
-      kpp: le.Kpp || '',
-      ogrn: le.Ogrn || '',
-      phone: le.Phone || '',
-      email: le.Email || '',
-      first_name: le.FirstName || '',
-      second_name: le.SecondName || '',
-      middle_name: le.MiddleName || ''
+    const data = await res.json()
+
+    const le = data.data.legal_entity
+    const ra = data.data.reg_address
+
+    // заполняем snake_case
+    legal_entity.value = {
+      id_legalentity: le.id_legalentity || '',
+      name_company: le.name_company || '',
+      inn: le.inn || '',
+      kpp: le.kpp || '',
+      ogrn: le.ogrn || '',
+      phone: le.phone || '',
+      email: le.email || '',
+      first_name: le.first_name || '',
+      second_name: le.second_name || '',
+      middle_name: le.middle_name || '',
+      id_regaddress: le.id_regaddress || ''
     }
 
-    regAddress.value = {
-      mail_index: (ra.mail_index || '').toString(),
+    reg_address.value = {
+      mail_index: ra.mail_index || '',
       region: ra.region || '',
       city: ra.city || '',
       street: ra.street || '',
@@ -110,10 +129,12 @@ const loadDetails = async () => {
     loading.value = false
   }
 }
+
 const goBack = () => router.push('/legalentities')
 
 onMounted(loadDetails)
 </script>
+
 
 <style scoped>
 .card {

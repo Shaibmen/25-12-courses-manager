@@ -28,6 +28,8 @@
             <th>Цена</th>
             <th>Начало</th>
             <th>Окончание</th>
+            <th>Группа</th>
+            <th>Тип обучения</th>
             <th>Действия</th>
           </tr>
         </thead>
@@ -39,6 +41,8 @@
             <td>{{ enr.current_price }} ₽</td>
             <td>{{ formatDate(enr.start_date) }}</td>
             <td>{{ formatDate(enr.end_date) }}</td>
+            <td>{{ enr.group || '—' }}</td>
+            <td>{{ enr.type_of_retraining || '—' }}</td>
             <td style="white-space: nowrap;">
               <button class="btn btn-success btn-sm" @click="openDetails(enr.id_listener)">Подробнее</button>
             </td>

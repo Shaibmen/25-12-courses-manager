@@ -39,6 +39,20 @@
             <option :value="price.campus_price">Кампус: {{ price.campus_price }}</option>
           </select>
         </div>
+        <div>
+        <label>Группа:</label>
+        <input type="text" v-model="group" class="form-control" placeholder="Например: 0" />
+      </div>
+
+      <div>
+        <label>Тип обучения:</label>
+        <select v-model="typeOfRetraining" class="form-select">
+          <option value="Повышение квалификации">Повышение квалификации</option>
+          <option value="Профессиональная переподготовка">Профессиональная переподготовка</option>
+          <option value="Дополительное образование">Дополительное образование</option>
+        </select>
+      </div>
+
       </div>
 
       <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
@@ -72,6 +86,8 @@ const endDate = ref('')
 const page = ref(1)
 const loading = ref(true)
 const error = ref(null)
+const group = ref('')
+const typeOfRetraining = ref('')
 
 const loadListener = async () => {
   if (!listenerId) {
@@ -120,37 +136,46 @@ const onProgramChange = () => {
   price.value = { individual_price: sel.individual_price, group_price: sel.group_price, campus_price: sel.campus_price }
   currentPrice.value = price.value.individual_price
 }
-
 const createEnrollment = async () => {
-  if (!selectedProgramId) return toast.warn('Выберите программу')
-  if (!listenerId) return toast.error('ID слушателя не найден')
+  if (!selectedProgramId.value) return toast.warn('Выберите программу')
+  if (!listenerId.value) return toast.error('ID слушателя не найден')
 
   try {
     const body = {
-      id_listener: listenerId.value,
-      id_program: selectedProgramId.value,
-      start_date: startDate.value,
-      end_date: endDate.value,
-      current_price: Number(currentPrice.value),
-      is_active: true
-    }
+  id_listener: listenerId.value,
+  id_program: selectedProgramId.value,
+  start_date: startDate.value,
+  end_date: endDate.value,
+  current_price: Number(currentPrice.value),
+
+  group: group.value,
+  type_of_retraining: typeOfRetraining.value,
+
+  is_active: true
+}
+
 
     const res = await fetch(`${API_URL_CORE}/enrollment/`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(body)
     })
 
     if (!res.ok) throw new Error(`Ошибка создания записи (${res.status})`)
     toast.success('Запись успешно создана')
+
     setTimeout(() => {
-    router.push(`/enrollment/details/${listenerId.value}`)
-      
-    }, 2000);
+      router.push(`/enrollment/details/${listenerId.value}`)
+    }, 2000)
+
   } catch (err) {
     toast.error(err.message)
   }
 }
+
 
 const nextPage = () => { page.value++; loadPrograms() }
 const prevPage = () => { if (page.value > 1) { page.value--; loadPrograms() } }

@@ -319,3 +319,25 @@ func (l *listenerService) DeleteListener(ctx context.Context, id uuid.UUID) erro
 	return nil
 
 }
+
+func (l *listenerService) FindByLegalEntity(ctx context.Context, id uuid.UUID) ([]dto.ListenerLegalEntity, error) {
+
+	data, err := l.listenerRepo.FindByLegalEntity(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var listeneres []dto.ListenerLegalEntity
+
+	for _, i := range data {
+		listeneres = append(listeneres, dto.ListenerLegalEntity{
+			ID_Listener: i.ID_Listener,
+			FirstName:   i.FirstName,
+			SecondName:  i.SecondName,
+			MiddleName:  i.MiddleName,
+			SNILS:       i.SNILS,
+		})
+	}
+
+	return listeneres, nil
+}

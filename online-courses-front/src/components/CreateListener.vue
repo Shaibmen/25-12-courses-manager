@@ -131,6 +131,10 @@ import { useRouter } from 'vue-router'
 import { API_URL_CORE } from '../config'
 import { toast } from 'vue3-toastify'
 import Header from './Header.vue'
+import { useRoute } from 'vue-router'
+const route = useRoute()
+const idLegalEntity = route.query.id_legalentity || ''
+
 
 const router = useRouter()
 const loading = ref(false)
@@ -193,18 +197,20 @@ const formatPassportCode = () => {
 const formatIndex = () => {
   registration_address.value.mail_index = registration_address.value.mail_index.replace(/\D/g, '').slice(0, 6)
 }
-
 const createListener = async () => {
   if (!emailValid.value) return toast.error("Проверьте правильность Email")
 
   loading.value = true
   const token = localStorage.getItem('access_token')
+  const listenerPayload = { ...listener.value }
+  if (idLegalEntity) listenerPayload.id_legalentity = idLegalEntity
 
   const payload = {
-    listener: listener.value,
+    listener: listenerPayload,
     passport: passport.value,
     registration_address: registration_address.value
   }
+
   if (Object.values(education.value).some(v => v)) payload.education = education.value
   if (Object.values(placeWork.value).some(v => v)) payload.placeWork = placeWork.value
 
@@ -219,15 +225,15 @@ const createListener = async () => {
 
     toast.success("Слушатель успешно создан")
     setTimeout(() => {
-    router.push('/listeners')
-    }, 2000) 
-
+      router.push('/listeners')
+    }, 2000)
   } catch (err) {
     toast.error(err.message || "Ошибка при создании")
   } finally {
     loading.value = false
   }
 }
+
 </script>
 
 <style scoped>
