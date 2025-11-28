@@ -7,6 +7,7 @@ import (
 	"document-service/internal/validate"
 	"log"
 	"net/http"
+	"io"
 
 	"github.com/gin-gonic/gin"
 )
@@ -68,11 +69,21 @@ func (p *PersonalCardHandler) ExistsPersonalCard(c *gin.Context) {
 }
 
 func (p *PersonalCardHandler) DownloadPersonalCard(c *gin.Context) {
+	// filePath := cardsPath + "/" + param
+	//
+	// c.File(filePath)
 	param := c.Query("card-name")
 
-	filePath := cardsPath + "/" + param
+	doc, err := p.service.DownloadPersonalCard(param)
+	if err != nil && err != io.EOF {
+		c.JSON(http.StatusNotFound, gin.H{"message": "не удалось загрузить файл"})
+		log.Println("ошибка при загрузке файла:", err)
+		return
+	}
 
-	c.File(filePath)
+	// log.Println("Doc size:", len(doc))
+
+	c.Data(200, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", doc)
 }
 
 func (p *PersonalCardHandler) DeletePersonalCard(c *gin.Context) {

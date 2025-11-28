@@ -43,7 +43,7 @@ services:
       - "8081:8081"
     
   apidoc:
-    image: shaibmen/document-service:latest
+    image: metapohuism/document-service:latest
     env_file:
       - ./document-service/.env
     depends_on:

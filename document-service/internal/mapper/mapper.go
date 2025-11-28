@@ -3,6 +3,7 @@ package mapper
 import (
 	"document-service/internal/domain/dto"
 	"document-service/internal/server/models"
+	"time"
 )
 
 func FullListenerMapping(request models.FullListenerRequest) (*dto.FullListenerDataDTO, error) {
@@ -17,6 +18,15 @@ func FullListenerMapping(request models.FullListenerRequest) (*dto.FullListenerD
 	// passportNumber, err := strconv.Atoi(request.Passport.Number)
 	// if err != nil {
 	// 	return nil, err
+	// }
+
+	startDate, _ := time.Parse("2006-01-02", request.EnrollmentListener.StartDate)
+	// if err != nil {
+	// 	return &dto.FullListenerDataDTO{}, err
+	// }
+	endDate, _ := time.Parse("2006-01-02", request.EnrollmentListener.EndDate)
+	// if err != nil {
+	// 	return &dto.FullListenerDataDTO{}, err
 	// }
 
 	dto := &dto.FullListenerDataDTO{
@@ -64,6 +74,12 @@ func FullListenerMapping(request models.FullListenerRequest) (*dto.FullListenerD
 			AllExperience:      request.PlaceWork.AllExperience,
 			JobTitleExpirience: request.PlaceWork.JobTitleExpirience,
 		},
+		EnrollmentListener: dto.EnrollmentListenerDTO{
+			StartDate:        startDate,
+			EndDate:          endDate,
+			TypeOfRetraining: request.EnrollmentListener.TypeOfRetraining,
+			CurrentPrice:     request.EnrollmentListener.CurrentPrice,
+		},
 		ProgramEducation: dto.ProgramEducationDTO{
 			NameProfEducation: request.ProgramEducation.NameProfEducation,
 			TimeEducation:     request.ProgramEducation.TimeEducation,
@@ -73,4 +89,167 @@ func FullListenerMapping(request models.FullListenerRequest) (*dto.FullListenerD
 	}
 
 	return dto, nil
+}
+
+func ZayavlenieMapping(request models.ZayavlenieRequest) *dto.ZayavlenieDTO {
+	dto := dto.ZayavlenieDTO{
+		ProgramEducation: dto.ProgramEducationDTO{
+			TimeEducation:     request.ProgramEducation.TimeEducation,
+			NameProfEducation: request.ProgramEducation.NameProfEducation,
+			DivisionEducation: request.ProgramEducation.DivisionEducation,
+			EducationType:     request.ProgramEducation.EducationType,
+		},
+		ListenerData: dto.ListenerDTO{
+			FirstName:    request.Listener.FirstName,
+			SecondName:   request.Listener.SecondName,
+			MiddleName:   request.Listener.MiddleName,
+			DateOfBirth:  request.Listener.DateOfBirth,
+			SNILS:        request.Listener.SNILS,
+			ContactPhone: request.Listener.ContactPhone,
+			Email:        request.Listener.Email,
+		},
+		Contractor: dto.ContractorDTO{
+			Passport: dto.PassportDTO{
+				PlaceBirth:    request.Contractor.Passport.PlaceBirth,
+				Citizenship:   request.Contractor.Passport.Citizenship,
+				Gender:        request.Contractor.Passport.Gender,
+				Seria:         request.Contractor.Passport.Seria,
+				Number:        request.Contractor.Passport.Number,
+				PassportGiven: request.Contractor.Passport.PassportGiven,
+				DateGiven:     request.Contractor.Passport.DateGiven,
+				Code:          request.Contractor.Passport.Code,
+			},
+			RegistrationAddress: dto.RegistrationAddressDTO{
+				MailIndex: request.Contractor.RegistrationAddress.MailIndex,
+				Region:    request.Contractor.RegistrationAddress.Region,
+				City:      request.Contractor.RegistrationAddress.City,
+				Street:    request.Contractor.RegistrationAddress.Street,
+				House:     request.Contractor.RegistrationAddress.House,
+				Building:  request.Contractor.RegistrationAddress.Building,
+				Apartment: request.Contractor.RegistrationAddress.Apartment,
+			},
+			FirstName:     request.Contractor.FirstName,
+			SecondName:    request.Contractor.SecondName,
+			MiddleName:    request.Contractor.MiddleName,
+			Contact_phone: request.Contractor.Contact_phone,
+			Email:         request.Contractor.Email,
+		},
+		Executor: dto.ExecutorDTO{
+			Status:             request.Executor.Status,
+			ExecutorName:       request.Executor.ExecutorName,
+			ExecutorSurname:    request.Executor.ExecutorSurname,
+			ExecutorMiddlename: request.Executor.ExecutorMiddlename,
+		},
+		Passport: dto.PassportDTO{
+			PlaceBirth:    request.Passport.PlaceBirth,
+			Citizenship:   request.Passport.Citizenship,
+			Gender:        request.Passport.Gender,
+			Seria:         request.Passport.Seria,
+			Number:        request.Passport.Number,
+			PassportGiven: request.Passport.PassportGiven,
+			DateGiven:     request.Passport.DateGiven,
+			Code:          request.Passport.Code,
+		},
+		Registration: dto.RegistrationAddressDTO{
+			MailIndex: request.Registration.MailIndex,
+			Region:    request.Registration.Region,
+			City:      request.Registration.City,
+			Street:    request.Registration.Street,
+			House:     request.Registration.House,
+			Building:  request.Registration.Building,
+			Apartment: request.Registration.Apartment,
+		},
+		Variant: request.Variant,
+	}
+	return &dto
+}
+
+func DogovorMapping(request models.DogovorRequest) (*dto.DogovorDTO, error) {
+	startDate, err := time.Parse("2006-01-02", request.Enrollment.StartDate)
+	if err != nil {
+		return &dto.DogovorDTO{}, err
+	}
+	endDate, err := time.Parse("2006-01-02", request.Enrollment.EndDate)
+	if err != nil {
+		return &dto.DogovorDTO{}, err
+	}
+
+	dto := dto.DogovorDTO{
+		ProgramEducation: dto.ProgramEducationDTO{
+			TimeEducation:     request.ProgramEducation.TimeEducation,
+			NameProfEducation: request.ProgramEducation.NameProfEducation,
+			DivisionEducation: request.ProgramEducation.DivisionEducation,
+			EducationType:     request.ProgramEducation.EducationType,
+		},
+		ListenerData: dto.ListenerDTO{
+			FirstName:    request.ListenerData.FirstName,
+			SecondName:   request.ListenerData.SecondName,
+			MiddleName:   request.ListenerData.MiddleName,
+			DateOfBirth:  request.ListenerData.DateOfBirth,
+			SNILS:        request.ListenerData.SNILS,
+			ContactPhone: request.ListenerData.ContactPhone,
+			Email:        request.ListenerData.Email,
+		},
+		Contractor: dto.ContractorDTO{
+			Passport: dto.PassportDTO{
+				PlaceBirth:    request.Contractor.Passport.PlaceBirth,
+				Citizenship:   request.Contractor.Passport.Citizenship,
+				Gender:        request.Contractor.Passport.Gender,
+				Seria:         request.Contractor.Passport.Seria,
+				Number:        request.Contractor.Passport.Number,
+				PassportGiven: request.Contractor.Passport.PassportGiven,
+				DateGiven:     request.Contractor.Passport.DateGiven,
+				Code:          request.Contractor.Passport.Code,
+			},
+			RegistrationAddress: dto.RegistrationAddressDTO{
+				MailIndex: request.Contractor.RegistrationAddress.MailIndex,
+				Region:    request.Contractor.RegistrationAddress.Region,
+				City:      request.Contractor.RegistrationAddress.City,
+				Street:    request.Contractor.RegistrationAddress.Street,
+				House:     request.Contractor.RegistrationAddress.House,
+				Building:  request.Contractor.RegistrationAddress.Building,
+				Apartment: request.Contractor.RegistrationAddress.Apartment,
+			},
+			FirstName:     request.Contractor.FirstName,
+			SecondName:    request.Contractor.SecondName,
+			MiddleName:    request.Contractor.MiddleName,
+			Contact_phone: request.Contractor.Contact_phone,
+			Email:         request.Contractor.Email,
+		},
+		Executor: dto.ExecutorDTO{
+			Status:             request.Executor.Status,
+			ExecutorName:       request.Executor.ExecutorName,
+			ExecutorSurname:    request.Executor.ExecutorSurname,
+			ExecutorMiddlename: request.Executor.ExecutorMiddlename,
+		},
+		Passport: dto.PassportDTO{
+			PlaceBirth:    request.Passport.PlaceBirth,
+			Citizenship:   request.Passport.Citizenship,
+			Gender:        request.Passport.Gender,
+			Seria:         request.Passport.Seria,
+			Number:        request.Passport.Number,
+			PassportGiven: request.Passport.PassportGiven,
+			DateGiven:     request.Passport.DateGiven,
+			Code:          request.Passport.Code,
+		},
+		Registration: dto.RegistrationAddressDTO{
+			MailIndex: request.Registration.MailIndex,
+			Region:    request.Registration.Region,
+			City:      request.Registration.City,
+			Street:    request.Registration.Street,
+			House:     request.Registration.House,
+			Building:  request.Registration.Building,
+			Apartment: request.Registration.Apartment,
+		},
+		Enrollment: dto.EnrollmentListenerDTO{
+			StartDate:        startDate,
+			EndDate:          endDate,
+			TypeOfRetraining: request.Enrollment.TypeOfRetraining,
+			CurrentPrice:     request.Enrollment.CurrentPrice,
+		},
+		OptionNagruzka: request.OptionNagruzka,
+		OptionDocument: request.OptionDocument,
+		OptionPrice:    request.OptionPrice,
+	}
+	return &dto, nil
 }

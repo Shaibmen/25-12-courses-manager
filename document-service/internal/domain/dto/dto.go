@@ -1,5 +1,7 @@
 package dto
 
+import "time"
+
 type ListenerDTO struct {
 	FirstName    string
 	SecondName   string
@@ -43,17 +45,26 @@ type EducationListenerDTO struct {
 }
 
 type PlaceWorkDTO struct {
-	NameCompany        string
-	JobTitle           string
 	AllExperience      int
 	JobTitleExpirience int
+	NameCompany        string
+	JobTitle           string
 }
 
 type ProgramEducationDTO struct {
-	NameProfEducation string
 	TimeEducation     int
+	NameProfEducation string
 	DivisionEducation string
 	EducationType     string
+}
+
+type EnrollmentListenerDTO struct {
+	StartDate        time.Time
+	EndDate          time.Time
+	CurrentPrice     float32
+	Is_active        bool
+	Group            string
+	TypeOfRetraining string
 }
 
 type FullListenerDataDTO struct {
@@ -63,4 +74,46 @@ type FullListenerDataDTO struct {
 	EducationListener   EducationListenerDTO
 	PlaceWork           PlaceWorkDTO
 	ProgramEducation    ProgramEducationDTO
+	EnrollmentListener  EnrollmentListenerDTO
+}
+
+type ContractorDTO struct {
+	Passport            PassportDTO
+	RegistrationAddress RegistrationAddressDTO
+	FirstName           string
+	SecondName          string
+	MiddleName          string
+	Contact_phone       string
+	Email               string
+}
+
+type ExecutorDTO struct {
+	Status             string
+	ExecutorName       string
+	ExecutorSurname    string
+	ExecutorMiddlename string
+}
+
+type ZayavlenieDTO struct {
+	ProgramEducation   ProgramEducationDTO
+	ListenerData       ListenerDTO
+	Contractor         ContractorDTO
+	Executor           ExecutorDTO
+	Passport           PassportDTO
+	Registration       RegistrationAddressDTO
+	EnrollmentListener EnrollmentListenerDTO
+	Variant            int
+}
+
+type DogovorDTO struct {
+	ProgramEducation ProgramEducationDTO
+	ListenerData     ListenerDTO
+	Contractor       ContractorDTO
+	Executor         ExecutorDTO
+	Passport         PassportDTO
+	Registration     RegistrationAddressDTO
+	Enrollment       EnrollmentListenerDTO
+	OptionNagruzka   string
+	OptionDocument   string
+	OptionPrice      string
 }
