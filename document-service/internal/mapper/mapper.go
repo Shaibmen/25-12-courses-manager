@@ -20,6 +20,15 @@ func FullListenerMapping(request models.FullListenerRequest) (*dto.FullListenerD
 	// 	return nil, err
 	// }
 
+	startDate, _ := time.Parse("2006-01-02", request.EnrollmentListener.StartDate)
+	// if err != nil {
+	// 	return &dto.FullListenerDataDTO{}, err
+	// }
+	endDate, _ := time.Parse("2006-01-02", request.EnrollmentListener.EndDate)
+	// if err != nil {
+	// 	return &dto.FullListenerDataDTO{}, err
+	// }
+
 	dto := &dto.FullListenerDataDTO{
 		Listener: dto.ListenerDTO{
 			FirstName:    request.Listener.FirstName,
@@ -64,6 +73,12 @@ func FullListenerMapping(request models.FullListenerRequest) (*dto.FullListenerD
 			JobTitle:           request.PlaceWork.JobTitle,
 			AllExperience:      request.PlaceWork.AllExperience,
 			JobTitleExpirience: request.PlaceWork.JobTitleExpirience,
+		},
+		EnrollmentListener: dto.EnrollmentListenerDTO{
+			StartDate:        startDate,
+			EndDate:          endDate,
+			TypeOfRetraining: request.EnrollmentListener.TypeOfRetraining,
+			CurrentPrice:     request.EnrollmentListener.CurrentPrice,
 		},
 		ProgramEducation: dto.ProgramEducationDTO{
 			NameProfEducation: request.ProgramEducation.NameProfEducation,
@@ -227,9 +242,10 @@ func DogovorMapping(request models.DogovorRequest) (*dto.DogovorDTO, error) {
 			Apartment: request.Registration.Apartment,
 		},
 		Enrollment: dto.EnrollmentListenerDTO{
-			StartDate:    startDate,
-			EndDate:      endDate,
-			CurrentPrice: request.Enrollment.CurrentPrice,
+			StartDate:        startDate,
+			EndDate:          endDate,
+			TypeOfRetraining: request.Enrollment.TypeOfRetraining,
+			CurrentPrice:     request.Enrollment.CurrentPrice,
 		},
 		OptionNagruzka: request.OptionNagruzka,
 		OptionDocument: request.OptionDocument,

@@ -58,6 +58,15 @@ type ProgramEducationDTO struct {
 	EducationType     string
 }
 
+type EnrollmentListenerDTO struct {
+	StartDate        time.Time
+	EndDate          time.Time
+	CurrentPrice     float32
+	Is_active        bool
+	Group            string
+	TypeOfRetraining string
+}
+
 type FullListenerDataDTO struct {
 	Listener            ListenerDTO
 	Passport            PassportDTO
@@ -65,12 +74,7 @@ type FullListenerDataDTO struct {
 	EducationListener   EducationListenerDTO
 	PlaceWork           PlaceWorkDTO
 	ProgramEducation    ProgramEducationDTO
-}
-
-type EnrollmentListenerDTO struct {
-	StartDate    time.Time
-	EndDate      time.Time
-	CurrentPrice float32
+	EnrollmentListener  EnrollmentListenerDTO
 }
 
 type ContractorDTO struct {
@@ -91,13 +95,14 @@ type ExecutorDTO struct {
 }
 
 type ZayavlenieDTO struct {
-	ProgramEducation ProgramEducationDTO
-	ListenerData     ListenerDTO
-	Contractor       ContractorDTO
-	Executor         ExecutorDTO
-	Passport         PassportDTO
-	Registration     RegistrationAddressDTO
-	Variant          int
+	ProgramEducation   ProgramEducationDTO
+	ListenerData       ListenerDTO
+	Contractor         ContractorDTO
+	Executor           ExecutorDTO
+	Passport           PassportDTO
+	Registration       RegistrationAddressDTO
+	EnrollmentListener EnrollmentListenerDTO
+	Variant            int
 }
 
 type DogovorDTO struct {

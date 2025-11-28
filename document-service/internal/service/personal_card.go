@@ -59,7 +59,7 @@ func (p *PersonalCardService) CreatePersonalCard(ListenerData *dto.FullListenerD
 
 func replaceFIZ(doc *docx.Docx, model *dto.FullListenerDataDTO) {
 	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
-	doc.Replace("TYPEOFRETRAINING", model.ProgramEducation.EducationType, -1)
+	doc.Replace("TYPEOFRETRAINING", model.EnrollmentListener.TypeOfRetraining, -1)
 	doc.Replace("HOUR", strconv.Itoa(model.ProgramEducation.TimeEducation), -1)
 
 	fio := model.Listener.SecondName + " " + model.Listener.FirstName + " " + model.Listener.MiddleName

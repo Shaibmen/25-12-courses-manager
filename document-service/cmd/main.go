@@ -24,9 +24,9 @@ func main() {
 	zayavlenieService := service.NewZayavlenieService(s3Client)
 	dogovorService := service.NewDogovorService(s3Client)
 
-	personalCardHandler := handler.NewPersonalCardHandler(personalCardService)
-	zayavlenieHandler := handler.NewZayavlenieHandler(zayavlenieService)
 	dogovorHandler := handler.NewDogovorHandler(dogovorService)
+	zayavlenieHandler := handler.NewZayavlenieHandler(zayavlenieService)
+	personalCardHandler := handler.NewPersonalCardHandler(personalCardService)
 
 	if _, err := os.Stat("./personal_card"); os.IsNotExist(err) {
 		os.MkdirAll("./personal_card", 0755)
