@@ -6,23 +6,25 @@ import (
 	"log/slog"
 	"online-courses/internal/database"
 
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
 
 type PostgresSQL struct {
-	DB *sql.DB
+	DBX *sqlx.DB
 }
 
 func MustNewConnectionPostgresSQL(cfg string, logger *slog.Logger) *PostgresSQL {
-	conn, err := sql.Open("postgres", cfg)
+
+	connx, err := sqlx.Open("postgres", cfg)
 	if err != nil {
-		logger.Error("ошибка подключения к базе данных",
+		logger.Error("ошибка подключения к базе данных x",
 			"error", err,
 		)
 		panic(1)
 	}
 
-	if err = conn.Ping(); err != nil {
+	if err = connx.Ping(); err != nil {
 		logger.Error("ошибка при пинге бд",
 			"error", err,
 		)
@@ -30,12 +32,12 @@ func MustNewConnectionPostgresSQL(cfg string, logger *slog.Logger) *PostgresSQL 
 	}
 
 	logger.Info("база данных подключена")
-	return &PostgresSQL{DB: conn}
+	return &PostgresSQL{DBX: connx}
 }
 
 func (p *PostgresSQL) ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error) {
 
-	rows, err := p.DB.ExecContext(ctx, query, args...)
+	rows, err := p.DBX.ExecContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -44,8 +46,16 @@ func (p *PostgresSQL) ExecContext(ctx context.Context, query string, args ...any
 
 }
 
+func (p *PostgresSQL) GetContext(ctx context.Context, dest any, query string, args ...any) error {
+	return p.DBX.GetContext(ctx, dest, query, args...)
+}
+
+func (p *PostgresSQL) SelectContext(ctx context.Context, dest any, query string, args ...any) error {
+	return p.DBX.SelectContext(ctx, dest, query, args...)
+}
+
 func (p *PostgresSQL) QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
-	rows, err := p.DB.QueryContext(ctx, query, args...)
+	rows, err := p.DBX.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -54,20 +64,20 @@ func (p *PostgresSQL) QueryContext(ctx context.Context, query string, args ...an
 }
 
 func (p *PostgresSQL) QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row {
-	row := p.DB.QueryRowContext(ctx, query, args...)
+	row := p.DBX.QueryRowContext(ctx, query, args...)
 	return row
 }
 
 func (p *PostgresSQL) Ping() error {
-	return p.DB.Ping()
+	return p.DBX.Ping()
 }
 
 func (p *PostgresSQL) Close() error {
-	return p.DB.Close()
+	return p.DBX.Close()
 }
 
 func (p *PostgresSQL) BeginTx(ctx context.Context) (database.Tx, error) {
-	tx, err := p.DB.BeginTx(ctx, nil)
+	tx, err := p.DBX.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
 	}

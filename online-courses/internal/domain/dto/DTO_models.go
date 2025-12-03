@@ -50,6 +50,7 @@ type RawOnlyListener struct {
 	ID_RegAddress        uuid.UUID  `json:"id_reg_address"`
 	ID_EducationListener *uuid.UUID `json:"id_education_listener"`
 	ID_PlaceWork         *uuid.UUID `json:"id_placework"`
+	Looting_education    bool
 }
 
 type PassportDTO struct {

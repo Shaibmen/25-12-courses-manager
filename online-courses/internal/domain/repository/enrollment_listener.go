@@ -16,4 +16,6 @@ type EnrollmentListenerRepository interface {
 	ReadByProgram(ctx context.Context, id uuid.UUID, page int) ([]entity.EnrollmentListenerDetails, error)
 	InfoToPersonalCard(ctx context.Context, listenerID, programID uuid.UUID) (*entity.PersonalCardInfo, error)
 	GetListenerFIO(ctx context.Context, listenerID uuid.UUID) (*entity.ListenerFIO, error)
+	SaveInfo(ctx context.Context, m entity.AccurateProgram) error
+	GetProgram(ctx context.Context, id uuid.UUID) (*entity.ProgramToAccurate, error)
 }

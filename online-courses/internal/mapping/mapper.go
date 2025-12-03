@@ -107,6 +107,7 @@ func MapListenerEntityToDTO(entity *entity.Listener) *dto.FullListenerDataDTO {
 		ID_RegAddress:        entity.ID_RegAddress,
 		ID_EducationListener: entity.ID_EducationListener,
 		ID_PlaceWork:         entity.ID_PlaceWork,
+		Looting_education:    entity.Looting_education,
 	}
 
 	var passport *dto.PassportDTO

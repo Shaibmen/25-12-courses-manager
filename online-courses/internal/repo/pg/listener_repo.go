@@ -175,6 +175,7 @@ func (l *ListenerRepo) ReadFullData(ctx context.Context, id uuid.UUID) (*entity.
 			&data.ID_PlaceWork,
 			&data.ID_Legalentity,
 			&data.ID_Contractor,
+			&data.Looting_education,
 			&data.RegistrationAddress.MailIndex,
 			&data.RegistrationAddress.Region,
 			&data.RegistrationAddress.City,

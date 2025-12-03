@@ -371,6 +371,45 @@ func (e *enrollmentListenerRepo) ReadByProgram(ctx context.Context, id uuid.UUID
 	return enrollments, nil
 }
 
+func (e *enrollmentListenerRepo) SaveInfo(ctx context.Context, m entity.AccurateProgram) error {
+
+	query :=
+
+		`
+	insert into accurateprogram (id_listener, name_prof_education, time_education, individual_price, group_price, campus_price, educationtype, divisionseducation)
+	values ($1, $2, $3, $4, $5, $6, $7, $8)
+	`
+
+	_, err := e.repo.ExecContext(ctx, query, m.ID_Listener, m.NameProfEducation, m.TimeEducation, m.IndividualPrice, m.GroupPrice, m.CampusPrice, m.EducationType, m.Division)
+	if err != nil {
+		return repoutils.HandleRepoErr(err)
+	}
+
+	return nil
+
+}
+
+func (e *enrollmentListenerRepo) GetProgram(ctx context.Context, id uuid.UUID) (*entity.ProgramToAccurate, error) {
+
+	query :=
+		`
+	
+select 
+	p.name_prof_education , p.time_education, p.individual_price, p.group_price, p.campus_price, e.type_name, d.divisions
+	from programeducation as p
+	inner join educationtypes e on p.id_educationtype = e.id_educationtype
+	inner join divisionseducation d on p.id_divisionseducation = d.id_divisionseducation 
+	where p.id_programeducation = $1
+	`
+	program := entity.ProgramToAccurate{}
+	err := e.repo.GetContext(ctx, &program, query, id)
+	if err != nil {
+		return nil, repoutils.HandleRepoErr(err)
+	}
+
+	return &program, err
+}
+
 func (e *enrollmentListenerRepo) InfoToPersonalCard(ctx context.Context, listenerID, programID uuid.UUID) (*entity.PersonalCardInfo, error) {
 	queryExists := `select exists (select 1 from enrollmentlistener where id_listener = $1 and id_programeducation = $2)`
 

@@ -112,6 +112,31 @@ func (ProgramEducation) TableName() string {
 	return "programeducation"
 }
 
+type AccurateProgram struct {
+	ID_Listener       uuid.UUID
+	NameProfEducation string
+	TimeEducation     int
+	IndividualPrice   float32
+	GroupPrice        float32
+	CampusPrice       float32
+	EducationType     string
+	Division          string
+}
+
+type ProgramToAccurate struct {
+	NameProfEducation string  `db:"name_prof_education"`
+	TimeEducation     int     `db:"time_education"`
+	IndividualPrice   float32 `db:"individual_price"`
+	GroupPrice        float32 `db:"group_price"`
+	CampusPrice       float32 `db:"campus_price"`
+	EducationType     string  `db:"type_name"`
+	Division          string  `db:"divisions"`
+}
+
+func (AccurateProgram) TableName() string {
+	return "accurateprogram"
+}
+
 type LegalEntity struct {
 	ID_Legalentity      uuid.UUID
 	NameCompany         string
@@ -157,6 +182,7 @@ type Listener struct {
 	SNILS                string
 	ContactPhone         string
 	Email                string
+	Looting_education    bool
 	ID_Passport          *uuid.UUID
 	Passport             Passport
 	ID_RegAddress        uuid.UUID

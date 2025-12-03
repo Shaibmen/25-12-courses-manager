@@ -30,7 +30,7 @@ func (e *enrollmentListenerService) Create(ctx context.Context, model dto.Enroll
 		return err
 	}
 
-	entity := entity.EnrollmentListener{
+	entityModel := entity.EnrollmentListener{
 		ID_Listener:         model.ID_Listener,
 		ID_ProgramEducation: model.ID_Program,
 		StartDate:           *startDate,
@@ -41,7 +41,26 @@ func (e *enrollmentListenerService) Create(ctx context.Context, model dto.Enroll
 		TypeOfRetraining:    model.TypeOfRetraining,
 	}
 
-	if err := e.service.Create(ctx, entity); err != nil {
+	if err := e.service.Create(ctx, entityModel); err != nil {
+		return err
+	}
+
+	program, err := e.service.GetProgram(ctx, model.ID_Program)
+	if err != nil {
+		return nil
+	}
+	AccurateProgram := entity.AccurateProgram{
+		ID_Listener:       model.ID_Listener,
+		NameProfEducation: program.NameProfEducation,
+		TimeEducation:     program.TimeEducation,
+		IndividualPrice:   program.IndividualPrice,
+		GroupPrice:        program.GroupPrice,
+		CampusPrice:       program.CampusPrice,
+		EducationType:     program.EducationType,
+		Division:          program.Division,
+	}
+
+	if err = e.service.SaveInfo(ctx, AccurateProgram); err != nil {
 		return err
 	}
 

@@ -92,6 +92,18 @@ CREATE TABLE IF NOT EXISTS programeducation (
     id_divisionseducation UUID REFERENCES divisionseducation(id_divisionseducation) not null
 );
 
+
+create table if not exists accurateprogram (
+	id_listener uuid not null,
+	name_prof_education varchar(100) not null unique,
+    time_education INTEGER not null,
+    individual_price REAL not null,
+    group_price REAL not null,
+    campus_price REAL not null,
+    educationtype varchar(255) not null,
+    divisionseducation varchar(255) not null
+);
+
 CREATE TABLE IF NOT EXISTS legal_entity (
 	id_legalentity uuid primary key,
 	name_company varchar(255) not null, 
@@ -130,8 +142,9 @@ CREATE TABLE IF NOT EXISTS listener (
     id_regaddress UUID REFERENCES registrationaddress(id_regaddress) not null,
     id_educationlistener UUID REFERENCES educationlistener(id_educationlistener),
     id_placework UUID REFERENCES placework(id_placework),
-	id_legalentity uuid references legal_entity(id_legalentity),
-	id_contractor uuid references contractor(id_contractor)
+    id_legalentity uuid references legal_entity(id_legalentity),
+    id_contractor uuid references contractor(id_contractor) ON DELETE SET NULL,
+    looting_education boolean DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS enrollmentlistener (
@@ -386,6 +399,7 @@ VALUES
 INSERT INTO leveleducation (id_leveleducation, education)
 VALUES
 (gen_random_uuid(), 'Бакалавр'),
+(gen_random_uuid(), 'Специалитет'),
 (gen_random_uuid(), 'Магистр'),
 (gen_random_uuid(), 'Кандидат наук'),
 (gen_random_uuid(), 'Среднее специальное'),
@@ -412,11 +426,8 @@ VALUES
 -- Divisions Education
 INSERT INTO divisionseducation (id_divisionseducation, divisions)
 VALUES
-(gen_random_uuid(), 'Отдел 1'),
-(gen_random_uuid(), 'Отдел 2'),
-(gen_random_uuid(), 'Отдел 3'),
-(gen_random_uuid(), 'Отдел 4'),
-(gen_random_uuid(), 'Отдел 5');
+(gen_random_uuid(), 'Лингвистический центр'),
+(gen_random_uuid(), 'Центр прикладных технологий');
 
 -- Education Types
 INSERT INTO educationtypes (id_educationtype, type_name)
@@ -430,11 +441,11 @@ VALUES
 -- Program Education
 INSERT INTO programeducation (id_programeducation, name_prof_education, time_education, individual_price, group_price, campus_price, id_educationtype, id_divisionseducation)
 VALUES
-(gen_random_uuid(), 'Программа 1', 30, 10000, 8000, 12000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 0), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 0)),
-(gen_random_uuid(), 'Программа 2', 45, 12000, 9000, 15000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 1), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
-(gen_random_uuid(), 'Программа 3', 60, 15000, 11000, 18000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 2), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 2)),
-(gen_random_uuid(), 'Программа 4', 90, 20000, 15000, 25000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 3), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 3)),
-(gen_random_uuid(), 'Программа 5', 120, 30000, 25000, 35000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 4), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 4));
+(gen_random_uuid(), 'Разработка игровых продуктов на Unity', 256, 146000, 146000, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 0), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 0)),
+(gen_random_uuid(), 'Разработка кроссплатформенных мобильных приложений на Flutter', 256, 146000, 146000, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 1), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
+(gen_random_uuid(), 'Разработка корпоративных приложений на Java', 256, 146000, 146000, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 2), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
+(gen_random_uuid(), 'Python: первые шаги в программировании', 256, 146000, 146000, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 3), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
+(gen_random_uuid(), 'Математика для программистов Junior', 20, 20000, 20000, 20000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 4), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1));
 
 -- Listener (частично без работы или образования)
 INSERT INTO listener (id_listener, first_name, second_name, middle_name, date_of_birth, snils, contact_phone, email, id_passport, id_regaddress, id_educationlistener, id_placework)
@@ -470,11 +481,5 @@ VALUES
  (SELECT id_placework FROM placework LIMIT 1 OFFSET 4));
 
 
-ALTER TABLE listener DROP CONSTRAINT listener_id_contractor_fkey;
 
 
-ALTER TABLE listener 
-ADD CONSTRAINT listener_id_contractor_fkey 
-FOREIGN KEY (id_contractor) 
-REFERENCES contractor(id_contractor) 
-ON DELETE SET NULL;
