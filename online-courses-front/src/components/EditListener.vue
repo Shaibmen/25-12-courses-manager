@@ -62,14 +62,18 @@
         <div class="card p-3 shadow-sm card-block">
           <h5 class="card-title mb-3">Образование</h5>
           <div class="d-flex flex-column gap-2">
-            <input v-model="education.diplom_seria" @input="numbersOnly('education','diplom_seria',6)" class="form-control" placeholder="Серия диплома">
-            <input v-model="education.diplom_number" @input="numbersOnly('education','diplom_number',7)" class="form-control" placeholder="Номер диплома">
-            <input type="date" v-model="education.date_given" class="form-control">
-            <input v-model="education.city" @input="onlyLettersAddress('city')" class="form-control" placeholder="Город">
-            <input v-model="education.region" @input="onlyLettersAddress('region')" class="form-control" placeholder="Регион">
-            <input v-model="education.educational_institution" class="form-control" placeholder="Учебное заведение">
-            <input v-model="education.speciality" class="form-control" placeholder="Специальность">
-            <select v-model="education.level_education" class="form-select">
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" v-model="listener.looting_education" id="lootingEduEdit" @change="onLootingChange">
+              <label class="form-check-label" for="lootingEduEdit">Получает образование</label>
+            </div>
+            <input v-model="education.diplom_seria" @input="numbersOnly('education','diplom_seria',6)" class="form-control" placeholder="Серия диплома" :disabled="listener.looting_education">
+            <input v-model="education.diplom_number" @input="numbersOnly('education','diplom_number',7)" class="form-control" placeholder="Номер диплома" :disabled="listener.looting_education">
+            <input type="date" v-model="education.date_given" class="form-control" :disabled="listener.looting_education">
+            <input v-model="education.city" @input="onlyLettersAddress('city')" class="form-control" placeholder="Город" :disabled="listener.looting_education">
+            <input v-model="education.region" @input="onlyLettersAddress('region')" class="form-control" placeholder="Регион" :disabled="listener.looting_education">
+            <input v-model="education.educational_institution" class="form-control" placeholder="Учебное заведение" :disabled="listener.looting_education">
+            <input v-model="education.speciality" class="form-control" placeholder="Специальность" :disabled="listener.looting_education">
+            <select v-model="education.level_education" class="form-select" :disabled="listener.looting_education">
               <option value="">Выберите уровень образования</option>
               <option v-for="lvl in educationLevels" :key="lvl.id_level_education" :value="lvl.id_level_education">
                 {{ lvl.education }}
@@ -158,6 +162,11 @@ const formatPassportCode = () => {
 const formatIndex = () => {
   registrationAddress.value.mail_index = (registrationAddress.value.mail_index || '').toString().replace(/\D/g, '').slice(0, 6)
 }
+const onLootingChange = () => {
+  if (listener.value.looting_education) {
+    education.value = { diplom_seria: '', diplom_number: '', date_given: '', city: '', region: '', educational_institution: '', speciality: '', level_education: '' }
+  }
+}
 
 const normalizeToDateInput = dateStr => {
   if (!dateStr) return ''
@@ -230,8 +239,19 @@ const updateListener = async () => {
 
   loading.value = true
   try {
+    let educationPayload = {
+      ...education.value,
+      diplom_seria: String(education.value.diplom_seria || ''),
+      diplom_number: String(education.value.diplom_number || ''),
+      level_education: education.value.level_education || null
+    }
+
+    if (listener.value.looting_education) {
+      educationPayload = { diplom_seria: '', diplom_number: '', date_given: '', city: '', region: '', educational_institution: '', speciality: '', level_education: '' }
+    }
+
     const payload = {
-      listener: { ...listener.value },
+      listener: { ...listener.value, looting_education: !!listener.value.looting_education },
       passport: {
         ...passport.value,
         seria: String(passport.value.seria || ''),
@@ -241,12 +261,7 @@ const updateListener = async () => {
         ...registrationAddress.value,
         mail_index: String(registrationAddress.value.mail_index || '')
       },
-      education: {
-        ...education.value,
-        diplom_seria: String(education.value.diplom_seria || ''),
-        diplom_number: String(education.value.diplom_number || ''),
-        level_education: education.value.level_education || null
-      },
+      education: educationPayload,
       placeWork: { ...placeWork.value }
     }
 

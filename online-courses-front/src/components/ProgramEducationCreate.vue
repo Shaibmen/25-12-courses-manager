@@ -8,7 +8,7 @@
         <h5 class="card-title mb-3">Данные программы</h5>
         <div class="d-flex flex-column gap-2">
           <input v-model="name" placeholder="Название программы" class="form-control" required />
-          <input v-model.number="time" type="number" min="1" placeholder="Длительность (мес.)" class="form-control" required />
+          <input v-model.number="time" type="number" min="1" placeholder="Длительность (часы)" class="form-control" required />
           <input v-model.number="priceIndividual" type="number" min="0" placeholder="Индивидуальная цена (₽)" class="form-control" required />
           <input v-model.number="priceGroup" type="number" min="0" placeholder="Групповая цена (₽)" class="form-control" required />
           <input v-model.number="priceCampus" type="number" min="0" placeholder="Кампусная цена (₽)" class="form-control" required />

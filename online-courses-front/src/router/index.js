@@ -4,6 +4,7 @@ import AdminDashboard from '../components/AdminDashboard.vue'
 import UserDashboard from '../components/UserDashboard.vue'
 import AccountantDashboard from '../components/AccountantDashboard.vue'
 import Listeners from '../components/Listeners.vue'
+import Executers from '../components/Executers.vue'
 
 const routes = [
   { path: '/', redirect: '/login' },
@@ -17,6 +18,9 @@ const routes = [
 { path: '/listeners/create', component: () => import('../components/CreateListener.vue') },
 { path: '/listeners/edit/:id', component: () => import('../components/EditListener.vue') },
 { path: '/listeners/:id', component: () => import('../components/ListenerDetails.vue') },
+
+  { path: '/executers', component: Executers },
+{ path: '/executers/create', component: () => import('../components/CreateExecuters.vue') },
 
 
   { path: '/divisions', component: () => import('../components/Divisions.vue') },

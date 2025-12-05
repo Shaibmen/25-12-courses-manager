@@ -10,7 +10,7 @@
         </div>
 
         <div>
-          <label>Длительность (мес.):</label>
+          <label>Длительность (часы):</label>
           <input v-model.number="time" type="number" min="1" required class="form-control" />
         </div>
 
