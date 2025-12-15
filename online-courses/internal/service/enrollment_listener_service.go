@@ -190,67 +190,67 @@ func (e *enrollmentListenerService) ReadByProgram(ctx context.Context, id uuid.U
 	return enrollments, nil
 }
 
-func (e *enrollmentListenerService) InfoToPersonalCard(ctx context.Context, listenerID, programID uuid.UUID) (*dto.PersonalCardInfoDTO, error) {
-	data, err := e.service.InfoToPersonalCard(ctx, listenerID, programID)
-	if err != nil {
-		return nil, err
-	}
+// func (e *enrollmentListenerService) InfoToPersonalCard(ctx context.Context, listenerID, programID uuid.UUID) (*dto.PersonalCardInfoDTO, error) {
+// 	data, err := e.service.InfoToPersonalCard(ctx, listenerID, programID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	dto := &dto.PersonalCardInfoDTO{
-		Listener: dto.ListenerDTO{
-			FirstName:    data.FirstName,
-			SecondName:   data.SecondName,
-			MiddleName:   data.MiddleName,
-			DateOfBirth:  data.DateOfBirth,
-			SNILS:        data.SNILS,
-			ContactPhone: data.ContactPhone,
-			Email:        data.Email,
-		},
-		Passport: dto.PassportCardDTO{
-			PlaceBirth:    data.PlaceBirth,
-			Citizenship:   data.Citizenship,
-			Gender:        data.Gender,
-			Seria:         data.Seria,
-			Number:        data.Number,
-			PassportGiven: data.PassportGiven,
-			DateGiven:     data.DateGiven,
-			Code:          data.Code,
-		},
-		RegistrationAddress: dto.RegistrationAddressCardDTO{
-			MailIndex: data.MailIndex,
-			Region:    data.RegRegion,
-			City:      data.RegCity,
-			Street:    data.RegStreet,
-			House:     data.House,
-			Building:  data.Building,
-			Apartment: data.Apartment,
-		},
-		EducationListener: dto.EducationListenerCardDTO{
-			DiplomSeria:            data.DiplomSeria.String,
-			DiplomNumber:           data.DiplomNumber.String,
-			DateGiven:              data.DiplomDateGiven.String,
-			City:                   data.DiplomCity.String,
-			Region:                 data.DiplomRegion.String,
-			EducationalInstitution: data.EducationalInstitution.String,
-			Speciality:             data.Speciality.String,
-			LevelEducation:         data.LevelEducation.String,
-		},
-		PlaceWork: dto.PlaceWorkDTO{
-			NameCompany:        data.NameCompany.String,
-			JobTitle:           data.JobTitle.String,
-			AllExperience:      int(data.AllExperience.Int32),
-			JobTitleExpirience: int(data.JobTitleExpirience.Int32),
-		},
-		ProgramEducation: dto.ProgramEducationToCardDTO{
-			NameProfEducation: data.NameProfEducation,
-			TimeEducation:     data.TimeEducation,
-			DivisionEducation: data.DivisionEducation,
-			EducationType:     data.EducationType,
-		},
-	}
+// 	dto := &dto.PersonalCardInfoDTO{
+// 		Listener: dto.ListenerDTO{
+// 			FirstName:    data.FirstName,
+// 			SecondName:   data.SecondName,
+// 			MiddleName:   data.MiddleName,
+// 			DateOfBirth:  data.DateOfBirth,
+// 			SNILS:        data.SNILS,
+// 			ContactPhone: data.ContactPhone,
+// 			Email:        data.Email,
+// 		},
+// 		Passport: dto.PassportCardDTO{
+// 			PlaceBirth:    data.PlaceBirth,
+// 			Citizenship:   data.Citizenship,
+// 			Gender:        data.Gender,
+// 			Seria:         data.Seria,
+// 			Number:        data.Number,
+// 			PassportGiven: data.PassportGiven,
+// 			DateGiven:     data.DateGiven,
+// 			Code:          data.Code,
+// 		},
+// 		RegistrationAddress: dto.RegistrationAddressCardDTO{
+// 			MailIndex: data.MailIndex,
+// 			Region:    data.RegRegion,
+// 			City:      data.RegCity,
+// 			Street:    data.RegStreet,
+// 			House:     data.House,
+// 			Building:  data.Building,
+// 			Apartment: data.Apartment,
+// 		},
+// 		EducationListener: dto.EducationListenerCardDTO{
+// 			DiplomSeria:            data.DiplomSeria.String,
+// 			DiplomNumber:           data.DiplomNumber.String,
+// 			DateGiven:              data.DiplomDateGiven.String,
+// 			City:                   data.DiplomCity.String,
+// 			Region:                 data.DiplomRegion.String,
+// 			EducationalInstitution: data.EducationalInstitution.String,
+// 			Speciality:             data.Speciality.String,
+// 			LevelEducation:         data.LevelEducation.String,
+// 		},
+// 		PlaceWork: dto.PlaceWorkDTO{
+// 			NameCompany:        data.NameCompany.String,
+// 			JobTitle:           data.JobTitle.String,
+// 			AllExperience:      int(data.AllExperience.Int32),
+// 			JobTitleExpirience: int(data.JobTitleExpirience.Int32),
+// 		},
+// 		ProgramEducation: dto.ProgramEducationToCardDTO{
+// 			NameProfEducation: data.NameProfEducation,
+// 			TimeEducation:     data.TimeEducation,
+// 			DivisionEducation: data.DivisionEducation,
+// 			EducationType:     data.EducationType,
+// 		},
+// 	}
 
-	return dto, nil
-}
+// 	return dto, nil
+// }
 
 func (e *enrollmentListenerService) GetListenerFIO(ctx context.Context, listenerID uuid.UUID) (*dto.ListenerFIODTO, error) {
 	data, err := e.service.GetListenerFIO(ctx, listenerID)

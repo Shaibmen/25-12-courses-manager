@@ -183,6 +183,7 @@ type EnrollmentProgramDetailsDTO struct {
 	TypeOfRetraining    string    `json:"type_of_retraining"`
 }
 
+// card
 type ProgramEducationToCardDTO struct {
 	NameProfEducation string `json:"name_prof_education"`
 	TimeEducation     int    `json:"time_education"`
@@ -212,14 +213,23 @@ type RegistrationAddressCardDTO struct {
 }
 
 type EducationListenerCardDTO struct {
+	DateGiven              string `json:"date_given"`
 	DiplomSeria            string `json:"diplom_seria"`
 	DiplomNumber           string `json:"diplom_number"`
-	DateGiven              string `json:"date_given"`
 	City                   string `json:"city"`
 	Region                 string `json:"region"`
 	EducationalInstitution string `json:"educational_institution"`
 	Speciality             string `json:"speciality"`
 	LevelEducation         string `json:"level_education"`
+}
+
+type EnrollmentListenerToCard struct {
+	StartDate        string  `json:"start_date"`
+	EndDate          string  `json:"end_date"`
+	CurrentPrice     float32 `json:"current_price"`
+	Is_active        bool    `json:"is_active"`
+	Group            string  `json:"group"`
+	TypeOfRetraining string  `json:"type_of_retraining"`
 }
 
 type PersonalCardInfoDTO struct {
@@ -229,7 +239,68 @@ type PersonalCardInfoDTO struct {
 	EducationListener   EducationListenerCardDTO   `json:"education"`
 	PlaceWork           PlaceWorkDTO               `json:"placeWork"`
 	ProgramEducation    ProgramEducationToCardDTO  `json:"program_education"`
+	EnrollmentListener  EnrollmentListenerToCard   `json:"enrollment_listener"`
 }
+
+type ContractorCardInfo struct {
+	Passport            PassportCardDTO            `json:"passport"`
+	RegistrationAddress RegistrationAddressCardDTO `json:"registration_address"`
+	FirstName           string                     `json:"first_name"`
+	SecondName          string                     `json:"second_name"`
+	MiddleName          string                     `json:"middle_name"`
+	Contact_phone       string                     `json:"contact_phone"`
+	Email               string                     `json:"email"`
+}
+
+type ExecutorCardInfo struct {
+	Status             string `json:"status"`
+	ExecutorName       string `json:"executor_name"`
+	ExecutorSurname    string `json:"executor_surname"`
+	ExecutorMiddlename string `json:"executor_middlename"`
+}
+
+type ZayavlenieCardInfo struct {
+	ProgramEducation   ProgramEducationToCardDTO  `json:"program_education"`
+	Listener           ListenerDTO                `json:"listener"`
+	EnrollmentListener EnrollmentListenerToCard   `json:"enrollment_listener"`
+	Contractor         ContractorCardInfo         `json:"contractor"`
+	Executor           ExecutorCardInfo           `json:"executor"`
+	Passport           PassportCardDTO            `json:"passport"`
+	Registration       RegistrationAddressCardDTO `json:"reg_address"`
+	Variant            int                        `json:"variant"`
+	DogovorType        string                     `json:"dogovor_type"`
+}
+
+type DogovorCardInfo struct {
+	ProgramEducation ProgramEducationToCardDTO  `json:"program_education"`
+	ListenerData     ListenerDTO                `json:"listener"`
+	Contractor       ContractorCardInfo         `json:"contractor"`
+	Executor         ExecutorCardInfo           `json:"executor"`
+	Passport         PassportCardDTO            `json:"passport"`
+	Registration     RegistrationAddressCardDTO `json:"reg_address"`
+	Enrollment       EnrollmentListenerToCard   `json:"enrollment_listener"`
+	OptionNagruzka   string                     `json:"opion_nagruz"`
+	OptionDocument   string                     `json:"opt_document"`
+	OptionPrice      string                     `json:"opt_price"`
+	Price            float32                    `json:"price"`
+	DogovorType      string                     `json:"dogovor_type"`
+}
+
+type FullDocumentInfoDTO struct {
+	PersonalCardInfo   PersonalCardInfoDTO `json:"personal_card"`
+	ZayavlenieCardInfo ZayavlenieCardInfo  `json:"zayavlenie_card"`
+	DogovorRequest     DogovorCardInfo     `json:"dogovor_card"`
+}
+
+type FrontDataDeliver struct {
+	Variant        int    `json:"variant"`
+	DogovorType    string `json:"dogovor_type"`
+	OptionNagruzka string `json:"opion_nagruz"`
+	OptionDocument string `json:"opt_document"`
+	OptionPrice    string `json:"opt_price"`
+}
+
+//card dto over
 
 type ListenerFIODTO struct {
 	FirstName  string `json:"first_name"`

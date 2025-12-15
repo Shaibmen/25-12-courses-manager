@@ -37,7 +37,7 @@
             <td :title="executer.middle_name || '-'">{{ executer.middle_name || '-' }}</td>
             <td :title="executer.status">{{ executer.status }}</td>
             <td style="white-space: nowrap;">
-              <div style="display: flex; gap: 8px;">
+              <div style=" gap: 8px;">
                 <button class="btn btn-danger btn-sm" @click="deleteExecuter(executer.id_executor)">Удалить</button>
               </div>
             </td>

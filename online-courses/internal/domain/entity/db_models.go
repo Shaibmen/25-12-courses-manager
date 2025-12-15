@@ -211,10 +211,10 @@ type ListenerLegalEntity struct {
 
 type Executor struct {
 	ID_Executor uuid.UUID
-	Status      string
-	FirstName   string
-	SecondName  string
-	MiddleName  string
+	Status      string `db:"status"`
+	FirstName   string `db:"first_name"`
+	SecondName  string `db:"second_name"`
+	MiddleName  string `db:"middle_name"`
 }
 
 func (Executor) TableName() string {
@@ -264,52 +264,6 @@ type EnrollmentProgramDetails struct {
 	CurrentPrice        float32
 	Group               string
 	TypeOfRetraining    string
-}
-
-type PersonalCardInfo struct {
-	FirstName    string
-	SecondName   string
-	MiddleName   string
-	DateOfBirth  string
-	SNILS        string
-	ContactPhone string
-	Email        string
-
-	PlaceBirth    string
-	Citizenship   string
-	Gender        string
-	Seria         string
-	Number        string
-	PassportGiven string
-	DateGiven     string
-	Code          string
-
-	MailIndex string
-	RegRegion string
-	RegCity   string
-	RegStreet string
-	House     string
-	Building  string
-	Apartment string
-
-	DiplomSeria            sql.NullString
-	DiplomNumber           sql.NullString
-	DiplomDateGiven        sql.NullString
-	DiplomCity             sql.NullString
-	DiplomRegion           sql.NullString
-	EducationalInstitution sql.NullString
-	Speciality             sql.NullString
-	LevelEducation         sql.NullString
-
-	NameCompany        sql.NullString
-	JobTitle           sql.NullString
-	AllExperience      sql.NullInt32
-	JobTitleExpirience sql.NullInt32
-
-	NameProfEducation string
-	TimeEducation     int
-	DivisionEducation string
-	EducationType     string
 }
 
 type ListenerFIO struct {
@@ -374,4 +328,86 @@ type AdminDashboard struct {
 type Role struct {
 	ID   uuid.UUID
 	Role string
+}
+type PersonalCardInfo struct {
+	FirstName    string `db:"first_name"`
+	SecondName   string `db:"second_name"`
+	MiddleName   string `db:"middle_name"`
+	DateOfBirth  string `db:"date_of_birth"`
+	SNILS        string `db:"snils"`
+	ContactPhone string `db:"contact_phone"`
+	Email        string `db:"email"`
+
+	PlaceBirth    string `db:"place_birth"`
+	Citizenship   string `db:"citizenship"`
+	Gender        string `db:"gender"`
+	Seria         string `db:"seria"`
+	Number        string `db:"number"`
+	PassportGiven string `db:"passport_given"`
+	DateGiven     string `db:"date_given"`
+	Code          string `db:"code"`
+
+	MailIndex string `db:"mail_index"`
+	RegRegion string `db:"region"`
+	RegCity   string `db:"city"`
+	RegStreet string `db:"street"`
+	House     string `db:"house"`
+	Building  string `db:"building"`
+	Apartment string `db:"apartment"`
+
+	DiplomSeria            sql.NullString `db:"diplom_seria"`
+	DiplomNumber           sql.NullString `db:"diplom_number"`
+	City                   sql.NullString `db:"educ_city"`
+	Region                 sql.NullString `db:"educ_region"`
+	EducationalInstitution sql.NullString `db:"educational_institution"`
+	Speciality             sql.NullString `db:"speciality"`
+	LevelEducation         sql.NullString `db:"education"`
+
+	NameCompany        sql.NullString `db:"name_company"`
+	JobTitle           sql.NullString `db:"job_title"`
+	AllExperience      sql.NullInt32  `db:"all_experience"`
+	JobTitleExpirience sql.NullInt32  `db:"job_title_experience"`
+
+	NameProfEducation string `db:"name_prof_education"`
+	TimeEducation     int    `db:"time_education"`
+	DivisionEducation string `db:"divisions"`
+	EducationType     string `db:"type_name"`
+
+	StartDate        string  `db:"start_date"`
+	EndDate          string  `db:"end_date"`
+	CurrentPrice     float32 `db:"current_price"`
+	Is_active        bool    `db:"is_active"`
+	Group            string  `db:"group_number"`
+	TypeOfRetraining string  `db:"type_of_retraining"`
+}
+
+type ContractorDoc struct {
+	FirstName    sql.NullString `db:"first_name"`
+	SecondName   sql.NullString `db:"second_name"`
+	MiddleName   sql.NullString `db:"middle_name"`
+	ContactPhone sql.NullString `db:"contact_phone"`
+	Email        sql.NullString `db:"email"`
+
+	PlaceBirth    sql.NullString `db:"place_birth"`
+	Citizenship   sql.NullString `db:"citizenship"`
+	Gender        sql.NullString `db:"gender"`
+	Seria         sql.NullString `db:"seria"`
+	Number        sql.NullString `db:"number"`
+	PassportGiven sql.NullString `db:"passport_given"`
+	DateGiven     sql.NullString `db:"date_given"`
+	Code          sql.NullString `db:"code"`
+
+	MailIndex sql.NullString `db:"mail_index"`
+	RegRegion sql.NullString `db:"city"`
+	RegCity   sql.NullString `db:"region"`
+	RegStreet sql.NullString `db:"street"`
+	House     sql.NullString `db:"house"`
+	Building  sql.NullString `db:"building"`
+	Apartment sql.NullString `db:"apartment"`
+}
+
+type FullDocument struct {
+	PersonalInfo PersonalCardInfo
+	Executor     Executor
+	Contractor   ContractorDoc
 }

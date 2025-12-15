@@ -289,22 +289,22 @@ func (e *EnrollmentListenerHandler) ReadByProgram(c *gin.Context) {
 	c.JSON(http.StatusOK, models.HttpResponseWithData{Data: data})
 }
 
-func (e *EnrollmentListenerHandler) GetInfoToCreateCard(c *gin.Context) {
-	var request request.CreateCardRequest
+// func (e *EnrollmentListenerHandler) GetInfoToCreateCard(c *gin.Context) {
+// 	var request request.CreateCardRequest
 
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.Error(err)
-		return
-	}
+// 	if err := c.ShouldBindJSON(&request); err != nil {
+// 		c.Error(err)
+// 		return
+// 	}
 
-	ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
-	defer cancel()
+// 	ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
+// 	defer cancel()
 
-	data, err := e.handler.InfoToPersonalCard(ctx, request.ID_listener, request.ID_program)
-	if err != nil {
-		c.Error(err)
-		return
-	}
+// 	data, err := e.handler.InfoToPersonalCard(ctx, request.ID_listener, request.ID_program)
+// 	if err != nil {
+// 		c.Error(err)
+// 		return
+// 	}
 
-	c.JSON(http.StatusOK, data)
-}
+// 	c.JSON(http.StatusOK, data)
+// }

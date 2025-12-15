@@ -23,6 +23,7 @@ func SetupRoutes(server *gin.Engine,
 	contractorHandler *handlers.ContractHandler,
 	legalEntityHandler *handlers.LegalEntityHandler,
 	executerHandler *handlers.ExecutorHandler,
+	documentHandler *handlers.DocumentHandler,
 	Logger *slog.Logger) {
 
 	server.Use(cors.New(cors.Config{
@@ -92,7 +93,7 @@ func SetupRoutes(server *gin.Engine,
 			enrollment.DELETE("/:id_listener/:id_program", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.DeleteEnrollment)
 			enrollment.GET("/details/:id", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.ReadDetailListener)
 			enrollment.GET("/:id", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.ReadByProgram) // :page
-			enrollment.GET("/application-data-card", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.GetInfoToCreateCard)
+			// enrollment.GET("/application-data-card", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.GetInfoToCreateCard)
 		}
 
 		dashboard := api.Group("/dashboard")
@@ -138,6 +139,9 @@ func SetupRoutes(server *gin.Engine,
 			executer.DELETE("/:id", middleware.RoleProtecteMiddleware("worker"), executerHandler.DeleteExecutor)
 			executer.GET("/", middleware.RoleProtecteMiddleware("worker"), executerHandler.ReadExecutor)
 		}
-
+		document := api.Group("/document")
+		{
+			document.GET("/", middleware.RoleProtecteMiddleware("worker"), documentHandler.DocumentDataDeliver)
+		}
 	}
 }

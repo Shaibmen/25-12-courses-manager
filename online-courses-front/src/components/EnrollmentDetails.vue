@@ -50,7 +50,7 @@
             <td>{{ item.current_price }} ₽</td>
             <td style="white-space: nowrap;">
               <div style="display: flex; gap: 8px;">
-                <button class="btn btn-warning btn-sm" @click="editRecord(item)">Изменить</button>
+                <!-- <button class="btn btn-warning btn-sm" @click="editRecord(item)">Изменить</button> -->
                 <button class="btn btn-danger btn-sm" @click="deleteRecord(item)">Удалить</button>
               </div>
             </td>

@@ -289,18 +289,16 @@ const router = useRouter()
 const listenerId = route.params.listenerId
 const token = localStorage.getItem('access_token')
 
-// --- Данные слушателя и заказчика ---
+
 const listener = ref({})
 const contractor = ref(null)
 const hasContractor = ref(false)
 const loading = ref(true)
 
-// --- Договоры ---
 const contracts = ref([])
 const loadingContracts = ref(false)
 const selectedContractId = ref('')
 
-// --- Программы ---
 const programs = ref([])
 const selectedProgramId = ref('')
 const price = ref({ individual_price: 0, group_price: 0, campus_price: 0 })
@@ -311,7 +309,6 @@ const group = ref('')
 const typeOfRetraining = ref('')
 const saving = ref(false)
 
-// --- Модалка заказчика ---
 const contractorModal = ref(false)
 const confirmModal = ref(null)
 
@@ -326,7 +323,6 @@ const errors = ref({
   gender: false, seria: false, number: false, code: false, index: false
 })
 
-// --- Валидация ---
 const onlyLetters = (obj, field) => {
   obj[field] = obj[field].replace(/[^А-Яа-яЁёA-Za-z\s-]/g, "")
   errors.value[field] = obj[field].trim() === ""
@@ -360,7 +356,6 @@ const formValid = computed(() => {
   return !Object.values(errors.value).some(Boolean)
 })
 
-// --- Вычисляемые ---
 const selectedContract = computed(() =>
   contracts.value.find(c => c.id_contract === selectedContractId.value)
 )
@@ -383,7 +378,6 @@ const isFormValid = computed(() => {
   )
 })
 
-// --- Загрузка ---
 const loadListenerAndContractor = async () => {
   try {
     const res = await fetch(`${API_URL_CORE}/listener/details/${listenerId}`, {
@@ -443,7 +437,6 @@ const onProgramChange = () => {
   }
 }
 
-// --- Работа с заказчиком ---
 const openContractorModal = () => {
   if (contractor.value) {
     contractorForm.value = {
@@ -480,35 +473,42 @@ const onHasContractorChange = () => {
     }
   }
 }
-
 const saveContractor = async () => {
-  if (!formValid.value) return toast.error("Исправьте ошибки в форме")
+  if (!formValid.value) return toast.error("Исправьте ошибки в форме");
 
   try {
-    saving.value = true
-    const url = contractor.value
-      ? `${API_URL_CORE}/contractor/${contractor.value.contractor.id_contractor}`
-      : `${API_URL_CORE}/contractor/${listenerId}`
+    saving.value = true;
 
-    const method = contractor.value ? 'PUT' : 'POST'
+    const url = `${API_URL_CORE}/contractor/${listenerId}`;
 
     const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
       body: JSON.stringify(contractorForm.value)
-    })
+    });
 
-    if (!res.ok) throw new Error(`Ошибка ${method === 'POST' ? 'добавления' : 'обновления'} заказчика`)
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({}));
+      throw new Error(e.message || "Ошибка добавления заказчика");
+    }
 
-    toast.success(`Заказчик успешно ${contractor.value ? 'обновлён' : 'добавлен'}`)
-    await loadListenerAndContractor()
-    closeContractorModal()
+    toast.success("Заказчик успешно добавлен");
+
+    await loadListenerAndContractor();
+    closeContractorModal();
+
   } catch (err) {
-    toast.error(err.message || 'Не удалось сохранить заказчика')
+    toast.error(err.message || "Не удалось добавить заказчика");
   } finally {
-    saving.value = false
+    saving.value = false;
   }
-}
+};
+
+
+
 
 const confirmDeleteContractor = () => {
   confirmModal.value?.open(async () => {
@@ -534,7 +534,6 @@ const deleteContractor = async () => {
   }
 }
 
-// --- Создание зачисления ---
 const createEnrollment = async () => {
   if (!isFormValid.value) return toast.warn('Заполните обязательные поля')
 
@@ -559,13 +558,13 @@ const createEnrollment = async () => {
 
     if (!res.ok) {
       const e = await res.json().catch(() => ({}))
-      throw new Error(e.message || `Ошибка создания записи (${res.status})`)
+      throw new Error(e.message || `Ошибка создания записи, возможно такая запись на курс уже существует (${res.status})`)
     }
 
     toast.success('Запись успешно создана')
     setTimeout(() => router.push(`/listeners/${listenerId}`), 2000)
   } catch (err) {
-    toast.error(err.message || 'Не удалось создать запись')
+    toast.error(err.message || 'Не удалось создать запись, возможно такая запись на курс уже существует')
   } finally {
     saving.value = false
   }

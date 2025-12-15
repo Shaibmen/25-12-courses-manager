@@ -146,3 +146,18 @@ type CreateCardRequest struct {
 	ID_listener uuid.UUID `json:"id_listener" validate:"required,uuid"`
 	ID_program  uuid.UUID `json:"id_program" validate:"required,uuid"`
 }
+
+type DocumentsDataRequest struct {
+	ID_Listener uuid.UUID `json:"id_listener"`
+	ID_Program  uuid.UUID `json:"id_program"`
+	ID_Executor uuid.UUID `json:"id_executor"`
+	FrontData   FrontDataDeliverRequest
+}
+
+type FrontDataDeliverRequest struct {
+	Variant        int    `json:"variant"`
+	DogovorType    string `json:"dogovor_type"`
+	OptionNagruzka string `json:"opion_nagruz"`
+	OptionDocument string `json:"opt_document"`
+	OptionPrice    string `json:"opt_price"`
+}
