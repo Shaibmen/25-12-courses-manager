@@ -45,26 +45,26 @@ type EducationListenerDTO struct {
 }
 
 type PlaceWorkDTO struct {
-	AllExperience      int
-	JobTitleExpirience int
 	NameCompany        string
 	JobTitle           string
+	AllExperience      int
+	JobTitleExpirience int
 }
 
 type ProgramEducationDTO struct {
-	TimeEducation     int
 	NameProfEducation string
 	DivisionEducation string
 	EducationType     string
+	TimeEducation     int
 }
 
 type EnrollmentListenerDTO struct {
 	StartDate        time.Time
 	EndDate          time.Time
-	CurrentPrice     float32
-	Is_active        bool
 	Group            string
 	TypeOfRetraining string
+	CurrentPrice     float32
+	Is_active        bool
 }
 
 type FullListenerDataDTO struct {
