@@ -19,10 +19,9 @@ func MustServerInit(r *gin.Engine, port string, personalCard *handler.PersonalCa
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-
+	r.Use(middleware.AuthMiddleware())
 	api := r.Group("v1/doc")
 	{
-		api.Use(middleware.AuthMiddleware())
 
 		api.POST("personal-card", personalCard.CreatePersonalCard)
 		api.GET("exists", personalCard.ExistsPersonalCard)

@@ -41,9 +41,9 @@ type PlaceWorkRequest struct {
 
 type ProgramEducationRequest struct {
 	NameProfEducation string `json:"name_prof_education"`
-	TimeEducation     int    `json:"time_education"`
 	DivisionEducation string `json:"divisions_education"`
 	EducationType     string `json:"education_type"`
+	TimeEducation     int    `json:"time_education"`
 }
 
 type ListenerRequest struct {
@@ -59,10 +59,10 @@ type ListenerRequest struct {
 type EnrollmentListenerRequest struct {
 	StartDate        string  `json:"start_date"`
 	EndDate          string  `json:"end_date"`
-	CurrentPrice     float32 `json:"current_price"`
-	Is_active        bool    `json:"is_active"`
 	Group            string  `json:"group"`
 	TypeOfRetraining string  `json:"type_of_retraining"`
+	CurrentPrice     float32 `json:"current_price"`
+	Is_active        bool    `json:"is_active"`
 }
 
 type FullListenerRequest struct {
@@ -73,6 +73,12 @@ type FullListenerRequest struct {
 	PlaceWork           PlaceWorkRequest          `json:"placeWork"`
 	ProgramEducation    ProgramEducationRequest   `json:"program_education"`
 	EnrollmentListener  EnrollmentListenerRequest `json:"enrollment_listener"`
+}
+
+type FullDocumentInfoDTO struct {
+	FullListener       FullListenerRequest `json:"personal_card"`
+	ZayavlenieCardInfo ZayavlenieRequest   `json:"zayavlenie_card"`
+	DogovorRequest     DogovorRequest      `json:"dogovor_card"`
 }
 
 // type ContractorRequest struct {
@@ -117,8 +123,8 @@ type ZayavlenieRequest struct {
 	Executor           ExecutorRequest           `json:"executor"`
 	Passport           PassportRequest           `json:"passport"`
 	Registration       RegAddressRequest         `json:"reg_address"`
-	Variant            int                       `json:"variant"`
 	DogovorType        string                    `json:"dogovor_type"`
+	Variant            int                       `json:"variant"`
 }
 
 type DogovorRequest struct {
@@ -132,6 +138,6 @@ type DogovorRequest struct {
 	OptionNagruzka   string                    `json:"opion_nagruz"`
 	OptionDocument   string                    `json:"opt_document"`
 	OptionPrice      string                    `json:"opt_price"`
-	Price            float32                   `json:"price"`
 	DogovorType      string                    `json:"dogovor_type"`
+	Price            float32                   `json:"price"`
 }

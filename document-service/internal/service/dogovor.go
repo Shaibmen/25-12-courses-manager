@@ -125,10 +125,195 @@ func replacePP3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 
 	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
 	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
-	doc.Replace("FOR", model.Enrollment.StartDate.Format("02.01.2006"), -1)
+	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
 
 	doc.Replace("OPTIOND", model.OptionDocument, -1)
 	doc.Replace("OPTIONH", model.OptionNagruzka, -1)
+
+	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
+
+	doc.Replace("OPTIONPRICE", model.OptionPrice, -1)
+
+	dob, err := time.Parse(time.RFC3339, model.ListenerData.DateOfBirth)
+	if err == nil {
+		doc.Replace("DATEBIRTH", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
+	}
+
+	doc.Replace("SNILS", model.ListenerData.SNILS, -1)
+	doc.Replace("PHONEL", model.ListenerData.ContactPhone, -1)
+	doc.Replace("EMAILL", model.ListenerData.Email, -1)
+
+	seriaNumberGiven := fmt.Sprintf("%s %s, %s", model.Passport.Seria, model.Passport.Number, model.Passport.PassportGiven)
+
+	doc.Replace("SERIAE, NUMBERE, GIVENE", seriaNumberGiven, -1)
+
+	cityStreetHouseBuildingApartment := fmt.Sprintf("%s, %s, %s, %s, %s. ",
+		model.Contractor.RegistrationAddress.City,
+		model.Contractor.RegistrationAddress.Street,
+		model.Contractor.RegistrationAddress.House,
+		model.Contractor.RegistrationAddress.Building,
+		model.Contractor.RegistrationAddress.Apartment)
+
+	doc.Replace("CITYE, STREETE, HOUSEE, BUILDINGE, APARTMENTE. ", cityStreetHouseBuildingApartment, -1)
+
+	doc.Replace("PHONEE", model.Contractor.Contact_phone, -1)
+	doc.Replace("EMAILE ", model.Contractor.Email+" ", -1)
+}
+
+func replacePP2FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
+	doc.Replace("STATUS", model.Executor.Status, -1)
+
+	executorFio := model.Executor.ExecutorSurname + " " + model.Executor.ExecutorName + " " + model.Executor.ExecutorMiddlename
+	doc.Replace("EXECUTORFIO", executorFio, -1)
+
+	listenerFio := model.ListenerData.SecondName + " " + model.ListenerData.FirstName + " " + model.ListenerData.MiddleName
+	doc.Replace("LISTENERFIO", listenerFio, -1)
+
+	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
+	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
+	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
+
+	doc.Replace("OPTIOND", model.OptionDocument, -1)
+	doc.Replace("OPTIONH", model.OptionNagruzka, -1)
+
+	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
+
+	doc.Replace("OPTIONPRICE", model.OptionPrice, -1)
+
+	seriaNumberGiven := fmt.Sprintf("%s %s, %s", model.Passport.Seria, model.Passport.Number, model.Passport.PassportGiven)
+	doc.Replace("SERIAE NUMBERE, GIVENE", seriaNumberGiven, -1)
+
+	cityStreetHouseBuildingApartment := fmt.Sprintf("%s, %s, %s, %s, %s.",
+		model.Registration.City,
+		model.Registration.Street,
+		model.Registration.House,
+		model.Registration.Building,
+		model.Registration.Apartment)
+
+	doc.Replace("CITYE, STREETE, HOUSEE, BUILDINGE, APARTMENTE.", cityStreetHouseBuildingApartment, -1)
+
+	doc.Replace("SNILS", model.ListenerData.SNILS, -1)
+
+	doc.Replace("PHONEL", model.ListenerData.ContactPhone, -1)
+	doc.Replace("EMAILL", model.ListenerData.Email, -1)
+
+	dob, err := time.Parse(time.RFC3339, model.ListenerData.DateOfBirth)
+	if err == nil {
+		doc.Replace("DATEBIRTH", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
+	}
+}
+
+func replacePK3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
+	doc.Replace("STATUS", model.Executor.Status, -1)
+
+	executorFio := model.Executor.ExecutorSurname + " " + model.Executor.ExecutorName + " " + model.Executor.ExecutorMiddlename
+	doc.Replace("EXECUTORFIO", executorFio, -1)
+
+	listenerFio := model.ListenerData.SecondName + " " + model.ListenerData.FirstName + " " + model.ListenerData.MiddleName
+	doc.Replace("LISTENERFIO", listenerFio, -1)
+
+	contractorFio := model.Contractor.SecondName + " " + model.Contractor.FirstName + " " + model.Contractor.MiddleName
+	doc.Replace("CONTRACTORFIO", contractorFio, -1)
+
+	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
+	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
+	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
+
+	doc.Replace("OPTIOND", model.OptionDocument, -1)
+	doc.Replace("OPTIONH", model.OptionNagruzka, -1)
+
+	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
+
+	doc.Replace("OPTIONPRICE", model.OptionPrice, -1)
+
+	doc.Replace("SNILS", model.ListenerData.SNILS, -1)
+	doc.Replace("PHONEL", model.ListenerData.ContactPhone, -1)
+	doc.Replace("EMAILL", model.ListenerData.Email, -1)
+
+	doc.Replace("SERIAE", model.Contractor.Passport.Seria, -1)
+	doc.Replace("NUMBERE", model.Contractor.Passport.Number, -1)
+	doc.Replace("GIVENE", model.Contractor.Passport.PassportGiven, -1)
+
+	cityTadada := fmt.Sprintf("%s, %s, %s, %s, %s",
+		model.Contractor.RegistrationAddress.City,
+		model.Contractor.RegistrationAddress.Street,
+		model.Contractor.RegistrationAddress.House,
+		model.Contractor.RegistrationAddress.Building,
+		model.Contractor.RegistrationAddress.Apartment)
+
+	doc.Replace("CITYE, STREETE, HOUSEE, BUILDINGE, APARTMENTE", cityTadada, -1)
+
+	doc.Replace("PHONEE", model.Contractor.Contact_phone, -1)
+	doc.Replace("EMAILE", model.Contractor.Email, -1)
+
+	dob, err := time.Parse(time.RFC3339, model.ListenerData.DateOfBirth)
+	if err == nil {
+		doc.Replace("DATEBIRTH", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
+	}
+
+}
+
+func replacePK2FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
+	doc.Replace("STATUS", model.Executor.Status, -1)
+
+	executorFio := model.Executor.ExecutorSurname + " " + model.Executor.ExecutorName + " " + model.Executor.ExecutorMiddlename
+	doc.Replace("EXECUTORFIO", executorFio, -1)
+
+	listenerFio := model.ListenerData.SecondName + " " + model.ListenerData.FirstName + " " + model.ListenerData.MiddleName
+	doc.Replace("LISTENERFIO", listenerFio, -1)
+
+	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
+	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
+	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
+
+	doc.Replace("OPTIOND", model.OptionDocument, -1)
+	doc.Replace("OPTIONH", model.OptionNagruzka, -1)
+
+	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
+
+	doc.Replace("OPTIONPRICE", model.OptionPrice, -1)
+
+	seriaNumberGiven := fmt.Sprintf("%s %s, %s", model.Passport.Seria, model.Passport.Number, model.Passport.PassportGiven)
+	doc.Replace("SERIAE NUMBERE, GIVENE", seriaNumberGiven, -1)
+
+	doc.Replace("SNILS", model.ListenerData.SNILS, -1)
+
+	cityStreetHouseBuildingApartment := fmt.Sprintf("%s, %s, %s, %s, %s.",
+		model.Registration.City,
+		model.Registration.Street,
+		model.Registration.House,
+		model.Registration.Building,
+		model.Registration.Apartment)
+
+	doc.Replace("CITYE, STREETE, HOUSEE, BUILDINGE, APARTMENTE.", cityStreetHouseBuildingApartment, -1)
+
+	doc.Replace("PHONEL", model.ListenerData.ContactPhone, -1)
+	doc.Replace("EMAILL", model.ListenerData.Email, -1)
+
+	dob, err := time.Parse(time.RFC3339, model.ListenerData.DateOfBirth)
+	if err == nil {
+		doc.Replace("DATEBIRTH", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
+	}
+}
+
+func replaceDO3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
+	doc.Replace("STATUS", model.Executor.Status, -1)
+
+	executorFio := model.Executor.ExecutorSurname + " " + model.Executor.ExecutorName + " " + model.Executor.ExecutorMiddlename
+	doc.Replace("EXECUTORFIO", executorFio, -1)
+
+	listenerFio := model.ListenerData.SecondName + " " + model.ListenerData.FirstName + " " + model.ListenerData.MiddleName
+	doc.Replace("LISTENERFIO", listenerFio, -1)
+
+	contractorFio := model.Contractor.SecondName + " " + model.Contractor.FirstName + " " + model.Contractor.MiddleName
+	doc.Replace("CONTRACTORFIO", contractorFio, -1)
+
+	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
+	doc.Replace("SIN", model.Enrollment.StartDate.Format("02.01.2006"), -1)
+	doc.Replace("CE", "", -1)
+	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
+
+	doc.Replace("OPTION", model.OptionNagruzka, -1)
 
 	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
 
@@ -150,150 +335,7 @@ func replacePP3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("CITYE", model.Contractor.RegistrationAddress.City, -1)
 	doc.Replace("STREETE", model.Contractor.RegistrationAddress.Street, -1)
 	doc.Replace("HOUSE", model.Contractor.RegistrationAddress.House, -1)
-	doc.Replace("BUILDINGE", model.Contractor.RegistrationAddress.Building, -1)
-	doc.Replace("APARTMENTE", model.Contractor.RegistrationAddress.Apartment, -1)
-	doc.Replace("PHONEE", model.Contractor.Contact_phone, -1)
-	doc.Replace("EMAILE", model.Contractor.Email, -1)
-
-}
-
-func replacePP2FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
-	doc.Replace("STATUS", model.Executor.Status, -1)
-
-	executorFio := model.Executor.ExecutorSurname + " " + model.Executor.ExecutorName + " " + model.Executor.ExecutorMiddlename
-	doc.Replace("EXECUTORFIO", executorFio, -1)
-
-	listenerFio := model.ListenerData.SecondName + " " + model.ListenerData.FirstName + " " + model.ListenerData.MiddleName
-	doc.Replace("LISTENERFIO", listenerFio, -1)
-
-	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
-	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
-	doc.Replace("FOR", model.Enrollment.StartDate.Format("02.01.2006"), -1)
-
-	doc.Replace("OPTIOND", model.OptionDocument, -1)
-	doc.Replace("OPTIONH", model.OptionNagruzka, -1)
-
-	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
-
-	doc.Replace("OPTIONPRICE", model.OptionPrice, -1)
-
-	doc.Replace("SERIAE", model.Passport.Seria, -1)
-	doc.Replace("NUMBERE", model.Passport.Number, -1)
-	doc.Replace("GIVENE", model.Passport.PassportGiven, -1)
-
-	doc.Replace("SNILS", model.ListenerData.SNILS, -1)
-
-	doc.Replace("PHONEL", model.Contractor.Contact_phone, -1)
-	doc.Replace("EMAILL", model.Contractor.Email, -1)
-}
-
-func replacePK3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
-	doc.Replace("STATUS", model.Executor.Status, -1)
-
-	executorFio := model.Executor.ExecutorSurname + " " + model.Executor.ExecutorName + " " + model.Executor.ExecutorMiddlename
-	doc.Replace("EXECUTORFIO", executorFio, -1)
-
-	listenerFio := model.ListenerData.SecondName + " " + model.ListenerData.FirstName + " " + model.ListenerData.MiddleName
-	doc.Replace("LISTENERFIO", listenerFio, -1)
-
-	contractorFio := model.Contractor.SecondName + " " + model.Contractor.FirstName + " " + model.Contractor.MiddleName
-	doc.Replace("CONTRACTORFIO", contractorFio, -1)
-
-	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
-	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
-	doc.Replace("FOR", model.Enrollment.StartDate.Format("02.01.2006"), -1)
-
-	doc.Replace("OPTIOND", model.OptionDocument, -1)
-	doc.Replace("OPTIONH", model.OptionNagruzka, -1)
-
-	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
-
-	doc.Replace("OPTIONPRICE", model.OptionPrice, -1)
-
-	doc.Replace("SNILS", model.ListenerData.SNILS, -1)
-	doc.Replace("PHONEL", model.ListenerData.ContactPhone, -1)
-	doc.Replace("EMAILL", model.ListenerData.Email, -1)
-
-	doc.Replace("SERIAE", model.Contractor.Passport.Seria, -1)
-	doc.Replace("NUMBERE", model.Contractor.Passport.Number, -1)
-	doc.Replace("GIVENE", model.Contractor.Passport.PassportGiven, -1)
-
-	doc.Replace("CITYE", model.Contractor.RegistrationAddress.City, -1)
-	doc.Replace("STREETE", model.Contractor.RegistrationAddress.Street, -1)
-	doc.Replace("HOUSE", model.Contractor.RegistrationAddress.House, -1)
-	doc.Replace("BUILDINGE", model.Contractor.RegistrationAddress.Building, -1)
-	doc.Replace("APARTMENTE", model.Contractor.RegistrationAddress.Apartment, -1)
-	doc.Replace("PHONEE", model.Contractor.Contact_phone, -1)
-	doc.Replace("EMAILE", model.Contractor.Email, -1)
-
-}
-
-func replacePK2FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
-	doc.Replace("STATUS", model.Executor.Status, -1)
-
-	executorFio := model.Executor.ExecutorSurname + " " + model.Executor.ExecutorName + " " + model.Executor.ExecutorMiddlename
-	doc.Replace("EXECUTORFIO", executorFio, -1)
-
-	listenerFio := model.ListenerData.SecondName + " " + model.ListenerData.FirstName + " " + model.ListenerData.MiddleName
-	doc.Replace("LISTENERFIO", listenerFio, -1)
-
-	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
-	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
-	doc.Replace("FOR", model.Enrollment.StartDate.Format("02.01.2006"), -1)
-
-	doc.Replace("OPTIOND", model.OptionDocument, -1)
-	doc.Replace("OPTIONH", model.OptionNagruzka, -1)
-
-	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
-
-	doc.Replace("OPTIONPRICE", model.OptionPrice, -1)
-
-	doc.Replace("SERIAE", model.Passport.Seria, -1)
-	doc.Replace("NUMBERE", model.Passport.Number, -1)
-	doc.Replace("GIVENE", model.Passport.PassportGiven, -1)
-
-	doc.Replace("SNILS", model.ListenerData.SNILS, -1)
-
-	doc.Replace("PHONEL", model.Contractor.Contact_phone, -1)
-	doc.Replace("EMAILL", model.Contractor.Email, -1)
-}
-
-func replaceDO3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
-	doc.Replace("STATUS", model.Executor.Status, -1)
-
-	executorFio := model.Executor.ExecutorSurname + " " + model.Executor.ExecutorName + " " + model.Executor.ExecutorMiddlename
-	doc.Replace("EXECUTORFIO", executorFio, -1)
-
-	listenerFio := model.ListenerData.SecondName + " " + model.ListenerData.FirstName + " " + model.ListenerData.MiddleName
-	doc.Replace("LISTENERFIO", listenerFio, -1)
-
-	contractorFio := model.Contractor.SecondName + " " + model.Contractor.FirstName + " " + model.Contractor.MiddleName
-	doc.Replace("CONTRACTORFIO", contractorFio, -1)
-
-	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
-	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
-	doc.Replace("FOR", model.Enrollment.StartDate.Format("02.01.2006"), -1)
-
-	doc.Replace("OPTIOND", model.OptionDocument, -1)
-	doc.Replace("OPTIONH", model.OptionNagruzka, -1)
-
-	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
-
-	doc.Replace("OPTIONPRICE", model.OptionPrice, -1)
-
-	doc.Replace("SNILS", model.ListenerData.SNILS, -1)
-	doc.Replace("PHONEL", model.ListenerData.ContactPhone, -1)
-	doc.Replace("EMAILL", model.ListenerData.Email, -1)
-
-	doc.Replace("SERIAE", model.Contractor.Passport.Seria, -1)
-	doc.Replace("NUMBERE", model.Contractor.Passport.Number, -1)
-	doc.Replace("GIVENE", model.Contractor.Passport.PassportGiven, -1)
-
-	doc.Replace("CITYE", model.Contractor.RegistrationAddress.City, -1)
-	doc.Replace("STREETE", model.Contractor.RegistrationAddress.Street, -1)
-	doc.Replace("HOUSE", model.Contractor.RegistrationAddress.House, -1)
-	doc.Replace("BUILDINGE", model.Contractor.RegistrationAddress.Building, -1)
-	doc.Replace("APARTMENTE", model.Contractor.RegistrationAddress.Apartment, -1)
+	doc.Replace("BUILDINGE, APARTMENTE", model.Contractor.RegistrationAddress.Building+", "+model.Contractor.RegistrationAddress.Apartment, -1)
 	doc.Replace("PHONEE", model.Contractor.Contact_phone, -1)
 	doc.Replace("EMAILE", model.Contractor.Email, -1)
 }
@@ -311,7 +353,7 @@ func (s *DogovorService) ExistsDogovor(fileName string) ([]string, error) {
 	if len(documents) > 0 {
 		return documents, nil
 	} else {
-		return []string{}, errors.New("Не найдено ни одного документа")
+		return []string{}, errors.New("не найдено ни одного документа")
 	}
 }
 

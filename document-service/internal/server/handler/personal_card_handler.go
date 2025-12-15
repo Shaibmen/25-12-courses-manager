@@ -5,9 +5,9 @@ import (
 	"document-service/internal/server/models"
 	"document-service/internal/service"
 	"document-service/internal/validate"
+	"io"
 	"log"
 	"net/http"
-	"io"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,7 +25,7 @@ func NewPersonalCardHandler(service *service.PersonalCardService) *PersonalCardH
 }
 
 func (p *PersonalCardHandler) CreatePersonalCard(c *gin.Context) {
-	var request models.FullListenerRequest
+	var request models.FullDocumentInfoDTO
 
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Println(err)
@@ -40,7 +40,7 @@ func (p *PersonalCardHandler) CreatePersonalCard(c *gin.Context) {
 		return
 	}
 
-	dto, err := mapper.FullListenerMapping(request)
+	dto, err := mapper.FullListenerMapping(request.FullListener)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "invalid parameter request mapping", "err": err.Error()})

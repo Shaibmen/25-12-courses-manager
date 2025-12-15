@@ -20,7 +20,7 @@ func NewZayavlenieHandler(service *service.ZayavlenieService) *ZayavlenieHandler
 }
 
 func (h *ZayavlenieHandler) CreateZayavlenie(c *gin.Context) {
-	var request models.ZayavlenieRequest
+	var request models.FullDocumentInfoDTO
 
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Println(err)
@@ -28,9 +28,9 @@ func (h *ZayavlenieHandler) CreateZayavlenie(c *gin.Context) {
 		return
 	}
 
-	dto := mapper.ZayavlenieMapping(request)
+	dto := mapper.ZayavlenieMapping(request.ZayavlenieCardInfo)
 
-	err := h.service.CreateZayavlenie(dto, request.DogovorType)
+	err := h.service.CreateZayavlenie(dto, request.ZayavlenieCardInfo.DogovorType)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": "creation zayavlenie error", "err": err.Error()})

@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"online-courses/internal/domain/dto"
 	"online-courses/internal/domain/service"
-	"online-courses/internal/server/http/models"
 	"online-courses/internal/server/http/request"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -38,5 +40,58 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, models.HttpResponseWithData{Data: data})
+	c.JSON(http.StatusOK, data)
+
+	responseCard, err := RequestToDoc(*data, "v1/doc/personal-card", c)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	if responseCard != http.StatusOK {
+		c.JSON(responseCard, nil)
+		return
+	}
+
+	// responseZayvlenie, err := RequestToDoc(*data, "zayavlenie", c)
+	// if err != nil {
+	// 	c.Error(err)
+	// 	return
+	// }
+	// if responseZayvlenie != http.StatusOK {
+	// 	c.JSON(responseZayvlenie, nil)
+	// 	return
+	// }
+
+	responseDogovor, err := RequestToDoc(*data, "v1/doc/dogovor", c)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	if responseDogovor != http.StatusOK {
+		c.JSON(responseDogovor, nil)
+		return
+	}
+
+}
+
+func RequestToDoc(data dto.FullDocumentInfoDTO, endpoint string, c *gin.Context) (int, error) {
+	requestBody, _ := json.Marshal(data)
+	req, err := http.NewRequest("POST", "http://localhost:8082/"+endpoint, bytes.NewBuffer(requestBody))
+	if err != nil {
+		return 0, err
+	}
+
+	authHeader := c.Request.Header.Get("Authorization")
+	field := strings.Fields(authHeader)
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+field[1])
+
+	client := &http.Client{}
+	response, err := client.Do(req)
+	if err != nil {
+		return 0, err
+	}
+
+	return response.StatusCode, nil
 }

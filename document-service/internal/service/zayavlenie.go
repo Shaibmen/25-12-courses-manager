@@ -74,6 +74,24 @@ func (s *ZayavlenieService) CreateZayavlenie(zayavlenieData *dto.ZayavlenieDTO, 
 	}
 
 	doc.Replace("DIVISONEDUCATION", zayavlenieData.ProgramEducation.DivisionEducation, -1)
+	doc.Replace("NAMEPROFEDUCATION", zayavlenieData.ProgramEducation.DivisionEducation, -1)
+
+	variantsIntToString := make(map[int]string)
+
+	variantsIntToString[1] = "ONE"
+	variantsIntToString[2] = "TWO"
+	variantsIntToString[3] = "THREE"
+	variantsIntToString[4] = "FOUR"
+	variantsIntToString[5] = "FIVE"
+	variantsIntToString[6] = "SIX"
+
+	for number, token := range variantsIntToString {
+		if number != zayavlenieData.Variant {
+			doc.Replace(token, "[ ]", -1)
+		} else {
+			doc.Replace(token, "[x]", -1)
+		}
+	}
 
 	var buffer bytes.Buffer
 	err = doc.Write(&buffer)
@@ -109,48 +127,35 @@ func replaceZayavlenieBetweenEighteen(doc *docx.Docx, model *dto.ZayavlenieDTO) 
 		doc.Replace("DATEBIRTH", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
 	}
 
-	doc.Replace("CITYB", model.Passport.PlaceBirth, -1)
+	doc.Replace("FCI", model.Passport.PlaceBirth, -1)
 
-	doc.Replace("SERIAL", model.Passport.Seria, -1)
-	doc.Replace("NUMBERL", model.Passport.Number, -1)
+	seriaNumber := fmt.Sprintf("%s %s ", model.Passport.Seria, model.Passport.Number)
+
+	doc.Replace("SERIAL NUMBERL ", seriaNumber, -1)
 	doc.Replace("GIVENL", model.Passport.PassportGiven, -1)
-	doc.Replace("DATEGIVENS", model.Passport.DateGiven, -1)
 
 	doc.Replace("SNILS", model.ListenerData.SNILS, -1)
 	doc.Replace("PHONEL", model.ListenerData.ContactPhone, -1)
+
 	doc.Replace("CITY", model.Registration.City, -1)
-	doc.Replace("STREET", model.Registration.Street, -1)
-	doc.Replace("HOUSE", model.Registration.House, -1)
-	doc.Replace("BUILDING", model.Registration.Building, -1)
-	doc.Replace("APARTMENT", model.Registration.Apartment, -1)
+	streetHouseBuildingApartment := fmt.Sprintf("%s, %s, %s, %s", model.Registration.Street, model.Registration.House, model.Registration.Building, model.Registration.Apartment)
+	doc.Replace("STREET, HOUSE, BUILDING, APARTMENT", streetHouseBuildingApartment, -1)
+
 	doc.Replace("EMAILL", model.ListenerData.Email, -1)
 
 	contractorFio := model.Contractor.SecondName + " " + model.Contractor.FirstName + " " + model.Contractor.MiddleName
 	doc.Replace("CONTRACTORFIO", contractorFio, -1)
 
-	doc.Replace("SERIAE", model.Contractor.Passport.Seria, -1)
-	doc.Replace("NUMBERE", model.Contractor.Passport.Number, -1)
-	doc.Replace("GIVENE", model.Contractor.Passport.PassportGiven, -1)
+	contractorSeriaNumber := fmt.Sprintf("%s %s ", model.Contractor.Passport.Seria, model.Contractor.Passport.Number)
+	doc.Replace("SERIAE NUMBERE", contractorSeriaNumber, -1)
 	doc.Replace("DATEGIVENE", model.Contractor.Passport.DateGiven, -1)
+	doc.Replace(": GIVENE", ":"+" "+model.Contractor.Passport.PassportGiven, -1)
+
+	doc.Replace("DATEGIVEN", model.Passport.DateGiven, -1) // !
 
 	doc.Replace("PHONEE", model.Contractor.Contact_phone, -1)
 	doc.Replace("EMAILE", model.Contractor.Email, -1)
 
-	variant := "VARIANT" + strconv.Itoa(model.Variant)
-
-	i := 1
-
-	for ; i < 7; i++ {
-		tempVar := "VARIANT" + strconv.Itoa(i)
-		if tempVar != variant {
-			doc.Replace(tempVar, "[ ]", -1)
-		} else {
-			doc.Replace(tempVar, "[x]", -1)
-		}
-	}
-
-	doc.Replace("TYPEOFTRAINING", model.ProgramEducation.EducationType, -1)
-	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
 	doc.Replace("HOUR", strconv.Itoa(model.ProgramEducation.TimeEducation), -1)
 }
 
@@ -166,10 +171,11 @@ func replaceZayavlenieFourteen(doc *docx.Docx, model *dto.ZayavlenieDTO) {
 	contractorFio := model.Contractor.SecondName + " " + model.Contractor.FirstName + " " + model.Contractor.MiddleName
 	doc.Replace("CONTRACTORFIO", contractorFio, -1)
 
-	doc.Replace("SERIAE", model.Contractor.Passport.Seria, -1)
-	doc.Replace("NUMBERE", model.Contractor.Passport.Number, -1)
+	seriaNumber := fmt.Sprintf(": %s %s ", model.Contractor.Passport.Seria, model.Contractor.Passport.Number)
+
+	doc.Replace(": SERIAE NUMBERE ", seriaNumber, -1)
 	doc.Replace("GIVENE", model.Contractor.Passport.PassportGiven, -1)
-	doc.Replace("DATEGIVENS", model.Contractor.Passport.DateGiven, -1)
+	doc.Replace("DATEGIVEN", model.Contractor.Passport.DateGiven, -1)
 
 	doc.Replace("PHONEE", model.Contractor.Contact_phone, -1)
 	doc.Replace("EMAILE", model.Contractor.Email, -1)
@@ -179,18 +185,18 @@ func replaceZayavlenieFourteen(doc *docx.Docx, model *dto.ZayavlenieDTO) {
 		doc.Replace("DATEBIRTH", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
 	}
 
-	variant := "VARIANT" + strconv.Itoa(model.Variant)
+	// variant := "VARIANT" + strconv.Itoa(model.Variant)
 
-	i := 1
+	// i := 1
 
-	for ; i < 7; i++ {
-		tempVar := "VARIANT" + strconv.Itoa(i)
-		if tempVar != variant {
-			doc.Replace(tempVar, "[ ]", -1)
-		} else {
-			doc.Replace(tempVar, "[x]", -1)
-		}
-	}
+	// for ; i < 7; i++ {
+	// 	tempVar := "VARIANT" + strconv.Itoa(i)
+	// 	if tempVar != variant {
+	// 		doc.Replace(tempVar, "[ ]", -1)
+	// 	} else {
+	// 		doc.Replace(tempVar, "[x]", -1)
+	// 	}
+	// }
 }
 
 func replaceZayavlenieEighteen(doc *docx.Docx, model *dto.ZayavlenieDTO) {
@@ -204,8 +210,9 @@ func replaceZayavlenieEighteen(doc *docx.Docx, model *dto.ZayavlenieDTO) {
 
 	doc.Replace("FCI", model.Registration.City, -1)
 
-	doc.Replace("SERIAE", model.Passport.Seria, -1)
-	doc.Replace("NUMBERE", model.Passport.Number, -1)
+	numberSeria := fmt.Sprintf(": %s %s ", model.Passport.Seria, model.Passport.Number)
+
+	doc.Replace(": SERIAE NUMBERE ", numberSeria, -1)
 	doc.Replace("DATEGIVEN", model.Passport.DateGiven, -1)
 	doc.Replace("GIVEN", model.Passport.PassportGiven, -1)
 	doc.Replace("SNILS", model.ListenerData.SNILS, -1)
@@ -235,51 +242,7 @@ func replaceZayavlenieEighteen(doc *docx.Docx, model *dto.ZayavlenieDTO) {
 	// 	}
 	// }
 
-	switch model.Variant {
-	case 1:
-		doc.Replace("VAR1", "[x]", -1)
-		doc.Replace("VAR2", "[ ]", -1)
-		doc.Replace("VAR3", "[ ]", -1)
-		doc.Replace("VAR4", "[ ]", -1)
-		doc.Replace("VAR5", "[ ]", -1)
-		doc.Replace("VAR6", "[ ]", -1)
-	case 2:
-		doc.Replace("VAR1", "[ ]", -1)
-		doc.Replace("VAR2", "[x]", -1)
-		doc.Replace("VAR3", "[ ]", -1)
-		doc.Replace("VAR4", "[ ]", -1)
-		doc.Replace("VAR5", "[ ]", -1)
-		doc.Replace("VAR6", "[ ]", -1)
-	case 3:
-		doc.Replace("VAR1", "[ ]", -1)
-		doc.Replace("VAR2", "[ ]", -1)
-		doc.Replace("VAR3", "[x]", -1)
-		doc.Replace("VAR4", "[ ]", -1)
-		doc.Replace("VAR5", "[ ]", -1)
-		doc.Replace("VAR6", "[ ]", -1)
-	case 4:
-		doc.Replace("VAR1", "[ ]", -1)
-		doc.Replace("VAR2", "[ ]", -1)
-		doc.Replace("VAR3", "[ ]", -1)
-		doc.Replace("VAR4", "[x]", -1)
-		doc.Replace("VAR5", "[ ]", -1)
-		doc.Replace("VAR6", "[ ]", -1)
-	case 5:
-		doc.Replace("VAR1", "[ ]", -1)
-		doc.Replace("VAR2", "[ ]", -1)
-		doc.Replace("VAR3", "[ ]", -1)
-		doc.Replace("VAR4", "[ ]", -1)
-		doc.Replace("VAR5", "[x]", -1)
-		doc.Replace("VAR6", "[ ]", -1)
-	case 6:
-		doc.Replace("VAR1", "[ ]", -1)
-		doc.Replace("VAR2", "[ ]", -1)
-		doc.Replace("VAR3", "[ ]", -1)
-		doc.Replace("VAR4", "[ ]", -1)
-		doc.Replace("VAR5", "[ ]", -1)
-		doc.Replace("VAR6", "[x]", -1)
-	}
-
+	doc.Replace("RETRAINTYPE", model.EnrollmentListener.TypeOfRetraining, -1)
 	doc.Replace("EDUNAME", model.ProgramEducation.NameProfEducation, -1)
 	doc.Replace("OBEM", strconv.Itoa(model.ProgramEducation.TimeEducation), -1)
 }
@@ -297,7 +260,7 @@ func (s *ZayavlenieService) ExistsZayavlenie(fileName string) ([]string, error) 
 	if len(documents) > 0 {
 		return documents, nil
 	} else {
-		return []string{}, errors.New("Не найдено ни одного документа")
+		return []string{}, errors.New("не найдено ни одного документа")
 	}
 }
 
