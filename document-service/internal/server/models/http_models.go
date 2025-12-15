@@ -129,9 +129,9 @@ type DogovorRequest struct {
 	Passport         PassportRequest           `json:"passport"`
 	Registration     RegAddressRequest         `json:"reg_address"`
 	Enrollment       EnrollmentListenerRequest `json:"enrollment_listener"`
-	OptionNagruzka   string                    `json:"opion_nagruz"`
-	OptionDocument   string                    `json:"opt_document"`
-	OptionPrice      string                    `json:"opt_price"`
+	OptionNagruzka   int                       `json:"opion_nagruz"`
+	OptionDocument   int                       `json:"opt_document"`
+	OptionPrice      int                       `json:"opt_price"`
 	Price            float32                   `json:"price"`
 	DogovorType      string                    `json:"dogovor_type"`
 }

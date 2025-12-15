@@ -6,6 +6,7 @@ import (
 	"document-service/internal/domain/dto"
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -17,9 +18,9 @@ var zayavlenieEighteenPath = "./internal/documents/zayavlenie-eighteen.docx"
 var zayavlenieBelowEighteenPath = "./internal/documents/zayavlenie-below-eighteen.docx"
 
 const (
-	BELOW_EIGHTEEN = "belowEighteen"
-	FOURTEEN       = "belowFourteen"
-	EIGHTEEN       = "eighteen"
+	BELOW_EIGHTEEN = "BELOW_EIGHTEEN"
+	FOURTEEN       = "BELOW_FOURTEEN"
+	EIGHTEEN       = "EIGHTEEN"
 )
 
 type ZayavlenieService struct {
@@ -34,6 +35,8 @@ func (s *ZayavlenieService) CreateZayavlenie(zayavlenieData *dto.ZayavlenieDTO, 
 
 	var doc *docx.Docx
 	var err error
+
+	log.Println("dogovorType:", dogovorType)
 
 	switch dogovorType {
 	case BELOW_EIGHTEEN:
