@@ -20,14 +20,14 @@ func FullListenerMapping(request models.FullListenerRequest) (*dto.FullListenerD
 	// 	return nil, err
 	// }
 
-	startDate, _ := time.Parse("2006-01-02", request.EnrollmentListener.StartDate)
-	// if err != nil {
-	// 	return &dto.FullListenerDataDTO{}, err
-	// }
-	endDate, _ := time.Parse("2006-01-02", request.EnrollmentListener.EndDate)
-	// if err != nil {
-	// 	return &dto.FullListenerDataDTO{}, err
-	// }
+	startDate, err := time.Parse(time.RFC3339, request.EnrollmentListener.StartDate)
+	if err != nil {
+		return &dto.FullListenerDataDTO{}, err
+	}
+	endDate, err := time.Parse(time.RFC3339, request.EnrollmentListener.EndDate)
+	if err != nil {
+		return &dto.FullListenerDataDTO{}, err
+	}
 
 	dto := &dto.FullListenerDataDTO{
 		Listener: dto.ListenerDTO{
@@ -165,11 +165,11 @@ func ZayavlenieMapping(request models.ZayavlenieRequest) *dto.ZayavlenieDTO {
 }
 
 func DogovorMapping(request models.DogovorRequest) (*dto.DogovorDTO, error) {
-	startDate, err := time.Parse("2006-01-02", request.Enrollment.StartDate)
+	startDate, err := time.Parse(time.RFC3339, request.Enrollment.StartDate)
 	if err != nil {
 		return &dto.DogovorDTO{}, err
 	}
-	endDate, err := time.Parse("2006-01-02", request.Enrollment.EndDate)
+	endDate, err := time.Parse(time.RFC3339, request.Enrollment.EndDate)
 	if err != nil {
 		return &dto.DogovorDTO{}, err
 	}

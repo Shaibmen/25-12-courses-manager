@@ -62,7 +62,7 @@ func NewDogovorService(s3client S3ClientInterface) *DogovorService {
 func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType string) error {
 
 	s.priceMap[1] = "Оплата осуществляется в следующем порядке: 100% предоплата до начала обучения"
-	s.priceMap[2] = fmt.Sprintf("а) Аванс 50 % — %.2f рублей, предоплата до начала обучения. \nб) Оставшиеся 50 % — %.2f рублей. Срок: не позднее «___» ____________ 20__ г.",
+	s.priceMap[2] = fmt.Sprintf("а) Аванс 50 %% — %.2f рублей, предоплата до начала обучения. \nб) Оставшиеся 50 %% — %.2f рублей. Срок: не позднее «___» ____________ 20__ г.",
 		dogovor.Enrollment.CurrentPrice/2.0,
 		dogovor.Enrollment.CurrentPrice/2.0)
 
@@ -125,6 +125,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 	doc.Replace("OPTIOND", s.diplomMap[dogovor.OptionDocument], -1)
 	doc.Replace("OPTIONH", s.nagruzkaMap[dogovor.OptionNagruzka], -1)
 	doc.Replace("OPTIONPRICE", s.priceMap[dogovor.OptionPrice], -1)
+	doc.Replace("PRICE", fmt.Sprintf("%.2f", dogovor.Enrollment.CurrentPrice), -1)
 	doc.Replace("OPTION", s.doMap[dogovor.OptionNagruzka], -1)
 
 	var buffer bytes.Buffer
@@ -163,8 +164,6 @@ func replacePP3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
 	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
 
-	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
-
 	dob, err := time.Parse(time.RFC3339, model.ListenerData.DateOfBirth)
 	if err == nil {
 		doc.Replace("DATEBIRTH", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
@@ -176,7 +175,7 @@ func replacePP3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 
 	seriaNumberGiven := fmt.Sprintf("%s %s, %s", model.Passport.Seria, model.Passport.Number, model.Passport.PassportGiven)
 
-	doc.Replace("SERIAE, NUMBERE, GIVENE", seriaNumberGiven, -1)
+	doc.Replace("SERIAE NUMBERE, GIVENE", seriaNumberGiven, -1)
 
 	cityStreetHouseBuildingApartment := fmt.Sprintf("%s, %s, %s, %s, %s. ",
 		model.Contractor.RegistrationAddress.City,
@@ -203,8 +202,6 @@ func replacePP2FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
 	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
 	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
-
-	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
 
 	seriaNumberGiven := fmt.Sprintf("%s %s, %s", model.Passport.Seria, model.Passport.Number, model.Passport.PassportGiven)
 	doc.Replace("SERIAE NUMBERE, GIVENE", seriaNumberGiven, -1)
@@ -244,8 +241,6 @@ func replacePK3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
 	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
 	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
-
-	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
 
 	doc.Replace("SNILS", model.ListenerData.SNILS, -1)
 	doc.Replace("PHONEL", model.ListenerData.ContactPhone, -1)
@@ -287,8 +282,6 @@ func replacePK2FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
 	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
 
-	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
-
 	seriaNumberGiven := fmt.Sprintf("%s %s, %s", model.Passport.Seria, model.Passport.Number, model.Passport.PassportGiven)
 	doc.Replace("SERIAE NUMBERE, GIVENE", seriaNumberGiven, -1)
 
@@ -328,8 +321,6 @@ func replaceDO3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("SIN", model.Enrollment.StartDate.Format("02.01.2006"), -1)
 	doc.Replace("CE", "", -1)
 	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
-
-	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
 
 	dob, err := time.Parse(time.RFC3339, model.ListenerData.DateOfBirth)
 	if err == nil {
