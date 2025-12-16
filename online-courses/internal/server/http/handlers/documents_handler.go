@@ -52,21 +52,22 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		return
 	}
 
-	// responseZayvlenie, err := RequestToDoc(*data, "zayavlenie", c)
-	// if err != nil {
-	// 	c.Error(err)
-	// 	return
-	// }
-	// if responseZayvlenie != http.StatusOK {
-	// 	c.JSON(responseZayvlenie, nil)
-	// 	return
-	// }
+	responseZayvlenie, err := RequestToDoc(*data, "zayavlenie", c)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	if responseZayvlenie != http.StatusOK {
+		c.JSON(responseZayvlenie, nil)
+		return
+	}
 
 	responseDogovor, err := RequestToDoc(*data, "v1/doc/dogovor", c)
 	if err != nil {
 		c.Error(err)
 		return
 	}
+
 	if responseDogovor != http.StatusOK {
 		c.JSON(responseDogovor, nil)
 		return

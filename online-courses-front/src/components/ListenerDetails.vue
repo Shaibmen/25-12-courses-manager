@@ -86,6 +86,38 @@
         </div>
       </div>
 
+      <div class="col-12">
+        <div class="card p-3 shadow-sm card-block">
+          <h5 class="card-title mb-3">Файлы слушателя</h5>
+
+          <div v-if="filesLoading">Загрузка файлов...</div>
+          <div v-else-if="filesList.length === 0">Файлы отсутствуют</div>
+
+          <ul v-else class="list-unstyled mb-0">
+            <li
+              v-for="f in filesList"
+              :key="f"
+              class="d-flex justify-content-between align-items-center mb-2"
+            >
+              <div class="text-truncate pe-3" style="max-width:80%">
+                {{ f }}
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-sm"
+                  @click="downloadFileByName(f)"
+                  :disabled="downloadLoading === f"
+                >
+                  {{ downloadLoading === f ? 'Скачивание...' : 'Скачать' }}
+                </button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <div class="col-12 d-flex justify-content-between">
         <button type="button" @click.prevent="goToCreateEnrollment" class="btn btn-success">
           Записать на курс
@@ -102,6 +134,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
 import Header from './Header.vue'
 import { API_URL_CORE } from '../config'
+import { API_URL_DOC } from '../config'
 
 const route = useRoute()
 const router = useRouter()
@@ -118,10 +151,71 @@ const enrollments = ref([])
 const loading = ref(true)
 const coursesLoading = ref(false)
 
+const filesList = ref([])
+const filesLoading = ref(false)
+const downloadLoading = ref('')
+
 const formatDate = (date) => {
   if (!date) return '—'
   const d = new Date(date)
   return isNaN(d) ? '—' : d.toLocaleDateString('ru-RU')
+}
+
+const fetchAllFiles = async (snils) => {
+  if (!snils) {
+    toast.error('СНИЛС не найден')
+    return
+  }
+  filesLoading.value = true
+  filesList.value = []
+  try {
+    const res = await fetch(`${API_URL_DOC}/exists?card-name=${encodeURIComponent(snils)}`, {
+  headers: { Authorization: `Bearer ${token}` }
+})
+
+    if (!res.ok) {
+      const txt = await res.text().catch(() => '')
+      throw new Error(txt || `Ошибка (${res.status})`)
+    }
+    const json = await res.json().catch(() => null)
+    let items = []
+    if (Array.isArray(json)) items = json
+    else if (Array.isArray(json.data)) items = json.data
+    else if (json.data && Array.isArray(json.data.files)) items = json.data.files
+    filesList.value = items
+  } catch (err) {
+    toast.error(err.message || 'Ошибка при получении файлов')
+    filesList.value = []
+  } finally {
+    filesLoading.value = false
+  }
+}
+
+const downloadFileByName = async (fileName) => {
+  if (!fileName) return
+  downloadLoading.value = fileName
+  try {
+    const res = await fetch(`${API_URL_DOC}/download?card-name=${encodeURIComponent(fileName)}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (!res.ok) {
+      const txt = await res.text().catch(() => '')
+      throw new Error(txt || `Ошибка скачивания (${res.status})`)
+    }
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = fileName
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  } catch (err) {
+    toast.error(err.message || 'Ошибка скачивания файла')
+  } finally {
+    downloadLoading.value = ''
+  }
 }
 
 const loadDetails = async () => {
@@ -131,14 +225,13 @@ const loadDetails = async () => {
     })
     if (!res.ok) throw new Error(`Ошибка загрузки (${res.status})`)
     const data = await res.json()
-
     listener.value = data.data.listener || {}
     passport.value = data.data.passport || {}
     regaddress.value = data.data.regaddress || {}
     education.value = data.data.education_listener || {}
     placework.value = data.data.placework || {}
-
-    loadEnrollments()
+    await loadEnrollments()
+    await fetchAllFiles(listener.value.snils)
   } catch (err) {
     toast.error(err.message || 'Ошибка загрузки данных')
   } finally {
@@ -174,5 +267,10 @@ onMounted(loadDetails)
 .card p strong {
   min-width: 160px;
   display: inline-block;
+}
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

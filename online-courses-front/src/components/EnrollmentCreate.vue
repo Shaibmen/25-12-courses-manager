@@ -41,11 +41,15 @@
         </div>
       </div>
 
-
       <div class="card p-3 shadow-sm card-block mt-4">
         <h5 class="card-title mb-3">Договор</h5>
+
         <div class="d-flex flex-column gap-3">
-          <select v-model="selectedContractId" class="form-select" :disabled="!contracts.length || loadingContracts">
+          <select
+            v-model="selectedContractId"
+            class="form-select"
+            :disabled="!contracts.length || loadingContracts"
+          >
             <option value="">— Выберите договор —</option>
             <option
               v-for="c in filteredContracts"
@@ -55,10 +59,100 @@
               {{ c.name }} ({{ c.type === 'bilateral' ? 'двусторонний' : 'трёхсторонний' }})
             </option>
           </select>
+
+          <select v-model="studyLoadOption" class="form-select">
+            <option value="">— Недельная учебная нагрузка —</option>
+            <option value="3">
+              Недельная учебная нагрузка по настоящему договору составляет 3 академических часа в неделю, включая 2 академических часа взаимодействия 
+              с преподавателем и 1 академический час самостоятельной работы; общая продолжительность освоения — 81 неделя.
+            </option>
+            <option value="6">
+              Недельная учебная нагрузка по настоящему договору составляет 6 академических часов в неделю, включая 4 академических часа взаимодействия 
+              с преподавателем и 2 академических часа самостоятельной работы; общая продолжительность освоения — 41 неделя.
+            </option>
+            <option value="12">
+              Недельная учебная нагрузка по настоящему договору составляет 12 академических часов в неделю, включая 8 академических часов взаимодействия 
+              с преподавателем и 4 академических часа самостоятельной работы; общая продолжительность освоения — 21 неделя.
+            </option>
+            <option value="15">
+              Недельная учебная нагрузка по настоящему договору составляет 15 академических часов в неделю, включая 10 академических часов взаимодействия 
+              с преподавателем и 5 академических часов самостоятельной работы; общая продолжительность освоения — 17 недель.
+            </option>
+            <option value="30">
+              Недельная учебная нагрузка по настоящему договору составляет 30 академических часов в неделю, включая 20 академических часов взаимодействия 
+              с преподавателем и 10 академических часов самостоятельной работы; общая продолжительность освоения — 9 недель.
+            </option>
+            <option value="32">
+              Недельная учебная нагрузка по настоящему договору составляет 32 академических часа в неделю, включая 20 академических часов взаимодействия 
+              с преподавателем и 12 академических часов самостоятельной работы; общая продолжительность освоения — 8 недель.
+            </option>
+          </select>
+
+          <select v-model="paymentOption" class="form-select">
+            <option value="">— Порядок оплаты —</option>
+            <option value="full">
+              Оплата осуществляется в следующем порядке: 100% предоплата до начала обучения.
+            </option>
+            <option value="split">
+              Оплата осуществляется в следующем порядке: аванс 50 % — предоплата до начала обучения, оставшиеся 50 % — в установленный срок.
+            </option>
+          </select>
+
+          <input
+            v-if="paymentOption === 'split'"
+            type="date"
+            v-model="secondPaymentDate"
+            class="form-control"
+            placeholder="Срок оплаты оставшихся 50 %"
+          />
+
+          <select v-model="loadVariant" class="form-select">
+            <option value="">— Вариант учебной нагрузки —</option>
+            <option
+              v-for="(label, key) in activeLoadVariants"
+              :key="key"
+              :value="key"
+            >
+              {{ label }}
+            </option>
+          </select>
+
+          <select v-model="ageCategory" class="form-select">
+            <option value="">— Возрастная категория —</option>
+            <option
+              v-for="(label, key) in ageCategories"
+              :key="key"
+              :value="key"
+            >
+              {{ label }}
+            </option>
+          </select>
         </div>
       </div>
 
-  
+      <div class="card p-3 shadow-sm card-block mt-4">
+        <h5 class="card-title mb-3">Исполнитель</h5>
+        <div class="d-flex flex-column gap-2">
+          <div
+            v-for="e in executors"
+            :key="e.id_executor"
+            class="form-check"
+          >
+            <input
+              class="form-check-input"
+              type="radio"
+              :value="e.id_executor"
+              v-model="selectedExecutorId"
+              :id="e.id_executor"
+            />
+            <label class="form-check-label" :for="e.id_executor">
+              {{ e.second_name }} {{ e.first_name }} {{ e.middle_name }}
+            </label>
+          </div>
+          <div v-if="!executors.length" class="text-muted">Исполнители не найдены</div>
+        </div>
+      </div>
+
       <div class="card p-3 shadow-sm card-block mt-4">
         <h5 class="card-title mb-3">Программа обучения</h5>
         <div class="d-flex flex-column gap-3">
@@ -80,9 +174,9 @@
             <div>
               <label class="form-label">Цена</label>
               <select v-model="currentPrice" class="form-select" required>
-                <option :value="price.individual_price">Индивидуальное: {{ price.individual_price }} ₽</option>
-                <option :value="price.group_price">Групповое: {{ price.group_price }} ₽</option>
-                <option :value="price.campus_price">Кампус: {{ price.campus_price }} ₽</option>
+                <option v-if="price.individual_price !== undefined" :value="price.individual_price">Индивидуальное: {{ price.individual_price }} ₽</option>
+                <option v-if="price.group_price !== undefined" :value="price.group_price">Групповое: {{ price.group_price }} ₽</option>
+                <option v-if="price.campus_price !== undefined" :value="price.campus_price">Кампус: {{ price.campus_price }} ₽</option>
               </select>
             </div>
           </div>
@@ -289,15 +383,49 @@ const router = useRouter()
 const listenerId = route.params.listenerId
 const token = localStorage.getItem('access_token')
 
-
 const listener = ref({})
 const contractor = ref(null)
 const hasContractor = ref(false)
 const loading = ref(true)
 
+const ageCategory = ref('')
+
+const documentType = ref('')
+const loadVariant = ref('')
+
+const loadVariantsDO = {
+  1: 'с пониженной недельной учебной нагрузкой (1 акад. час в неделю)',
+  2: 'с умеренной недельной учебной нагрузкой (2 акад. часа в неделю)',
+  3: 'со стандартной недельной учебной нагрузкой (3 акад. часа в неделю)',
+  4: 'с высокой недельной учебной нагрузкой (4 акад. часа в неделю)',
+  5: 'с повышенной недельной учебной нагрузкой (6 акад. часов в неделю)'
+}
+
+const loadVariantsNotDO = {
+  1: 'с пониженной недельной учебной нагрузкой (3 акад. часа в неделю)',
+  2: 'с умеренной недельной учебной нагрузкой (6 акад. часов в неделю)',
+  3: 'со стандартной недельной учебной нагрузкой (12 акад. часов в неделю)',
+  4: 'с высокой недельной учебной нагрузкой (15 акад. часов в неделю)',
+  5: 'с повышенной недельной учебной нагрузкой (30 акад. часов в неделю)',
+  6: 'с интенсивной недельной учебной нагрузкой (36 акад. часов в неделю)'
+}
+
+const ageCategories = {
+  belowEighteen: 'Меньше восемнадцати',
+  belowFourteen: 'Меньше четырнадцати',
+  eighteen: 'Восемнадцать'
+}
+
 const contracts = ref([])
 const loadingContracts = ref(false)
 const selectedContractId = ref('')
+
+const studyLoadOption = ref('')
+const paymentOption = ref('')
+const secondPaymentDate = ref('')
+
+const executors = ref([])
+const selectedExecutorId = ref('')
 
 const programs = ref([])
 const selectedProgramId = ref('')
@@ -368,6 +496,15 @@ const filteredContracts = computed(() => {
   }
 })
 
+const isDoFiz = computed(() => {
+  const c = contracts.value.find(c => c.id_contract === selectedContractId.value)
+  return c?.name === 'ДО с оплатой физическим лицом'
+})
+
+const activeLoadVariants = computed(() => {
+  return isDoFiz.value ? loadVariantsDO : loadVariantsNotDO
+})
+
 const isFormValid = computed(() => {
   return (
     selectedProgramId.value &&
@@ -409,20 +546,31 @@ const loadPrograms = async () => {
   }
 }
 
-
-
 const loadContracts = async () => {
   loadingContracts.value = true
   contracts.value = [
-        { id_contract: 'DO-FIZ-3', name: 'ДО с оплатой физическим лицом', type: 'trilateral' },
-        { id_contract: 'PK-FIZ-2', name: 'ПК с оплатой физическим лицом', type: 'bilateral' },
-        { id_contract: 'PK-FIZ-3', name: 'ПК с оплатой физическим лицом', type: 'trilateral' },
-        { id_contract: 'PK-YUR-3', name: 'ПК с оплатой юридическим лицом', type: 'trilateral' },
-        { id_contract: 'PP-FIZ-2', name: 'ПП с оплатой физическим лицом', type: 'bilateral' },
-        { id_contract: 'PP-FIZ-3', name: 'ПП с оплатой физическим лицом', type: 'trilateral' },
-        { id_contract: 'PP-YUR-3', name: 'ПП с оплатой юридическим лицом', type: 'trilateral' }
+    { id_contract: 'DO-FIZ-3', name: 'ДО с оплатой физическим лицом', type: 'trilateral' },
+    { id_contract: 'PK-FIZ-2', name: 'ПК с оплатой физическим лицом', type: 'bilateral' },
+    { id_contract: 'PK-FIZ-3', name: 'ПК с оплатой физическим лицом', type: 'trilateral' },
+    { id_contract: 'PK-YUR-3', name: 'ПК с оплатой юридическим лицом', type: 'trilateral' },
+    { id_contract: 'PP-FIZ-2', name: 'ПП с оплатой физическим лицом', type: 'bilateral' },
+    { id_contract: 'PP-FIZ-3', name: 'ПП с оплатой физическим лицом', type: 'trilateral' },
+    { id_contract: 'PP-YUR-3', name: 'ПП с оплатой юридическим лицом', type: 'trilateral' }
   ]
   loadingContracts.value = false
+}
+
+const loadExecutors = async () => {
+  try {
+    const res = await fetch(`${API_URL_CORE}/executer/`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (!res.ok) throw new Error('Ошибка загрузки исполнителей')
+    const data = await res.json()
+    executors.value = data.data || []
+  } catch (err) {
+    toast.error(err.message || 'Не удалось загрузить исполнителей')
+  }
 }
 
 const onProgramChange = () => {
@@ -473,13 +621,14 @@ const onHasContractorChange = () => {
     }
   }
 }
+
 const saveContractor = async () => {
-  if (!formValid.value) return toast.error("Исправьте ошибки в форме");
+  if (!formValid.value) return toast.error("Исправьте ошибки в форме")
 
   try {
-    saving.value = true;
+    saving.value = true
 
-    const url = `${API_URL_CORE}/contractor/${listenerId}`;
+    const url = `${API_URL_CORE}/contractor/${listenerId}`
 
     const res = await fetch(url, {
       method: "POST",
@@ -488,27 +637,24 @@ const saveContractor = async () => {
         Authorization: `Bearer ${token}`
       },
       body: JSON.stringify(contractorForm.value)
-    });
+    })
 
     if (!res.ok) {
-      const e = await res.json().catch(() => ({}));
-      throw new Error(e.message || "Ошибка добавления заказчика");
+      const e = await res.json().catch(() => ({}))
+      throw new Error(e.message || "Ошибка добавления заказчика")
     }
 
-    toast.success("Заказчик успешно добавлен");
+    toast.success("Заказчик успешно добавлен")
 
-    await loadListenerAndContractor();
-    closeContractorModal();
+    await loadListenerAndContractor()
+    closeContractorModal()
 
   } catch (err) {
-    toast.error(err.message || "Не удалось добавить заказчика");
+    toast.error(err.message || "Не удалось добавить заказчика")
   } finally {
-    saving.value = false;
+    saving.value = false
   }
-};
-
-
-
+}
 
 const confirmDeleteContractor = () => {
   confirmModal.value?.open(async () => {
@@ -524,11 +670,11 @@ const deleteContractor = async () => {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` }
     })
-    if (!res.ok) throw new Error('Ошибка удаления заказчика')
+    if (!res.ok) throw new Error('Ошибка удаления заказчика(заказчик игнорируется)')
     toast.success('Заказчик удалён')
     await loadListenerAndContractor()
   } catch (err) {
-    toast.error(err.message || 'Не удалось удалить заказчика')
+    toast.info(err.message || 'Не удалось удалить заказчика')
   } finally {
     saving.value = false
   }
@@ -550,6 +696,7 @@ const createEnrollment = async () => {
       type_of_retraining: typeOfRetraining.value || null,
       is_active: true
     }
+
     const res = await fetch(`${API_URL_CORE}/enrollment/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -562,7 +709,43 @@ const createEnrollment = async () => {
     }
 
     toast.success('Запись успешно создана')
-    setTimeout(() => router.push(`/listeners/${listenerId}`), 2000)
+
+    const frontData = {
+      variant: loadVariant.value ? Number(loadVariant.value) : null,
+      dogovor_type: selectedContractId.value || null,
+      opion_nagruz: studyLoadOption.value || null,
+      opt_document: ageCategory.value || null,
+      opt_price: currentPrice.value != null ? String(currentPrice.value) : null
+    }
+
+    if (paymentOption.value === 'split' && secondPaymentDate.value) {
+      frontData.second_payment_date = secondPaymentDate.value
+    }
+
+    const documentPayload = {
+      id_listener: listenerId,
+      id_program: selectedProgramId.value,
+      id_executor: selectedExecutorId.value || null,
+      FrontData: frontData
+    }
+
+    try {
+      const docRes = await fetch(`${API_URL_CORE}/document/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(documentPayload)
+      })
+      if (!docRes.ok) {
+        const e = await docRes.json().catch(() => ({}))
+        toast.error(e.message || 'Не удалось создать документ')
+      } else {
+        toast.success('Документ создан')
+      }
+    } catch (e) {
+      toast.error('Ошибка при создании документа')
+    }
+
+    router.push(`/listeners/${listenerId}`)
   } catch (err) {
     toast.error(err.message || 'Не удалось создать запись, возможно такая запись на курс уже существует')
   } finally {
@@ -576,6 +759,7 @@ onMounted(async () => {
   await loadListenerAndContractor()
   await loadPrograms()
   await loadContracts()
+  await loadExecutors()
   loading.value = false
 })
 </script>
@@ -589,5 +773,12 @@ onMounted(async () => {
 }
 .invalid-feedback {
   font-size: 0.875em;
+}
+.table-hover tbody tr:hover {
+  background-color: #e2f0d9;
+  cursor: pointer;
+}
+th, td {
+  vertical-align: middle;
 }
 </style>
