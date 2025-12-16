@@ -168,6 +168,9 @@ func replaceZayavlenieBetweenEighteen(doc *docx.Docx, model *dto.ZayavlenieDTO) 
 	doc.Replace("EMAILE", model.Contractor.Email, -1)
 
 	doc.Replace("HOUR", strconv.Itoa(model.ProgramEducation.TimeEducation), -1)
+
+	doc.Replace("TYPEOFRETRAINING", model.EnrollmentListener.TypeOfRetraining, -1)
+
 }
 
 func replaceZayavlenieFourteen(doc *docx.Docx, model *dto.ZayavlenieDTO) {
@@ -195,6 +198,8 @@ func replaceZayavlenieFourteen(doc *docx.Docx, model *dto.ZayavlenieDTO) {
 	if err == nil {
 		doc.Replace("DATEBIRTH", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
 	}
+
+	doc.Replace("TYPEOFRETRAINING", model.EnrollmentListener.TypeOfRetraining, -1)
 
 	// variant := "VARIANT" + strconv.Itoa(model.Variant)
 

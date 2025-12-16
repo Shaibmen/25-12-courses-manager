@@ -36,6 +36,7 @@ type DogovorService struct {
 func NewDogovorService(s3client S3ClientInterface) *DogovorService {
 
 	priceMap := make(map[int]string)
+	priceMap[1] = "Оплата осуществляется в следующем порядке: 100% предоплата до начала обучения"
 
 	nagruzkaMap := make(map[int]string)
 	nagruzkaMap[1] = "Недельная учебная нагрузка по настоящему договору составляет 3 академических часа в неделю, включая 2 академических часа взаимодействия с преподавателем и 1 академический час самостоятельной работы; общая продолжительность освоения — 81 неделя"
@@ -61,7 +62,6 @@ func NewDogovorService(s3client S3ClientInterface) *DogovorService {
 
 func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType string) error {
 
-	s.priceMap[1] = "Оплата осуществляется в следующем порядке: 100% предоплата до начала обучения"
 	s.priceMap[2] = fmt.Sprintf("а) Аванс 50 %% — %.2f рублей, предоплата до начала обучения. \nб) Оставшиеся 50 %% — %.2f рублей. Срок: не позднее «___» ____________ 20__ г.",
 		dogovor.Enrollment.CurrentPrice/2.0,
 		dogovor.Enrollment.CurrentPrice/2.0)
