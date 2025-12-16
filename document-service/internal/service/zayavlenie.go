@@ -19,7 +19,7 @@ var zayavlenieBelowEighteenPath = "./internal/documents/zayavlenie-below-eightee
 
 const (
 	BELOW_EIGHTEEN = "BELOW_EIGHTEEN"
-	FOURTEEN       = "BELOW_FOURTEEN"
+	FOURTEEN       = "FOURTEEN"
 	EIGHTEEN       = "EIGHTEEN"
 )
 
