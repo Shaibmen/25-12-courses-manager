@@ -18,22 +18,53 @@ var dogovorPK_2_path = "./internal/documents/PK-FIZ-2.docx"
 var dogovorDO_3_path = "./internal/documents/DO-FIZ-3.docx"
 
 const (
-	PP_3_FIZ = "pp_3_fiz"
-	PP_2_FIZ = "pp_2_fiz"
-	PK_3_FIZ = "pk_3_fiz"
-	PK_2_FIZ = "pk_2_fiz"
-	DO_3_FIZ = "do_3_fiz"
+	PP_3_FIZ = "PP_3_FIZ"
+	PP_2_FIZ = "PP_2_FIZ"
+	PK_3_FIZ = "PK_3_FIZ"
+	PK_2_FIZ = "PK_2_FIZ"
+	DO_3_FIZ = "DO_3_FIZ"
 )
 
 type DogovorService struct {
-	s3client S3ClientInterface
+	s3client    S3ClientInterface
+	priceMap    map[int]string
+	nagruzkaMap map[int]string
+	diplomMap   map[int]string
+	doMap       map[int]string
 }
 
 func NewDogovorService(s3client S3ClientInterface) *DogovorService {
-	return &DogovorService{s3client}
+
+	priceMap := make(map[int]string)
+	priceMap[1] = "Оплата осуществляется в следующем порядке: 100% предоплата до начала обучения"
+
+	nagruzkaMap := make(map[int]string)
+	nagruzkaMap[1] = "Недельная учебная нагрузка по настоящему договору составляет 3 академических часа в неделю, включая 2 академических часа взаимодействия с преподавателем и 1 академический час самостоятельной работы; общая продолжительность освоения — 81 неделя"
+	nagruzkaMap[2] = "Недельная учебная нагрузка по настоящему договору составляет 6 академических часов в неделю, включая 4 академических часа взаимодействия с преподавателем и 2 академических часа самостоятельной работы; общая продолжительность освоения — 41 неделя."
+	nagruzkaMap[3] = "Недельная учебная нагрузка по настоящему договору составляет 12 академических часов в неделю, включая 8 академических часов взаимодействия с преподавателем и 4 академических часа самостоятельной работы; общая продолжительность освоения — 21 неделя."
+	nagruzkaMap[4] = "Недельная учебная нагрузка по настоящему договору составляет 15 академических часов в неделю, включая 10 академических часов взаимодействия с преподавателем и 5 академических часов самостоятельной работы; общая продолжительность освоения — 17 недель."
+	nagruzkaMap[5] = "Недельная учебная нагрузка по настоящему договору составляет 30 академических часов в неделю, включая 20 академических часов взаимодействия с преподавателем и 10 академических часов самостоятельной работы; общая продолжительность освоения — 9 недель."
+	nagruzkaMap[6] = "Недельная учебная нагрузка по настоящему договору составляет 32 академических часа в неделю, включая 20 академических часов взаимодействия с преподавателем и 12 академических часов самостоятельной работы; общая продолжительность освоения — 8 недель."
+
+	diplomMap := make(map[int]string)
+	diplomMap[1] = "диплом о профпереподготовке вручается по окончании;"
+	diplomMap[2] = "диплом выдаётся одновременно с дипломом СПО/ВО (ч. 16 ст. 76 ФЗ-273). До этого момента диплом хранится у Исполнителя."
+
+	doMap := make(map[int]string)
+	doMap[1] = "Недельная учебная нагрузка по настоящему договору составляет 1 академический час в неделю; общая продолжительность освоения — 20 недель."
+	doMap[2] = "Недельная учебная нагрузка по настоящему договору составляет 2 академических часа в неделю; общая продолжительность освоения — 10 недель."
+	doMap[3] = "Недельная учебная нагрузка по настоящему договору составляет 4 академических часа в неделю; общая продолжительность освоения — 5 недель."
+	doMap[4] = "Недельная учебная нагрузка по настоящему договору составляет 8 академических часов в неделю; общая продолжительность освоения — 2,5 недели."
+	doMap[5] = "Недельная учебная нагрузка по настоящему договору составляет 10 академических часов в неделю; общая продолжительность освоения — 2 недели."
+
+	return &DogovorService{s3client, priceMap, nagruzkaMap, diplomMap, doMap}
 }
 
 func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType string) error {
+
+	s.priceMap[2] = fmt.Sprintf("а) Аванс 50 %% — %.2f рублей, предоплата до начала обучения. \nб) Оставшиеся 50 %% — %.2f рублей. Срок: не позднее «___» ____________ 20__ г.",
+		dogovor.Enrollment.CurrentPrice/2.0,
+		dogovor.Enrollment.CurrentPrice/2.0)
 
 	var doc *docx.Docx
 	var err error
@@ -46,7 +77,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		}
 		defer r.Close()
 
-		doc := r.Editable()
+		doc = r.Editable()
 
 		replacePP3FIZ(doc, dogovor)
 	case PP_2_FIZ:
@@ -56,7 +87,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		}
 		defer r.Close()
 
-		doc := r.Editable()
+		doc = r.Editable()
 
 		replacePP2FIZ(doc, dogovor)
 	case PK_3_FIZ:
@@ -66,7 +97,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		}
 		defer r.Close()
 
-		doc := r.Editable()
+		doc = r.Editable()
 
 		replacePK3FIZ(doc, dogovor)
 	case PK_2_FIZ:
@@ -76,7 +107,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		}
 		defer r.Close()
 
-		doc := r.Editable()
+		doc = r.Editable()
 
 		replacePK2FIZ(doc, dogovor)
 	case DO_3_FIZ:
@@ -86,10 +117,16 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		}
 		defer r.Close()
 
-		doc := r.Editable()
+		doc = r.Editable()
 
 		replaceDO3FIZ(doc, dogovor)
 	}
+
+	doc.Replace("OPTIOND", s.diplomMap[dogovor.OptionDocument], -1)
+	doc.Replace("OPTIONH", s.nagruzkaMap[dogovor.OptionNagruzka], -1)
+	doc.Replace("OPTIONPRICE", s.priceMap[dogovor.OptionPrice], -1)
+	doc.Replace("PRICE", fmt.Sprintf("%.2f", dogovor.Enrollment.CurrentPrice), -1)
+	doc.Replace("OPTION", s.doMap[dogovor.OptionNagruzka], -1)
 
 	var buffer bytes.Buffer
 	err = doc.Write(&buffer)
@@ -127,13 +164,6 @@ func replacePP3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
 	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
 
-	doc.Replace("OPTIOND", model.OptionDocument, -1)
-	doc.Replace("OPTIONH", model.OptionNagruzka, -1)
-
-	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
-
-	doc.Replace("OPTIONPRICE", model.OptionPrice, -1)
-
 	dob, err := time.Parse(time.RFC3339, model.ListenerData.DateOfBirth)
 	if err == nil {
 		doc.Replace("DATEBIRTH", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
@@ -145,7 +175,7 @@ func replacePP3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 
 	seriaNumberGiven := fmt.Sprintf("%s %s, %s", model.Passport.Seria, model.Passport.Number, model.Passport.PassportGiven)
 
-	doc.Replace("SERIAE, NUMBERE, GIVENE", seriaNumberGiven, -1)
+	doc.Replace("SERIAE NUMBERE, GIVENE", seriaNumberGiven, -1)
 
 	cityStreetHouseBuildingApartment := fmt.Sprintf("%s, %s, %s, %s, %s. ",
 		model.Contractor.RegistrationAddress.City,
@@ -172,13 +202,6 @@ func replacePP2FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
 	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
 	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
-
-	doc.Replace("OPTIOND", model.OptionDocument, -1)
-	doc.Replace("OPTIONH", model.OptionNagruzka, -1)
-
-	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
-
-	doc.Replace("OPTIONPRICE", model.OptionPrice, -1)
 
 	seriaNumberGiven := fmt.Sprintf("%s %s, %s", model.Passport.Seria, model.Passport.Number, model.Passport.PassportGiven)
 	doc.Replace("SERIAE NUMBERE, GIVENE", seriaNumberGiven, -1)
@@ -218,13 +241,6 @@ func replacePK3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
 	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
 	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
-
-	doc.Replace("OPTIOND", model.OptionDocument, -1)
-	doc.Replace("OPTIONH", model.OptionNagruzka, -1)
-
-	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
-
-	doc.Replace("OPTIONPRICE", model.OptionPrice, -1)
 
 	doc.Replace("SNILS", model.ListenerData.SNILS, -1)
 	doc.Replace("PHONEL", model.ListenerData.ContactPhone, -1)
@@ -266,13 +282,6 @@ func replacePK2FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("SINCE", model.Enrollment.StartDate.Format("02.01.2006"), -1)
 	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
 
-	doc.Replace("OPTIOND", model.OptionDocument, -1)
-	doc.Replace("OPTIONH", model.OptionNagruzka, -1)
-
-	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
-
-	doc.Replace("OPTIONPRICE", model.OptionPrice, -1)
-
 	seriaNumberGiven := fmt.Sprintf("%s %s, %s", model.Passport.Seria, model.Passport.Number, model.Passport.PassportGiven)
 	doc.Replace("SERIAE NUMBERE, GIVENE", seriaNumberGiven, -1)
 
@@ -313,12 +322,6 @@ func replaceDO3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("CE", "", -1)
 	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
 
-	doc.Replace("OPTION", model.OptionNagruzka, -1)
-
-	doc.Replace("PRICE", fmt.Sprintf("%.2f", model.Enrollment.CurrentPrice), -1)
-
-	doc.Replace("OPTIONPRICE", model.OptionPrice, -1)
-
 	dob, err := time.Parse(time.RFC3339, model.ListenerData.DateOfBirth)
 	if err == nil {
 		doc.Replace("DATEBIRTH", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
@@ -353,7 +356,7 @@ func (s *DogovorService) ExistsDogovor(fileName string) ([]string, error) {
 	if len(documents) > 0 {
 		return documents, nil
 	} else {
-		return []string{}, errors.New("не найдено ни одного документа")
+		return []string{}, errors.New("Не найдено ни одного документа")
 	}
 }
 

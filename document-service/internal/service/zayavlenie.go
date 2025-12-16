@@ -6,6 +6,7 @@ import (
 	"document-service/internal/domain/dto"
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -17,9 +18,9 @@ var zayavlenieEighteenPath = "./internal/documents/zayavlenie-eighteen.docx"
 var zayavlenieBelowEighteenPath = "./internal/documents/zayavlenie-below-eighteen.docx"
 
 const (
-	BELOW_EIGHTEEN = "belowEighteen"
-	FOURTEEN       = "belowFourteen"
-	EIGHTEEN       = "eighteen"
+	BELOW_EIGHTEEN = "BELOW_EIGHTEEN"
+	FOURTEEN       = "FOURTEEN"
+	EIGHTEEN       = "EIGHTEEN"
 )
 
 type ZayavlenieService struct {
@@ -34,6 +35,8 @@ func (s *ZayavlenieService) CreateZayavlenie(zayavlenieData *dto.ZayavlenieDTO, 
 
 	var doc *docx.Docx
 	var err error
+
+	log.Println("dogovorType:", dogovorType)
 
 	switch dogovorType {
 	case BELOW_EIGHTEEN:
@@ -148,15 +151,26 @@ func replaceZayavlenieBetweenEighteen(doc *docx.Docx, model *dto.ZayavlenieDTO) 
 
 	contractorSeriaNumber := fmt.Sprintf("%s %s ", model.Contractor.Passport.Seria, model.Contractor.Passport.Number)
 	doc.Replace("SERIAE NUMBERE", contractorSeriaNumber, -1)
-	doc.Replace("DATEGIVENE", model.Contractor.Passport.DateGiven, -1)
-	doc.Replace(": GIVENE", ":"+" "+model.Contractor.Passport.PassportGiven, -1)
 
-	doc.Replace("DATEGIVEN", model.Passport.DateGiven, -1) // !
+	dob, err = time.Parse(time.RFC3339, model.Contractor.Passport.DateGiven)
+	if err == nil {
+		doc.Replace("DATEGIVENE", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
+	}
+
+	dob, err = time.Parse(time.RFC3339, model.Passport.DateGiven)
+	if err == nil {
+		doc.Replace("DATEGIVEN", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
+	}
+
+	doc.Replace(": GIVENE", ":"+" "+model.Contractor.Passport.PassportGiven, -1)
 
 	doc.Replace("PHONEE", model.Contractor.Contact_phone, -1)
 	doc.Replace("EMAILE", model.Contractor.Email, -1)
 
 	doc.Replace("HOUR", strconv.Itoa(model.ProgramEducation.TimeEducation), -1)
+
+	doc.Replace("TYPEOFRETRAINING", model.EnrollmentListener.TypeOfRetraining, -1)
+
 }
 
 func replaceZayavlenieFourteen(doc *docx.Docx, model *dto.ZayavlenieDTO) {
@@ -184,6 +198,8 @@ func replaceZayavlenieFourteen(doc *docx.Docx, model *dto.ZayavlenieDTO) {
 	if err == nil {
 		doc.Replace("DATEBIRTH", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
 	}
+
+	doc.Replace("TYPEOFRETRAINING", model.EnrollmentListener.TypeOfRetraining, -1)
 
 	// variant := "VARIANT" + strconv.Itoa(model.Variant)
 
@@ -260,7 +276,7 @@ func (s *ZayavlenieService) ExistsZayavlenie(fileName string) ([]string, error) 
 	if len(documents) > 0 {
 		return documents, nil
 	} else {
-		return []string{}, errors.New("не найдено ни одного документа")
+		return []string{}, errors.New("Не найдено ни одного документа")
 	}
 }
 

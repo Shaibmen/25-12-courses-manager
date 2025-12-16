@@ -75,12 +75,6 @@ type FullListenerRequest struct {
 	EnrollmentListener  EnrollmentListenerRequest `json:"enrollment_listener"`
 }
 
-type FullDocumentInfoDTO struct {
-	FullListener       FullListenerRequest `json:"personal_card"`
-	ZayavlenieCardInfo ZayavlenieRequest   `json:"zayavlenie_card"`
-	DogovorRequest     DogovorRequest      `json:"dogovor_card"`
-}
-
 // type ContractorRequest struct {
 // 	Passport            PassportRequest
 // 	RegistrationAddress RegAddressRequest
@@ -135,9 +129,9 @@ type DogovorRequest struct {
 	Passport         PassportRequest           `json:"passport"`
 	Registration     RegAddressRequest         `json:"reg_address"`
 	Enrollment       EnrollmentListenerRequest `json:"enrollment_listener"`
-	OptionNagruzka   string                    `json:"opion_nagruz"`
-	OptionDocument   string                    `json:"opt_document"`
-	OptionPrice      string                    `json:"opt_price"`
+	OptionNagruzka   int                       `json:"opion_nagruz"`
+	OptionDocument   int                       `json:"opt_document"`
+	OptionPrice      int                       `json:"opt_price"`
 	DogovorType      string                    `json:"dogovor_type"`
 	Price            float32                   `json:"price"`
 }

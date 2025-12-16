@@ -20,7 +20,7 @@ func NewDogovorHandler(service *service.DogovorService) *DogovoreHandler {
 }
 
 func (h *DogovoreHandler) CreateDogovor(c *gin.Context) {
-	var request models.FullDocumentInfoDTO
+	var request models.DogovorRequest
 
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Println(err)
@@ -28,14 +28,14 @@ func (h *DogovoreHandler) CreateDogovor(c *gin.Context) {
 		return
 	}
 
-	dto, err := mapper.DogovorMapping(request.DogovorRequest)
+	dto, err := mapper.DogovorMapping(request)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "invalid parameter request mapping", "err": err.Error()})
 		return
 	}
 
-	err = h.service.CreateDogovor(dto, request.DogovorRequest.DogovorType)
+	err = h.service.CreateDogovor(dto, request.DogovorType)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": "creation dogovor error", "err": err.Error()})

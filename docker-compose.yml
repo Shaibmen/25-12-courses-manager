@@ -13,7 +13,7 @@ services:
       - ./db/init:/docker-entrypoint-initdb.d
     
   apicore:
-    image: shaibmen/online-courses:latest
+    image: shaibmen/online-courses:v1.3
     env_file:
       - ./online-courses/.env
     depends_on:
@@ -56,7 +56,7 @@ services:
       - "8082:8082"
 
   frontend:
-    image: shaibmen/online-courses-front:latest
+    image: shaibmen/online-courses-front:v1.2
     depends_on:
       - apicore
       - apiauth

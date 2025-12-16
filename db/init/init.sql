@@ -478,8 +478,12 @@ VALUES
  (SELECT id_passport FROM passport LIMIT 1 OFFSET 4),
  (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 4),
  (SELECT id_educationlistener FROM educationlistener LIMIT 1 OFFSET 4),
+<<<<<<< HEAD
  (SELECT id_placework FROM placework LIMIT 1 OFFSET 4));
 
 
 
 
+=======
+ (SELECT id_placework FROM placework LIMIT 1 OFFSET 4));
+>>>>>>> origin/dev-f
