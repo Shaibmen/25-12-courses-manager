@@ -133,5 +133,4 @@ type DogovorRequest struct {
 	OptionDocument   int                       `json:"opt_document"`
 	OptionPrice      int                       `json:"opt_price"`
 	DogovorType      string                    `json:"dogovor_type"`
-	Price            float32                   `json:"price"`
 }
