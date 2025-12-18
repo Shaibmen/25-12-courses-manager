@@ -279,10 +279,9 @@ type DogovorCardInfo struct {
 	Passport         PassportCardDTO            `json:"passport"`
 	Registration     RegistrationAddressCardDTO `json:"reg_address"`
 	Enrollment       EnrollmentListenerToCard   `json:"enrollment_listener"`
-	OptionNagruzka   string                     `json:"opion_nagruz"`
-	OptionDocument   string                     `json:"opt_document"`
+	OptionNagruzka   int                        `json:"opion_nagruz"`
+	OptionDocument   int                        `json:"opt_document"`
 	OptionPrice      string                     `json:"opt_price"`
-	Price            float32                    `json:"price"`
 	DogovorType      string                     `json:"dogovor_type"`
 }
 
@@ -295,8 +294,9 @@ type FullDocumentInfoDTO struct {
 type FrontDataDeliver struct {
 	Variant        int    `json:"variant"`
 	DogovorType    string `json:"dogovor_type"`
-	OptionNagruzka string `json:"opion_nagruz"`
-	OptionDocument string `json:"opt_document"`
+	OptionNagruzka int    `json:"opion_nagruz"`
+	OptionDocument int    `json:"opt_document"`
+	DogovorAgeType string `json:"dogovor_age"`
 	OptionPrice    string `json:"opt_price"`
 }
 

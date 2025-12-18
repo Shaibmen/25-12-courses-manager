@@ -113,7 +113,7 @@ type DogovorDTO struct {
 	Passport         PassportDTO
 	Registration     RegistrationAddressDTO
 	Enrollment       EnrollmentListenerDTO
-	OptionNagruzka   string
-	OptionDocument   string
+	OptionNagruzka   int
+	OptionDocument   int
 	OptionPrice      string
 }

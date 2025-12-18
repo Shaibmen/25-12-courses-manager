@@ -19,9 +19,10 @@ func MustServerInit(r *gin.Engine, port string, personalCard *handler.PersonalCa
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-	r.Use(middleware.AuthMiddleware())
+
 	api := r.Group("v1/doc")
 	{
+		api.Use(middleware.AuthMiddleware())
 
 		api.POST("personal-card", personalCard.CreatePersonalCard)
 		api.GET("exists", personalCard.ExistsPersonalCard)
@@ -33,11 +34,12 @@ func MustServerInit(r *gin.Engine, port string, personalCard *handler.PersonalCa
 		// api.GET("zayavlenie-download", zayavlenie.DownloadZayavlenie)
 		// api.DELETE("zayavlenie-delete", zayavlenie.DeleteZayavlenie)
 
-		api.POST("dogovor", dogovor.CreateDogovor)
-		api.GET("dogovor-exists", dogovor.ExistsDogovor)
-		api.GET("dogovor-download", dogovor.DownloadDogovor)
-		api.DELETE("dogovor-delete", dogovor.DeleteDogovor)
 	}
+
+	r.POST("dogovor", dogovor.CreateDogovor)
+	r.GET("dogovor-exists", dogovor.ExistsDogovor)
+	r.GET("dogovor-download", dogovor.DownloadDogovor)
+	r.DELETE("dogovor-delete", dogovor.DeleteDogovor)
 
 	r.POST("zayavlenie", zayavlenie.CreateZayavlenie)
 	r.GET("zayavlenie-exists", zayavlenie.ExistsZayavlenie)

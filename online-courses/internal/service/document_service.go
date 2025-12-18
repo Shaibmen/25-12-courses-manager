@@ -159,7 +159,7 @@ func (d *DocumentService) FormingDataDocument(ctx context.Context, idListener, i
 				Apartment: prepareInfo.PersonalInfo.Apartment,
 			},
 			Variant:     frontData.Variant,
-			DogovorType: frontData.DogovorType,
+			DogovorType: frontData.DogovorAgeType,
 		},
 		DogovorRequest: dto.DogovorCardInfo{
 			ProgramEducation: dto.ProgramEducationToCardDTO{
@@ -239,7 +239,6 @@ func (d *DocumentService) FormingDataDocument(ctx context.Context, idListener, i
 			OptionNagruzka: frontData.OptionNagruzka,
 			OptionDocument: frontData.OptionDocument,
 			OptionPrice:    frontData.OptionPrice,
-			Price:          prepareInfo.PersonalInfo.CurrentPrice,
 			DogovorType:    frontData.DogovorType,
 		},
 	}

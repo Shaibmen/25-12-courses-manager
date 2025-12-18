@@ -131,7 +131,7 @@
       </div>
 
       <div class="card p-3 shadow-sm card-block mt-4">
-        <h5 class="card-title mb-3">Исполнитель</h5>
+        <h5 class="card-title mb-3">Исполнитель с стороны 25-12</h5>
         <div class="d-flex flex-column gap-2">
           <div
             v-for="e in executors"

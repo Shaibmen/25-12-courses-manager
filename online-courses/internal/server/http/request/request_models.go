@@ -157,7 +157,8 @@ type DocumentsDataRequest struct {
 type FrontDataDeliverRequest struct {
 	Variant        int    `json:"variant"`
 	DogovorType    string `json:"dogovor_type"`
-	OptionNagruzka string `json:"opion_nagruz"`
-	OptionDocument string `json:"opt_document"`
+	OptionNagruzka int    `json:"opion_nagruz"`
+	OptionDocument int    `json:"opt_document"`
+	DogovorAgeType string `json:"dogovor_age"`
 	OptionPrice    string `json:"opt_price"`
 }

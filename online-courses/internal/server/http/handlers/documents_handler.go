@@ -42,7 +42,7 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 
 	c.JSON(http.StatusOK, data)
 
-	responseCard, err := RequestToDoc(*data, "v1/doc/personal-card", c)
+	responseCard, err := RequestToDoc(*data, "personal-card", c)
 	if err != nil {
 		c.Error(err)
 		return
@@ -62,7 +62,7 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		return
 	}
 
-	responseDogovor, err := RequestToDoc(*data, "v1/doc/dogovor", c)
+	responseDogovor, err := RequestToDoc(*data, "dogovor", c)
 	if err != nil {
 		c.Error(err)
 		return
@@ -77,7 +77,7 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 
 func RequestToDoc(data dto.FullDocumentInfoDTO, endpoint string, c *gin.Context) (int, error) {
 	requestBody, _ := json.Marshal(data)
-	req, err := http.NewRequest("POST", "http://localhost:8082/"+endpoint, bytes.NewBuffer(requestBody))
+	req, err := http.NewRequest("POST", "http://localhost:8082/v1/doc/"+endpoint, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return 0, err
 	}
