@@ -27,16 +27,12 @@ const (
 
 type DogovorService struct {
 	s3client    S3ClientInterface
-	priceMap    map[int]string
 	nagruzkaMap map[int]string
 	diplomMap   map[int]string
 	doMap       map[int]string
 }
 
 func NewDogovorService(s3client S3ClientInterface) *DogovorService {
-
-	priceMap := make(map[int]string)
-	priceMap[1] = "Оплата осуществляется в следующем порядке: 100% предоплата до начала обучения"
 
 	nagruzkaMap := make(map[int]string)
 	nagruzkaMap[1] = "Недельная учебная нагрузка по настоящему договору составляет 3 академических часа в неделю, включая 2 академических часа взаимодействия с преподавателем и 1 академический час самостоятельной работы; общая продолжительность освоения — 81 неделя"
@@ -57,14 +53,10 @@ func NewDogovorService(s3client S3ClientInterface) *DogovorService {
 	doMap[4] = "Недельная учебная нагрузка по настоящему договору составляет 8 академических часов в неделю; общая продолжительность освоения — 2,5 недели."
 	doMap[5] = "Недельная учебная нагрузка по настоящему договору составляет 10 академических часов в неделю; общая продолжительность освоения — 2 недели."
 
-	return &DogovorService{s3client, priceMap, nagruzkaMap, diplomMap, doMap}
+	return &DogovorService{s3client, nagruzkaMap, diplomMap, doMap}
 }
 
 func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType string) error {
-
-	s.priceMap[2] = fmt.Sprintf("а) Аванс 50 %% — %.2f рублей, предоплата до начала обучения. \nб) Оставшиеся 50 %% — %.2f рублей. Срок: не позднее «___» ____________ 20__ г.",
-		dogovor.Enrollment.CurrentPrice/2.0,
-		dogovor.Enrollment.CurrentPrice/2.0)
 
 	var doc *docx.Docx
 	var err error
@@ -124,7 +116,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 
 	doc.Replace("OPTIOND", s.diplomMap[dogovor.OptionDocument], -1)
 	doc.Replace("OPTIONH", s.nagruzkaMap[dogovor.OptionNagruzka], -1)
-	doc.Replace("OPTIONPRICE", s.priceMap[dogovor.OptionPrice], -1)
+	doc.Replace("OPTIONPRICE", dogovor.OptionPrice, -1)
 	doc.Replace("PRICE", fmt.Sprintf("%.2f", dogovor.Enrollment.CurrentPrice), -1)
 	doc.Replace("OPTION", s.doMap[dogovor.OptionNagruzka], -1)
 

@@ -115,5 +115,5 @@ type DogovorDTO struct {
 	Enrollment       EnrollmentListenerDTO
 	OptionNagruzka   int
 	OptionDocument   int
-	OptionPrice      int
+	OptionPrice      string
 }

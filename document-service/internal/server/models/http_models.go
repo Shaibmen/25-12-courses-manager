@@ -131,7 +131,7 @@ type DogovorRequest struct {
 	Enrollment       EnrollmentListenerRequest `json:"enrollment_listener"`
 	OptionNagruzka   int                       `json:"opion_nagruz"`
 	OptionDocument   int                       `json:"opt_document"`
-	OptionPrice      int                       `json:"opt_price"`
+	OptionPrice      string                    `json:"opt_price"`
 	DogovorType      string                    `json:"dogovor_type"`
 	Price            float32                   `json:"price"`
 }
