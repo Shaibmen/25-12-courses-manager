@@ -165,7 +165,7 @@ func replacePP3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("PHONEL", model.ListenerData.ContactPhone, -1)
 	doc.Replace("EMAILL", model.ListenerData.Email, -1)
 
-	seriaNumberGiven := fmt.Sprintf("%s %s, %s", model.Passport.Seria, model.Passport.Number, model.Passport.PassportGiven)
+	seriaNumberGiven := fmt.Sprintf("%s %s, %s", model.Contractor.Passport.Seria, model.Contractor.Passport.Number, model.Contractor.Passport.PassportGiven)
 
 	doc.Replace("SERIAE NUMBERE, GIVENE", seriaNumberGiven, -1)
 
