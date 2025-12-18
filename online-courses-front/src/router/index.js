@@ -6,6 +6,7 @@ import AccountantDashboard from '../components/AccountantDashboard.vue'
 import Listeners from '../components/Listeners.vue'
 import Executers from '../components/Executers.vue'
 
+
 const routes = [
   { path: '/', redirect: '/login' },
   { path: '/login', component: Login },
@@ -46,7 +47,10 @@ const routes = [
   { path: '/legalentities', component: () => import('../components/LegalEntity.vue') },
    { path: '/legalentity/create', component: () => import('../components/CreateLegalEntity.vue') },
    { path: '/legalentity/edit/:id', component: () => import('../components/EditLegalEntity.vue') },
-{ path: '/legalentity/:id', component: () => import('../components/LegalEntityDetails.vue') }
+{ path: '/legalentity/:id', component: () => import('../components/LegalEntityDetails.vue') },
+
+{ path: '/enrollment/accurate', component: () => import('../components/AccurateEnrollments.vue') },
+
 ]
 
 const router = createRouter({

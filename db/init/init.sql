@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS programeducation (
 
 create table if not exists accurateprogram (
 	id_listener uuid not null,
-	name_prof_education varchar(100) not null unique,
+	name_prof_education varchar(100) not null,
     time_education INTEGER not null,
     individual_price REAL not null,
     group_price REAL not null,
@@ -479,7 +479,5 @@ VALUES
  (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 4),
  (SELECT id_educationlistener FROM educationlistener LIMIT 1 OFFSET 4),
  (SELECT id_placework FROM placework LIMIT 1 OFFSET 4));
-
-
 
 

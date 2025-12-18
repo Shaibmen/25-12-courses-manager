@@ -113,14 +113,14 @@ func (ProgramEducation) TableName() string {
 }
 
 type AccurateProgram struct {
-	ID_Listener       uuid.UUID
-	NameProfEducation string
-	TimeEducation     int
-	IndividualPrice   float32
-	GroupPrice        float32
-	CampusPrice       float32
-	EducationType     string
-	Division          string
+	ID_Listener       uuid.UUID `db:"id_listener"`
+	NameProfEducation string    `db:"name_prof_education"`
+	TimeEducation     int       `db:"time_education"`
+	IndividualPrice   float32   `db:"individual_price"`
+	GroupPrice        float32   `db:"group_price"`
+	CampusPrice       float32   `db:"campus_price"`
+	EducationType     string    `db:"educationtype"`
+	Division          string    `db:"divisionseducation"`
 }
 
 type ProgramToAccurate struct {

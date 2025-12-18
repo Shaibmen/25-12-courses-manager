@@ -4,6 +4,7 @@ import (
 	"document-service/internal/mapper"
 	"document-service/internal/server/models"
 	"document-service/internal/service"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -20,17 +21,19 @@ func NewZayavlenieHandler(service *service.ZayavlenieService) *ZayavlenieHandler
 }
 
 func (h *ZayavlenieHandler) CreateZayavlenie(c *gin.Context) {
-	var request models.ZayavlenieRequest
+	var fullRequest models.FullRequest
 
-	if err := c.ShouldBindJSON(&request); err != nil {
-		log.Println(err)
+	if err := c.ShouldBindJSON(&fullRequest); err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "invalid parameter request", "err": err.Error()})
 		return
 	}
 
+	request := fullRequest.ZayavlenieData
+
 	dto := mapper.ZayavlenieMapping(request)
 
-	err := h.service.CreateZayavlenie(dto, request.DogovorType)
+	err := h.service.CreateZayavlenie(dto, request.DogovorAgeType)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": "creation zayavlenie error", "err": err.Error()})

@@ -15,4 +15,5 @@ type EnrollmentListenerService interface {
 	ReadDetailListener(ctx context.Context, id uuid.UUID) ([]dto.EnrollmentProgramDetailsDTO, error)
 	ReadByProgram(ctx context.Context, id uuid.UUID, page int) ([]dto.EnrollmentListenerDetailsDTO, error)
 	GetListenerFIO(ctx context.Context, listenerID uuid.UUID) (*dto.ListenerFIODTO, error)
+	GetAccurateEnrollment(ctx context.Context) ([]dto.AccurateProgramDTO, error)
 }

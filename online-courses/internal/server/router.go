@@ -94,6 +94,7 @@ func SetupRoutes(server *gin.Engine,
 			enrollment.GET("/details/:id", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.ReadDetailListener)
 			enrollment.GET("/:id", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.ReadByProgram) // :page
 			// enrollment.GET("/application-data-card", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.GetInfoToCreateCard)
+			enrollment.GET("/accurate", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.GetAccurateEnrollment)
 		}
 
 		dashboard := api.Group("/dashboard")
@@ -141,7 +142,7 @@ func SetupRoutes(server *gin.Engine,
 		}
 		document := api.Group("/document")
 		{
-			document.GET("/", middleware.RoleProtecteMiddleware("worker"), documentHandler.DocumentDataDeliver)
+			document.POST("/", middleware.RoleProtecteMiddleware("worker"), documentHandler.DocumentDataDeliver)
 		}
 	}
 }

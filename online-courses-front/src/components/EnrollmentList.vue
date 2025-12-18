@@ -10,7 +10,7 @@
           Цена {{ sortOrder === 'asc' ? '↑' : sortOrder === 'desc' ? '↓' : '' }}
         </button>
         <button class="btn btn-success" @click="goCourseSearch">Поиск по курсу</button>
-        
+        <button class="btn btn-info" @click="goAccurateEnrollments">Точные записи на курс</button>
       </div>
 
       <button class="btn btn-secondary" @click="goBack">Назад</button>
@@ -123,6 +123,7 @@ watch(filter, () => {
 const openDetails = (id) => router.push(`/enrollment/details/${id}`)
 const goBack = () => router.push('/dashboard/worker')
 const goCourseSearch = () => router.push('/enrollment/by-course')
+const goAccurateEnrollments = () => router.push('/enrollment/accurate')
 
 const formatDate = d => d?.split(' ')[0] || ''
 

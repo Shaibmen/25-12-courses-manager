@@ -389,6 +389,21 @@ func (e *enrollmentListenerRepo) SaveInfo(ctx context.Context, m entity.Accurate
 
 }
 
+func (e *enrollmentListenerRepo) GetAccurateEnrollment(ctx context.Context) ([]entity.AccurateProgram, error) {
+	program := []entity.AccurateProgram{}
+	query :=
+		`
+	select * from accurateprogram
+	`
+	err := e.repo.SelectContext(ctx, &program, query)
+	if err != nil {
+		return nil, repoutils.HandleRepoErr(err)
+	}
+
+	return program, nil
+
+}
+
 func (e *enrollmentListenerRepo) GetProgram(ctx context.Context, id uuid.UUID) (*entity.ProgramToAccurate, error) {
 
 	query :=

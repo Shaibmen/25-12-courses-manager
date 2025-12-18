@@ -117,7 +117,7 @@ type ZayavlenieRequest struct {
 	Executor           ExecutorRequest           `json:"executor"`
 	Passport           PassportRequest           `json:"passport"`
 	Registration       RegAddressRequest         `json:"reg_address"`
-	DogovorType        string                    `json:"dogovor_type"`
+	DogovorAgeType     string                    `json:"dogovor_type"`
 	Variant            int                       `json:"variant"`
 }
 
@@ -133,4 +133,10 @@ type DogovorRequest struct {
 	OptionDocument   int                       `json:"opt_document"`
 	OptionPrice      string                    `json:"opt_price"`
 	DogovorType      string                    `json:"dogovor_type"`
+}
+
+type FullRequest struct {
+	PersonalCardData FullListenerRequest `json:"personal_card"`
+	ZayavlenieData   ZayavlenieRequest   `json:"zayavlenie_card"`
+	DogovorData      DogovorRequest      `json:"dogovor_card"`
 }

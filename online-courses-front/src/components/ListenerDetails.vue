@@ -184,7 +184,7 @@ const fetchAllFiles = async (snils) => {
     else if (json.data && Array.isArray(json.data.files)) items = json.data.files
     filesList.value = items
   } catch (err) {
-    toast.error(err.message || 'Ошибка при получении файлов')
+    toast.info("Файлов для скачивания нет")
     filesList.value = []
   } finally {
     filesLoading.value = false

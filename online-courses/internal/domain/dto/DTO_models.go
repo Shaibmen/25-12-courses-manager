@@ -153,6 +153,17 @@ type EnrollmentListenerDTO struct {
 	TypeOfRetraining string    `json:"type_of_retraining"`
 }
 
+type AccurateProgramDTO struct {
+	ID_Listener       uuid.UUID
+	NameProfEducation string
+	TimeEducation     int
+	IndividualPrice   float32
+	GroupPrice        float32
+	CampusPrice       float32
+	EducationType     string
+	Division          string
+}
+
 type EnrollmentListenerDetailsDTO struct {
 	ID_Listener       uuid.UUID `json:"id_listener"`
 	FirstName         string    `json:"first_name"`

@@ -60,31 +60,10 @@
             </option>
           </select>
 
-          <select v-model="studyLoadOption" class="form-select">
+          <select v-model="studyLoadOption" class="form-select" :disabled="isDoFiz">
             <option value="">— Недельная учебная нагрузка —</option>
-            <option value="3">
-              Недельная учебная нагрузка по настоящему договору составляет 3 академических часа в неделю, включая 2 академических часа взаимодействия 
-              с преподавателем и 1 академический час самостоятельной работы; общая продолжительность освоения — 81 неделя.
-            </option>
-            <option value="6">
-              Недельная учебная нагрузка по настоящему договору составляет 6 академических часов в неделю, включая 4 академических часа взаимодействия 
-              с преподавателем и 2 академических часа самостоятельной работы; общая продолжительность освоения — 41 неделя.
-            </option>
-            <option value="12">
-              Недельная учебная нагрузка по настоящему договору составляет 12 академических часов в неделю, включая 8 академических часов взаимодействия 
-              с преподавателем и 4 академических часа самостоятельной работы; общая продолжительность освоения — 21 неделя.
-            </option>
-            <option value="15">
-              Недельная учебная нагрузка по настоящему договору составляет 15 академических часов в неделю, включая 10 академических часов взаимодействия 
-              с преподавателем и 5 академических часов самостоятельной работы; общая продолжительность освоения — 17 недель.
-            </option>
-            <option value="30">
-              Недельная учебная нагрузка по настоящему договору составляет 30 академических часов в неделю, включая 20 академических часов взаимодействия 
-              с преподавателем и 10 академических часов самостоятельной работы; общая продолжительность освоения — 9 недель.
-            </option>
-            <option value="32">
-              Недельная учебная нагрузка по настоящему договору составляет 32 академических часа в неделю, включая 20 академических часов взаимодействия 
-              с преподавателем и 12 академических часов самостоятельной работы; общая продолжительность освоения — 8 недель.
+            <option v-for="(label, key) in activeLoadVariants" :key="key" :value="key">
+              {{ label }}
             </option>
           </select>
 
@@ -121,6 +100,17 @@
             <option value="">— Возрастная категория —</option>
             <option
               v-for="(label, key) in ageCategories"
+              :key="key"
+              :value="key"
+            >
+              {{ label }}
+            </option>
+          </select>
+
+          <select v-model="optDocumentSelected" class="form-select">
+            <option value="">— Итоговый документ и режим выдачи —</option>
+            <option
+              v-for="(label, key) in optDocumentOptions"
               :key="key"
               :value="key"
             >
@@ -223,8 +213,7 @@
               <input
                 v-model="contractorForm.contractor.second_name"
                 @input="onlyLetters(contractorForm.contractor, 'second_name')"
-                :class="['form-control', { 'is-invalid': errors.second_name }]"
-              />
+                :class="['form-control', { 'is-invalid': errors.second_name }]"/>
               <div v-if="errors.second_name" class="invalid-feedback d-block">Только буквы</div>
             </div>
             <div class="col-md-4">
@@ -232,8 +221,7 @@
               <input
                 v-model="contractorForm.contractor.first_name"
                 @input="onlyLetters(contractorForm.contractor, 'first_name')"
-                :class="['form-control', { 'is-invalid': errors.first_name }]"
-              />
+                :class="['form-control', { 'is-invalid': errors.first_name }]"/>
               <div v-if="errors.first_name" class="invalid-feedback d-block">Только буквы</div>
             </div>
             <div class="col-md-4">
@@ -241,8 +229,7 @@
               <input
                 v-model="contractorForm.contractor.middle_name"
                 @input="onlyLetters(contractorForm.contractor, 'middle_name')"
-                class="form-control"
-              />
+                class="form-control"/>
             </div>
 
             <div class="col-md-6">
@@ -250,8 +237,7 @@
               <input
                 v-model="contractorForm.contractor.contact_phone"
                 @input="formatPhone"
-                :class="['form-control', { 'is-invalid': errors.phone }]"
-              />
+                :class="['form-control', { 'is-invalid': errors.phone }]"/>
               <div v-if="errors.phone" class="invalid-feedback d-block">Формат: +7XXXXXXXXXX</div>
             </div>
             <div class="col-md-6">
@@ -259,8 +245,7 @@
               <input
                 v-model="contractorForm.contractor.email"
                 @input="validateEmail"
-                :class="['form-control', { 'is-invalid': errors.email }]"
-              />
+                :class="['form-control', { 'is-invalid': errors.email }]"/>
               <div v-if="errors.email" class="invalid-feedback d-block">Некорректный Email</div>
             </div>
           </div>
@@ -277,8 +262,7 @@
             <div class="col-md-4">
               <select
                 v-model="contractorForm.passport.gender"
-                :class="['form-select', { 'is-invalid': errors.gender }]"
-              >
+                :class="['form-select', { 'is-invalid': errors.gender }]">
                 <option value="">Пол</option>
                 <option value="Мужской">Мужской</option>
                 <option value="Женский">Женский</option>
@@ -290,8 +274,7 @@
                 v-model="contractorForm.passport.seria"
                 @input="digitsLimit(contractorForm.passport, 'seria', 4)"
                 :class="['form-control', { 'is-invalid': errors.seria }]"
-                placeholder="Серия (4 цифры)"
-              />
+                placeholder="Серия (4 цифры)" />
               <div v-if="errors.seria" class="invalid-feedback d-block">4 цифры</div>
             </div>
             <div class="col-md-4">
@@ -299,8 +282,7 @@
                 v-model="contractorForm.passport.number"
                 @input="digitsLimit(contractorForm.passport, 'number', 6)"
                 :class="['form-control', { 'is-invalid': errors.number }]"
-                placeholder="Номер (6 цифр)"
-              />
+                placeholder="Номер (6 цифр)" />
               <div v-if="errors.number" class="invalid-feedback d-block">6 цифр</div>
             </div>
             <div class="col-md-12">
@@ -314,8 +296,7 @@
                 v-model="contractorForm.passport.code"
                 @input="formatCode"
                 :class="['form-control', { 'is-invalid': errors.code }]"
-                placeholder="Код подразделения (000-000)"
-              />
+                placeholder="Код подразделения (000-000)" />
               <div v-if="errors.code" class="invalid-feedback d-block">Формат: 000-000</div>
             </div>
           </div>
@@ -328,8 +309,7 @@
                 v-model="contractorForm.reg_address.mail_index"
                 @input="digitsLimit(contractorForm.reg_address, 'mail_index', 6)"
                 :class="['form-control', { 'is-invalid': errors.index }]"
-                placeholder="Индекс (6 цифр)"
-              />
+                placeholder="Индекс (6 цифр)"/>
               <div v-if="errors.index" class="invalid-feedback d-block">6 цифр</div>
             </div>
             <div class="col-md-4">
@@ -371,12 +351,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
 import Header from './Header.vue'
 import ConfirmModal from './ConfirmModal.vue'
-import { API_URL_CORE } from '../config'
+import { API_URL_CORE, API_URL_DOC } from '../config'
 
 const route = useRoute()
 const router = useRouter()
@@ -411,9 +391,9 @@ const loadVariantsNotDO = {
 }
 
 const ageCategories = {
-  belowEighteen: 'Меньше восемнадцати',
-  belowFourteen: 'Меньше четырнадцати',
-  eighteen: 'Восемнадцать'
+  BELOW_EIGHTEEN: 'Меньше восемнадцати',
+  FOURTEEN: 'Меньше ',
+  EIGHTEEN: 'Восемнадцать'
 }
 
 const contracts = ref([])
@@ -505,6 +485,12 @@ const activeLoadVariants = computed(() => {
   return isDoFiz.value ? loadVariantsDO : loadVariantsNotDO
 })
 
+const optDocumentOptions = {
+  option_1: 'удостоверение о повышении квалификации вручается по окончании',
+  option_2: 'удостоверение выдаётся одновременно с дипломом СПО/ВО (ч. 16 ст. 76 ФЗ-273). До этого момента удостоверение хранится у Исполнителя.'
+}
+const optDocumentSelected = ref('')
+
 const isFormValid = computed(() => {
   return (
     selectedProgramId.value &&
@@ -549,13 +535,13 @@ const loadPrograms = async () => {
 const loadContracts = async () => {
   loadingContracts.value = true
   contracts.value = [
-    { id_contract: 'DO-FIZ-3', name: 'ДО с оплатой физическим лицом', type: 'trilateral' },
-    { id_contract: 'PK-FIZ-2', name: 'ПК с оплатой физическим лицом', type: 'bilateral' },
-    { id_contract: 'PK-FIZ-3', name: 'ПК с оплатой физическим лицом', type: 'trilateral' },
-    { id_contract: 'PK-YUR-3', name: 'ПК с оплатой юридическим лицом', type: 'trilateral' },
-    { id_contract: 'PP-FIZ-2', name: 'ПП с оплатой физическим лицом', type: 'bilateral' },
-    { id_contract: 'PP-FIZ-3', name: 'ПП с оплатой физическим лицом', type: 'trilateral' },
-    { id_contract: 'PP-YUR-3', name: 'ПП с оплатой юридическим лицом', type: 'trilateral' }
+    { id_contract: 'DO_3_FIZ', name: 'ДО с оплатой физическим лицом', type: 'trilateral' },
+    { id_contract: 'PK_2_FIZ', name: 'ПК с оплатой физическим лицом', type: 'bilateral' },
+    { id_contract: 'PK_3_FIZ', name: 'ПК с оплатой физическим лицом', type: 'trilateral' },
+    { id_contract: 'PK_3_YUR', name: 'ПК с оплатой юридическим лицом', type: 'trilateral' },
+    { id_contract: 'PP_2_FIZ', name: 'ПП с оплатой физическим лицом', type: 'bilateral' },
+    { id_contract: 'PP_3_FIZ', name: 'ПП с оплатой физическим лицом', type: 'trilateral' },
+    { id_contract: 'PP_3_YUR', name: 'ПП с оплатой юридическим лицом', type: 'trilateral' }
   ]
   loadingContracts.value = false
 }
@@ -680,13 +666,21 @@ const deleteContractor = async () => {
   }
 }
 
+watch(() => isDoFiz.value, (nv) => {
+  if (nv) {
+    studyLoadOption.value = ''
+  }
+})
 const createEnrollment = async () => {
-  if (!isFormValid.value) return toast.warn('Заполните обязательные поля')
+  if (!isFormValid.value) {
+    toast.warn('Заполните обязательные поля')
+    return
+  }
 
   try {
     saving.value = true
 
-    const body = {
+    const enrollmentBody = {
       id_listener: listenerId,
       id_program: selectedProgramId.value,
       start_date: startDate.value,
@@ -699,59 +693,68 @@ const createEnrollment = async () => {
 
     const res = await fetch(`${API_URL_CORE}/enrollment/`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify(body)
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(enrollmentBody)
     })
 
     if (!res.ok) {
       const e = await res.json().catch(() => ({}))
-      throw new Error(e.message || `Ошибка создания записи, возможно такая запись на курс уже существует (${res.status})`)
+      throw new Error(e.message || 'Ошибка создания записи(возможно такая запись уже существует)')
     }
 
     toast.success('Запись успешно создана')
 
-    const frontData = {
-      variant: loadVariant.value ? Number(loadVariant.value) : null,
-      dogovor_type: selectedContractId.value || null,
-      opion_nagruz: studyLoadOption.value || null,
-      opt_document: ageCategory.value || null,
-      opt_price: currentPrice.value != null ? String(currentPrice.value) : null
-    }
 
-    if (paymentOption.value === 'split' && secondPaymentDate.value) {
-      frontData.second_payment_date = secondPaymentDate.value
+    let optPriceValue = null
+    if (paymentOption.value === 'split') {
+      optPriceValue =
+        `Оплата осуществляется в следующем порядке: аванс 50 % — предоплата до начала обучения, ` +
+        `оставшиеся 50 % — в установленный срок ${secondPaymentDate.value}`
+    } else if (paymentOption.value === 'full') {
+      optPriceValue =
+        'Оплата осуществляется в следующем порядке: 100% предоплата до начала обучения.'
     }
 
     const documentPayload = {
       id_listener: listenerId,
       id_program: selectedProgramId.value,
-      id_executor: selectedExecutorId.value || null,
-      FrontData: frontData
-    }
-
-    try {
-      const docRes = await fetch(`${API_URL_CORE}/document/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(documentPayload)
-      })
-      if (!docRes.ok) {
-        const e = await docRes.json().catch(() => ({}))
-        toast.error(e.message || 'Не удалось создать документ')
-      } else {
-        toast.success('Документ создан')
+      id_executor: selectedExecutorId.value,
+      FrontData: {
+        variant: Number(loadVariant.value),
+        dogovor_type: selectedContractId.value,
+        opion_nagruz: isDoFiz.value ? null : Number(studyLoadOption.value),
+        opt_document: Number(optDocumentSelected.value),
+        dogovor_age: ageCategory.value,
+        opt_price: optPriceValue
       }
-    } catch (e) {
-      toast.error('Ошибка при создании документа')
     }
 
-    router.push(`/listeners/${listenerId}`)
+    const docRes = await fetch(`${API_URL_CORE}/document/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(documentPayload)
+    })
+
+    if (!docRes.ok) {
+      const e = await docRes.json().catch(() => ({}))
+      throw new Error(e.message || 'Ошибка создания документов(стоит проверить может быть запись создалась, тогда стоит её удалить)')
+    }
+
+    toast.success('Документы успешно созданы')
+
   } catch (err) {
-    toast.error(err.message || 'Не удалось создать запись, возможно такая запись на курс уже существует')
+    toast.error(err.message || 'Ошибка')
   } finally {
     saving.value = false
   }
 }
+
 
 const goBack = () => router.push(`/listeners/${listenerId}`)
 

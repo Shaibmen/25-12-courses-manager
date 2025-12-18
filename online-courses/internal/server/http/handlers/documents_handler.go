@@ -40,8 +40,6 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, data)
-
 	responseCard, err := RequestToDoc(*data, "personal-card", c)
 	if err != nil {
 		c.Error(err)

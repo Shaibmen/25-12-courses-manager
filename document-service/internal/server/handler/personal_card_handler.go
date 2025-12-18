@@ -5,9 +5,9 @@ import (
 	"document-service/internal/server/models"
 	"document-service/internal/service"
 	"document-service/internal/validate"
+	"io"
 	"log"
 	"net/http"
-	"io"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,13 +25,15 @@ func NewPersonalCardHandler(service *service.PersonalCardService) *PersonalCardH
 }
 
 func (p *PersonalCardHandler) CreatePersonalCard(c *gin.Context) {
-	var request models.FullListenerRequest
+	var fullRequest models.FullRequest
 
-	if err := c.ShouldBindJSON(&request); err != nil {
+	if err := c.ShouldBindJSON(&fullRequest); err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "invalid parameter request", "err": err.Error()})
 		return
 	}
+
+	request := fullRequest.PersonalCardData
 
 	err := validate.Validator.Struct(&request)
 	if err != nil {

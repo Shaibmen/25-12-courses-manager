@@ -67,6 +67,31 @@ func (e *enrollmentListenerService) Create(ctx context.Context, model dto.Enroll
 	return nil
 }
 
+func (e *enrollmentListenerService) GetAccurateEnrollment(ctx context.Context) ([]dto.AccurateProgramDTO, error) {
+
+	data, err := e.service.GetAccurateEnrollment(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var datas []dto.AccurateProgramDTO
+
+	for _, i := range data {
+		datas = append(datas, dto.AccurateProgramDTO{
+			ID_Listener:       i.ID_Listener,
+			NameProfEducation: i.NameProfEducation,
+			TimeEducation:     i.TimeEducation,
+			IndividualPrice:   i.IndividualPrice,
+			GroupPrice:        i.GroupPrice,
+			CampusPrice:       i.CampusPrice,
+			EducationType:     i.EducationType,
+			Division:          i.Division,
+		})
+	}
+
+	return datas, nil
+}
+
 func (e *enrollmentListenerService) Read(ctx context.Context, page int, filter string) ([]dto.EnrollmentListenerDetailsDTO, error) {
 
 	data, err := e.service.Read(ctx, page, filter)
