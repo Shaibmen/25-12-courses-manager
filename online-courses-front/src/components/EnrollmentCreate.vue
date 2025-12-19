@@ -391,9 +391,9 @@ const loadVariantsNotDO = {
 }
 
 const ageCategories = {
-  BELOW_EIGHTEEN: 'Меньше восемнадцати',
-  FOURTEEN: 'Меньше ',
-  EIGHTEEN: 'Восемнадцать'
+  BELOW_EIGHTEEN: 'От четырнадцати до восемнадцати',
+  FOURTEEN: 'До четырнадцати',
+  EIGHTEEN: 'От восемнадцати'
 }
 
 const contracts = ref([])
