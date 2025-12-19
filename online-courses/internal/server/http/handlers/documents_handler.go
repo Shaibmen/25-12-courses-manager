@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"online-courses/internal/config"
 	"online-courses/internal/domain/dto"
 	"online-courses/internal/domain/service"
 	"online-courses/internal/server/http/request"
@@ -16,10 +17,11 @@ import (
 
 type DocumentHandler struct {
 	handler service.DocumentService
+	cfg     *config.Config
 }
 
-func NewDocumentHandler(handler service.DocumentService) *DocumentHandler {
-	return &DocumentHandler{handler: handler}
+func NewDocumentHandler(handler service.DocumentService, cfg *config.Config) *DocumentHandler {
+	return &DocumentHandler{handler: handler, cfg: cfg}
 }
 
 func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
@@ -40,7 +42,7 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		return
 	}
 
-	responseCard, err := RequestToDoc(*data, "personal-card", c)
+	responseCard, err := RequestToDoc(*data, "personal-card", c, d.cfg)
 	if err != nil {
 		c.Error(err)
 		return
@@ -50,7 +52,7 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		return
 	}
 
-	responseZayvlenie, err := RequestToDoc(*data, "zayavlenie", c)
+	responseZayvlenie, err := RequestToDoc(*data, "zayavlenie", c, d.cfg)
 	if err != nil {
 		c.Error(err)
 		return
@@ -60,7 +62,7 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		return
 	}
 
-	responseDogovor, err := RequestToDoc(*data, "dogovor", c)
+	responseDogovor, err := RequestToDoc(*data, "dogovor", c, d.cfg)
 	if err != nil {
 		c.Error(err)
 		return
@@ -73,9 +75,9 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 
 }
 
-func RequestToDoc(data dto.FullDocumentInfoDTO, endpoint string, c *gin.Context) (int, error) {
+func RequestToDoc(data dto.FullDocumentInfoDTO, endpoint string, c *gin.Context, cfg *config.Config) (int, error) {
 	requestBody, _ := json.Marshal(data)
-	req, err := http.NewRequest("POST", "http://apidoc:8082/v1/doc/"+endpoint, bytes.NewBuffer(requestBody))
+	req, err := http.NewRequest("POST", cfg.SERVICE_DOC+":8082/v1/doc/"+endpoint, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return 0, err
 	}

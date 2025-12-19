@@ -2,6 +2,7 @@ package pg
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"online-courses/internal/database"
 	"online-courses/internal/domain/entity"
@@ -35,7 +36,7 @@ func (d *DocumentsRepo) PrepareDataDocument(ctx context.Context, idListener, idP
 	
 	from enrollmentlistener as e
 	inner join listener l on e.id_listener = l.id_listener
-	inner join passport pas on l.id_passport = pas.id_passport
+	left join passport pas on l.id_passport = pas.id_passport
 	inner join registrationaddress r on l.id_regaddress = r.id_regaddress
 	left join educationlistener educ on l.id_educationlistener = educ.id_educationlistener
 	left join leveleducation lvl on educ.level_education = lvl.id_leveleducation
@@ -54,6 +55,7 @@ func (d *DocumentsRepo) PrepareDataDocument(ctx context.Context, idListener, idP
 	info := entity.PersonalCardInfo{}
 	err := d.repo.GetContext(ctx, &info, query, idListener, idProgram)
 	if err != nil {
+		fmt.Println("asdfasdf")
 		return nil, repoutils.HandleRepoErr(err)
 	}
 
@@ -67,6 +69,7 @@ func (d *DocumentsRepo) PrepareDataDocument(ctx context.Context, idListener, idP
 	executor := entity.Executor{}
 	err = d.repo.GetContext(ctx, &executor, queryExecutor, idExecutor)
 	if err != nil {
+		fmt.Println("1234")
 		return nil, repoutils.HandleRepoErr(err)
 	}
 
@@ -86,6 +89,7 @@ func (d *DocumentsRepo) PrepareDataDocument(ctx context.Context, idListener, idP
 	contractor := entity.ContractorDoc{}
 	err = d.repo.GetContext(ctx, &contractor, queryContractor, idListener, idProgram)
 	if err != nil {
+		fmt.Println("780967")
 		return nil, repoutils.HandleRepoErr(err)
 	}
 

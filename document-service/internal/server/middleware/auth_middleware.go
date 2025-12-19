@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"bytes"
+	"document-service/internal/config"
 	"encoding/json"
 	"net/http"
 	"strings"
@@ -13,7 +14,7 @@ type HttpResponse struct {
 	Message string
 }
 
-func AuthMiddleware() gin.HandlerFunc {
+func AuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
 
@@ -34,7 +35,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		requestBody, _ := json.Marshal(map[string]string{"token": token})
 
-		resp, err := http.Post("http://apiauth:8081/auth/v1/valid", "application/json", bytes.NewBuffer(requestBody))
+		resp, err := http.Post(cfg.SERVICE_AUTH+":8081/auth/v1/valid", "application/json", bytes.NewBuffer(requestBody))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, HttpResponse{Message: "invalid serivce"})
 			c.Abort()

@@ -13,7 +13,7 @@ func main() {
 
 	config := config.MustInitConfig()
 
-	db := database.MustInitDB(config.DB)
+	db := database.MustInitDB(config.DB_STRING_CONN)
 
 	utils.InitdValidator()
 
@@ -26,6 +26,6 @@ func main() {
 
 	middleware := handler.NewMiddleware(config.JWTKey)
 
-	server.InitSever(authHandler, registerHandler, middleware)
+	server.InitSever(authHandler, registerHandler, middleware, config)
 
 }

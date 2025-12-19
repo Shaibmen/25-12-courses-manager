@@ -775,7 +775,7 @@ const createEnrollment = async () => {
 
     if (!docRes.ok) {
       const e = await docRes.json().catch(() => ({}))
-      throw new Error(e.message || 'Ошибка создания документов (проверь тело запроса и права)')
+      throw new Error(e.message || 'Ошибка создания документов (возможно у слушателя нет паспорта(фикс в будущем))')
     }
 
     toast.success('Документы успешно созданы')

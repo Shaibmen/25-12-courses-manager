@@ -338,14 +338,14 @@ type PersonalCardInfo struct {
 	ContactPhone string `db:"contact_phone"`
 	Email        string `db:"email"`
 
-	PlaceBirth    string `db:"place_birth"`
-	Citizenship   string `db:"citizenship"`
-	Gender        string `db:"gender"`
-	Seria         string `db:"seria"`
-	Number        string `db:"number"`
-	PassportGiven string `db:"passport_given"`
-	DateGiven     string `db:"date_given"`
-	Code          string `db:"code"`
+	PlaceBirth    sql.NullString `db:"place_birth"`
+	Citizenship   sql.NullString `db:"citizenship"`
+	Gender        sql.NullString `db:"gender"`
+	Seria         sql.NullString `db:"seria"`
+	Number        sql.NullString `db:"number"`
+	PassportGiven sql.NullString `db:"passport_given"`
+	DateGiven     sql.NullString `db:"date_given"`
+	Code          sql.NullString `db:"code"`
 
 	MailIndex string `db:"mail_index"`
 	RegRegion string `db:"region"`

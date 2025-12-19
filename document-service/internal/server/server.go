@@ -1,6 +1,7 @@
 package server
 
 import (
+	"document-service/internal/config"
 	"document-service/internal/server/handler"
 	"document-service/internal/server/middleware"
 	"time"
@@ -9,10 +10,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func MustServerInit(r *gin.Engine, port string, personalCard *handler.PersonalCardHandler, zayavlenie *handler.ZayavlenieHandler, dogovor *handler.DogovoreHandler) {
+func MustServerInit(r *gin.Engine, port string, personalCard *handler.PersonalCardHandler, zayavlenie *handler.ZayavlenieHandler, dogovor *handler.DogovoreHandler, cfg *config.Config) {
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8081"},
+		AllowOrigins:     []string{cfg.SERVICE_FRONT + ":5173"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -22,7 +23,7 @@ func MustServerInit(r *gin.Engine, port string, personalCard *handler.PersonalCa
 
 	api := r.Group("v1/doc")
 	{
-		api.Use(middleware.AuthMiddleware())
+		api.Use(middleware.AuthMiddleware(cfg))
 
 		api.POST("personal-card", personalCard.CreatePersonalCard)
 		api.GET("exists", personalCard.ExistsPersonalCard)
