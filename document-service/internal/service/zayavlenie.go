@@ -189,12 +189,16 @@ func replaceZayavlenieFourteen(doc *docx.Docx, model *dto.ZayavlenieDTO) {
 
 	doc.Replace(": SERIAE NUMBERE ", seriaNumber, -1)
 	doc.Replace("GIVENE", model.Contractor.Passport.PassportGiven, -1)
-	doc.Replace("DATEGIVEN", model.Contractor.Passport.DateGiven, -1)
+
+	dob, err := time.Parse(time.RFC3339, model.Contractor.Passport.DateGiven)
+	if err == nil {
+		doc.Replace("DATEGIVEN", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
+	}
 
 	doc.Replace("PHONEE", model.Contractor.Contact_phone, -1)
 	doc.Replace("EMAILE", model.Contractor.Email, -1)
 
-	dob, err := time.Parse(time.RFC3339, model.ListenerData.DateOfBirth)
+	dob, err = time.Parse(time.RFC3339, model.ListenerData.DateOfBirth)
 	if err == nil {
 		doc.Replace("DATEBIRTH", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
 	}
@@ -229,11 +233,15 @@ func replaceZayavlenieEighteen(doc *docx.Docx, model *dto.ZayavlenieDTO) {
 	numberSeria := fmt.Sprintf(": %s %s ", model.Passport.Seria, model.Passport.Number)
 
 	doc.Replace(": SERIAE NUMBERE ", numberSeria, -1)
-	doc.Replace("DATEGIVEN", model.Passport.DateGiven, -1)
 	doc.Replace("GIVEN", model.Passport.PassportGiven, -1)
 	doc.Replace("SNILS", model.ListenerData.SNILS, -1)
 
-	dob, err := time.Parse(time.RFC3339, model.ListenerData.DateOfBirth)
+	dob, err := time.Parse(time.RFC3339, model.Passport.DateGiven)
+	if err == nil {
+		doc.Replace("DATEGIVEN", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
+	}
+
+	dob, err = time.Parse(time.RFC3339, model.ListenerData.DateOfBirth)
 	if err == nil {
 		doc.Replace("ROZHD", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
 	}

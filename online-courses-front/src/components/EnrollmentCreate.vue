@@ -63,6 +63,52 @@ const listenerId = ref(route.params.listenerId)
 const token = localStorage.getItem('access_token')
 
 const listener = ref({})
+<<<<<<< HEAD
+=======
+const contractor = ref(null)
+const hasContractor = ref(false)
+const loading = ref(true)
+
+const ageCategory = ref('')
+
+const documentType = ref('')
+const loadVariant = ref('')
+
+const loadVariantsDO = {
+  1: 'с пониженной недельной учебной нагрузкой (1 акад. час в неделю)',
+  2: 'с умеренной недельной учебной нагрузкой (2 акад. часа в неделю)',
+  3: 'со стандартной недельной учебной нагрузкой (3 акад. часа в неделю)',
+  4: 'с высокой недельной учебной нагрузкой (4 акад. часа в неделю)',
+  5: 'с повышенной недельной учебной нагрузкой (6 акад. часов в неделю)'
+}
+
+const loadVariantsNotDO = {
+  1: 'с пониженной недельной учебной нагрузкой (3 акад. часа в неделю)',
+  2: 'с умеренной недельной учебной нагрузкой (6 акад. часов в неделю)',
+  3: 'со стандартной недельной учебной нагрузкой (12 акад. часов в неделю)',
+  4: 'с высокой недельной учебной нагрузкой (15 акад. часов в неделю)',
+  5: 'с повышенной недельной учебной нагрузкой (30 акад. часов в неделю)',
+  6: 'с интенсивной недельной учебной нагрузкой (36 акад. часов в неделю)'
+}
+
+const ageCategories = {
+  BELOW_EIGHTEEN: 'От четырнадцати до восемнадцати',
+  FOURTEEN: 'До четырнадцати',
+  EIGHTEEN: 'От восемнадцати'
+}
+
+const contracts = ref([])
+const loadingContracts = ref(false)
+const selectedContractId = ref('')
+
+const studyLoadOption = ref('')
+const paymentOption = ref('')
+const secondPaymentDate = ref('')
+
+const executors = ref([])
+const selectedExecutorId = ref('')
+
+>>>>>>> 5eb1431 (фиксы)
 const programs = ref([])
 const selectedProgramId = ref('')
 const price = ref({ individual_price: 0, group_price: 0, campus_price: 0 })

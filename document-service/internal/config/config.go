@@ -1,8 +1,8 @@
 package config
 
 import (
+	"log"
 	"os"
-	"fmt"
 
 	"github.com/joho/godotenv"
 )
@@ -15,7 +15,7 @@ func MustInitConfig() *Config {
 	err := godotenv.Load()
 
 	if err != nil {
-		panic(fmt.Sprintf("ошибка при загрузке конфига: %s", err.Error()))
+		log.Printf("ошибка при загрузке конфига: %s", err.Error())
 	}
 
 	PORT := os.Getenv("PORT")

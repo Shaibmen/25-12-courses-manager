@@ -311,7 +311,6 @@ func replaceDO3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 
 	doc.Replace("NAMEPROFEDUCATION", model.ProgramEducation.NameProfEducation, -1)
 	doc.Replace("SIN", model.Enrollment.StartDate.Format("02.01.2006"), -1)
-	doc.Replace("CE", "", -1)
 	doc.Replace("FOR", model.Enrollment.EndDate.Format("02.01.2006"), -1)
 
 	dob, err := time.Parse(time.RFC3339, model.ListenerData.DateOfBirth)
@@ -321,7 +320,6 @@ func replaceDO3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 
 	doc.Replace("SNILS", model.ListenerData.SNILS, -1)
 	doc.Replace("PHONEL", model.ListenerData.ContactPhone, -1)
-	doc.Replace("EMAILL", model.ListenerData.Email, -1)
 
 	doc.Replace("SERIAE", model.Contractor.Passport.Seria, -1)
 	doc.Replace("NUMBERE", model.Contractor.Passport.Number, -1)
@@ -333,6 +331,8 @@ func replaceDO3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("BUILDINGE, APARTMENTE", model.Contractor.RegistrationAddress.Building+", "+model.Contractor.RegistrationAddress.Apartment, -1)
 	doc.Replace("PHONEE", model.Contractor.Contact_phone, -1)
 	doc.Replace("EMAILE", model.Contractor.Email, -1)
+
+	doc.Replace("EMA", model.ListenerData.Email, -1)
 }
 
 func (s *DogovorService) ExistsDogovor(fileName string) ([]string, error) {

@@ -19,6 +19,7 @@ func MustNewConnectionPostgresSQL(cfg string, logger *slog.Logger) *PostgresSQL 
 		logger.Error("ошибка подключения к базе данных",
 			"error", err,
 		)
+
 		panic(1)
 	}
 
