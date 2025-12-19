@@ -60,9 +60,16 @@
             </option>
           </select>
 
-          <select v-model="studyLoadOption" class="form-select" :disabled="isDoFiz">
+          <select v-model="studyLoadOption" class="form-select" :disabled="isDO">
             <option value="">— Недельная учебная нагрузка —</option>
-            <option v-for="(label, key) in activeLoadVariants" :key="key" :value="key">
+            <option v-for="(label, key) in loadVariantsNotDO" :key="key" :value="key">
+              {{ label }}
+            </option>
+          </select>
+
+          <select v-model="loadVariant" class="form-select" :disabled="isPKorPP">
+            <option value="">— Вариант учебной нагрузки —</option>
+            <option v-for="(label, key) in loadVariantsDO" :key="key" :value="key">
               {{ label }}
             </option>
           </select>
@@ -85,35 +92,16 @@
             placeholder="Срок оплаты оставшихся 50 %"
           />
 
-          <select v-model="loadVariant" class="form-select">
-            <option value="">— Вариант учебной нагрузки —</option>
-            <option
-              v-for="(label, key) in activeLoadVariants"
-              :key="key"
-              :value="key"
-            >
-              {{ label }}
-            </option>
-          </select>
-
           <select v-model="ageCategory" class="form-select">
             <option value="">— Возрастная категория —</option>
-            <option
-              v-for="(label, key) in ageCategories"
-              :key="key"
-              :value="key"
-            >
+            <option v-for="(label, key) in ageCategories" :key="key" :value="key">
               {{ label }}
             </option>
           </select>
 
           <select v-model="optDocumentSelected" class="form-select">
             <option value="">— Итоговый документ и режим выдачи —</option>
-            <option
-              v-for="(label, key) in optDocumentOptions"
-              :key="key"
-              :value="key"
-            >
+            <option v-for="(label, key) in optDocumentOptions" :key="key" :value="key">
               {{ label }}
             </option>
           </select>
@@ -121,13 +109,12 @@
       </div>
 
       <div class="card p-3 shadow-sm card-block mt-4">
-        <h5 class="card-title mb-3">Исполнитель с стороны 25-12</h5>
+        <h5 class="card-title mb-3">
+          Исполнитель со стороны 25-12 <span class="text-danger">*</span>
+        </h5>
+
         <div class="d-flex flex-column gap-2">
-          <div
-            v-for="e in executors"
-            :key="e.id_executor"
-            class="form-check"
-          >
+          <div v-for="e in executors" :key="e.id_executor" class="form-check">
             <input
               class="form-check-input"
               type="radio"
@@ -178,11 +165,13 @@
             </div>
             <div class="col-md-6">
               <label class="form-label">Тип обучения</label>
-              <select v-model="typeOfRetraining" class="form-select">
+              <select v-model="typeOfRetraining" class="form-select" disabled>
+                <option value="">— Автоподстановка типа обучения —</option>
                 <option value="Повышение квалификации">Повышение квалификации</option>
                 <option value="Профессиональная переподготовка">Профессиональная переподготовка</option>
                 <option value="Дополнительное образование">Дополнительное образование</option>
               </select>
+              <div class="form-text">Тип обучения подставляется автоматически по выбранному договору</div>
             </div>
           </div>
         </div>
@@ -206,6 +195,7 @@
         </div>
 
         <div class="modal-body">
+          <!-- модалка заказчика (как раньше) -->
           <h5 class="mb-3">Данные заказчика</h5>
           <div class="row g-3">
             <div class="col-md-4">
@@ -250,87 +240,97 @@
             </div>
           </div>
 
-          <hr class="my-4">
-          <h5 class="mb-3">Паспорт заказчика</h5>
-          <div class="row g-3">
-            <div class="col-md-6">
-              <input v-model="contractorForm.passport.place_birth" class="form-control" placeholder="Место рождения" />
-            </div>
-            <div class="col-md-6">
-              <input v-model="contractorForm.passport.citizenship" class="form-control" placeholder="Гражданство" />
-            </div>
-            <div class="col-md-4">
-              <select
-                v-model="contractorForm.passport.gender"
-                :class="['form-select', { 'is-invalid': errors.gender }]">
-                <option value="">Пол</option>
-                <option value="Мужской">Мужской</option>
-                <option value="Женский">Женский</option>
-              </select>
-              <div v-if="errors.gender" class="invalid-feedback d-block">Выберите пол</div>
-            </div>
-            <div class="col-md-4">
-              <input
-                v-model="contractorForm.passport.seria"
-                @input="digitsLimit(contractorForm.passport, 'seria', 4)"
-                :class="['form-control', { 'is-invalid': errors.seria }]"
-                placeholder="Серия (4 цифры)" />
-              <div v-if="errors.seria" class="invalid-feedback d-block">4 цифры</div>
-            </div>
-            <div class="col-md-4">
-              <input
-                v-model="contractorForm.passport.number"
-                @input="digitsLimit(contractorForm.passport, 'number', 6)"
-                :class="['form-control', { 'is-invalid': errors.number }]"
-                placeholder="Номер (6 цифр)" />
-              <div v-if="errors.number" class="invalid-feedback d-block">6 цифр</div>
-            </div>
-            <div class="col-md-12">
-              <input v-model="contractorForm.passport.passport_given" class="form-control" placeholder="Кем выдан" />
-            </div>
-            <div class="col-md-6">
-              <input type="date" v-model="contractorForm.passport.date_given" class="form-control" />
-            </div>
-            <div class="col-md-6">
-              <input
-                v-model="contractorForm.passport.code"
-                @input="formatCode"
-                :class="['form-control', { 'is-invalid': errors.code }]"
-                placeholder="Код подразделения (000-000)" />
-              <div v-if="errors.code" class="invalid-feedback d-block">Формат: 000-000</div>
-            </div>
+          <!-- паспорт и адрес (полная версия) -->
+<hr class="my-4">
+<h5 class="mb-3">Паспорт заказчика</h5>
+<div class="row g-3">
+  <div class="col-md-6">
+    <input v-model="contractorForm.passport.place_birth" class="form-control" placeholder="Место рождения" />
+  </div>
+  <div class="col-md-6">
+    <input v-model="contractorForm.passport.citizenship" class="form-control" placeholder="Гражданство" />
+  </div>
+
+  <div class="col-md-4">
+    <select v-model="contractorForm.passport.gender"
+            @change="validateGender"
+            :class="['form-select', { 'is-invalid': errors.gender }]">
+      <option value="">Пол</option>
+      <option value="Мужской">Мужской</option>
+      <option value="Женский">Женский</option>
+    </select>
+    <div v-if="errors.gender" class="invalid-feedback d-block">Выберите пол</div>
+  </div>
+
+  <div class="col-md-4">
+    <input v-model="contractorForm.passport.seria"
+           @input="digitsLimit(contractorForm.passport, 'seria', 4)"
+           :class="['form-control', { 'is-invalid': errors.seria }]"
+           placeholder="Серия (4 цифры)" />
+    <div v-if="errors.seria" class="invalid-feedback d-block">Серия из 4 цифр</div>
+  </div>
+
+  <div class="col-md-4">
+    <input v-model="contractorForm.passport.number"
+           @input="digitsLimit(contractorForm.passport, 'number', 6)"
+           :class="['form-control', { 'is-invalid': errors.number }]"
+           placeholder="Номер (6 цифр)" />
+    <div v-if="errors.number" class="invalid-feedback d-block">Номер из 6 цифр</div>
+  </div>
+
+  <div class="col-md-8">
+    <input v-model="contractorForm.passport.passport_given" class="form-control" placeholder="Кем выдан (орган выдачи)" />
+  </div>
+
+  <div class="col-md-4">
+    <input v-model="contractorForm.passport.date_given" type="date" class="form-control" placeholder="Дата выдачи" />
+  </div>
+
+  <div class="col-md-6">
+    <input v-model="contractorForm.passport.code"
+           @input="formatCode"
+           :class="['form-control', { 'is-invalid': errors.code }]"
+           placeholder="Код подразделения (XXX-XXX)" />
+    <div v-if="errors.code" class="invalid-feedback d-block">Формат: 123-456</div>
+  </div>
+</div>
+
+<hr class="my-4">
+<h5 class="mb-3">Адрес регистрации</h5>
+<div class="row g-3">
+  <div class="col-md-3">
+    <input v-model="contractorForm.reg_address.mail_index"
+           @input="digitsLimit(contractorForm.reg_address, 'mail_index', 6)"
+           :class="['form-control', { 'is-invalid': errors.index }]"
+           placeholder="Индекс (6 цифр)"/>
+    <div v-if="errors.index" class="invalid-feedback d-block">Индекс из 6 цифр</div>
           </div>
 
-          <hr class="my-4">
-          <h5 class="mb-3">Адрес регистрации</h5>
-          <div class="row g-3">
-            <div class="col-md-4">
-              <input
-                v-model="contractorForm.reg_address.mail_index"
-                @input="digitsLimit(contractorForm.reg_address, 'mail_index', 6)"
-                :class="['form-control', { 'is-invalid': errors.index }]"
-                placeholder="Индекс (6 цифр)"/>
-              <div v-if="errors.index" class="invalid-feedback d-block">6 цифр</div>
-            </div>
-            <div class="col-md-4">
-              <input v-model="contractorForm.reg_address.region" class="form-control" placeholder="Регион" />
-            </div>
-            <div class="col-md-4">
-              <input v-model="contractorForm.reg_address.city" class="form-control" placeholder="Город" />
-            </div>
-            <div class="col-md-6">
-              <input v-model="contractorForm.reg_address.street" class="form-control" placeholder="Улица" />
-            </div>
-            <div class="col-md-3">
-              <input v-model="contractorForm.reg_address.house" class="form-control" placeholder="Дом" />
-            </div>
-            <div class="col-md-3">
-              <input v-model="contractorForm.reg_address.building" class="form-control" placeholder="Корпус" />
-            </div>
-            <div class="col-md-3">
-              <input v-model="contractorForm.reg_address.apartment" class="form-control" placeholder="Квартира" />
-            </div>
+          <div class="col-md-3">
+            <input v-model="contractorForm.reg_address.region" class="form-control" placeholder="Регион" />
           </div>
+
+          <div class="col-md-3">
+            <input v-model="contractorForm.reg_address.city" class="form-control" placeholder="Город" />
+          </div>
+
+          <div class="col-md-3">
+            <input v-model="contractorForm.reg_address.street" class="form-control" placeholder="Улица" />
+          </div>
+
+          <div class="col-md-2">
+            <input v-model="contractorForm.reg_address.house" class="form-control" placeholder="Дом" />
+          </div>
+
+          <div class="col-md-2">
+            <input v-model="contractorForm.reg_address.building" class="form-control" placeholder="Корпус/Строение" />
+          </div>
+
+          <div class="col-md-2">
+            <input v-model="contractorForm.reg_address.apartment" class="form-control" placeholder="Квартира" />
+          </div>
+        </div>
+
         </div>
 
         <div class="modal-footer">
@@ -356,7 +356,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
 import Header from './Header.vue'
 import ConfirmModal from './ConfirmModal.vue'
-import { API_URL_CORE, API_URL_DOC } from '../config'
+import { API_URL_CORE } from '../config'
 
 const route = useRoute()
 const router = useRouter()
@@ -370,8 +370,10 @@ const loading = ref(true)
 
 const ageCategory = ref('')
 
-const documentType = ref('')
 const loadVariant = ref('')
+const studyLoadOption = ref('')
+const paymentOption = ref('')
+const secondPaymentDate = ref('')
 
 const loadVariantsDO = {
   1: 'с пониженной недельной учебной нагрузкой (1 акад. час в неделю)',
@@ -392,17 +394,13 @@ const loadVariantsNotDO = {
 
 const ageCategories = {
   BELOW_EIGHTEEN: 'Меньше восемнадцати',
-  FOURTEEN: 'Меньше ',
+  FOURTEEN: 'Меньше четырнадцати',
   EIGHTEEN: 'Восемнадцать'
 }
 
 const contracts = ref([])
 const loadingContracts = ref(false)
 const selectedContractId = ref('')
-
-const studyLoadOption = ref('')
-const paymentOption = ref('')
-const secondPaymentDate = ref('')
 
 const executors = ref([])
 const selectedExecutorId = ref('')
@@ -414,7 +412,7 @@ const currentPrice = ref(0)
 const startDate = ref('')
 const endDate = ref('')
 const group = ref('')
-const typeOfRetraining = ref('')
+const typeOfRetraining = ref('') 
 const saving = ref(false)
 
 const contractorModal = ref(false)
@@ -476,18 +474,20 @@ const filteredContracts = computed(() => {
   }
 })
 
-const isDoFiz = computed(() => {
+const isDO = computed(() => {
   const c = contracts.value.find(c => c.id_contract === selectedContractId.value)
-  return c?.name === 'ДО с оплатой физическим лицом'
+  return !!c && String(c.id_contract).toUpperCase().startsWith('DO')
 })
-
-const activeLoadVariants = computed(() => {
-  return isDoFiz.value ? loadVariantsDO : loadVariantsNotDO
+const isPKorPP = computed(() => {
+  const c = contracts.value.find(c => c.id_contract === selectedContractId.value)
+  if (!c) return false
+  const id = String(c.id_contract).toUpperCase()
+  return id.startsWith('PK') || id.startsWith('PP')
 })
 
 const optDocumentOptions = {
-  option_1: 'удостоверение о повышении квалификации вручается по окончании',
-  option_2: 'удостоверение выдаётся одновременно с дипломом СПО/ВО (ч. 16 ст. 76 ФЗ-273). До этого момента удостоверение хранится у Исполнителя.'
+  1: 'удостоверение о повышении квалификации вручается по окончании',
+  2: 'удостоверение выдаётся одновременно с дипломом СПО/ВО (ч. 16 ст. 76 ФЗ-273). До этого момента удостоверение хранится у Исполнителя.'
 }
 const optDocumentSelected = ref('')
 
@@ -497,9 +497,11 @@ const isFormValid = computed(() => {
     startDate.value &&
     endDate.value &&
     currentPrice.value != null &&
+    selectedExecutorId.value && 
     (!hasContractor.value || selectedContractId.value)
   )
 })
+
 
 const loadListenerAndContractor = async () => {
   try {
@@ -666,14 +668,36 @@ const deleteContractor = async () => {
   }
 }
 
-watch(() => isDoFiz.value, (nv) => {
-  if (nv) {
-    studyLoadOption.value = ''
+watch(isDO, (val) => {
+  if (val) {
+    studyLoadOption.value = '' 
   }
 })
+watch(isPKorPP, (val) => {
+  if (val) {
+    loadVariant.value = '' 
+  }
+})
+
+watch(selectedContractId, (newId) => {
+  const c = contracts.value.find(ci => ci.id_contract === newId)
+  const id = c?.id_contract?.toUpperCase() || ''
+  if (id.startsWith('DO')) typeOfRetraining.value = 'Дополнительное образование'
+  else if (id.startsWith('PK')) typeOfRetraining.value = 'Повышение квалификации'
+  else if (id.startsWith('PP')) typeOfRetraining.value = 'Профессиональная переподготовка'
+  else typeOfRetraining.value = ''
+})
+
 const createEnrollment = async () => {
+    
+
   if (!isFormValid.value) {
     toast.warn('Заполните обязательные поля')
+    return
+  }
+
+  if (!selectedExecutorId.value) {
+    toast.warn('Выберите исполнителя')
     return
   }
 
@@ -707,30 +731,38 @@ const createEnrollment = async () => {
 
     toast.success('Запись успешно создана')
 
-
     let optPriceValue = null
     if (paymentOption.value === 'split') {
       optPriceValue =
         `Оплата осуществляется в следующем порядке: аванс 50 % — предоплата до начала обучения, ` +
-        `оставшиеся 50 % — в установленный срок ${secondPaymentDate.value}`
+        `оставшиеся 50 % — в установленный срок${secondPaymentDate.value ? ' ' + secondPaymentDate.value : ''}`
     } else if (paymentOption.value === 'full') {
       optPriceValue =
         'Оплата осуществляется в следующем порядке: 100% предоплата до начала обучения.'
     }
 
+    const frontData = {
+      dogovor_type: selectedContractId.value || null,
+      dogovor_age: ageCategory.value || null,
+      opt_document: optDocumentSelected.value ? Number(optDocumentSelected.value) : null,
+      opt_price: optPriceValue || null,
+      opt_nagruz: null
+    }
+
+    if (isDO.value) {
+      frontData.opt_nagruz = loadVariant.value ? Number(loadVariant.value) : null
+    } else if (isPKorPP.value) {
+      frontData.opt_nagruz = studyLoadOption.value ? Number(studyLoadOption.value) : null
+    }
+
     const documentPayload = {
       id_listener: listenerId,
       id_program: selectedProgramId.value,
-      id_executor: selectedExecutorId.value,
-      FrontData: {
-        variant: Number(loadVariant.value),
-        dogovor_type: selectedContractId.value,
-        opion_nagruz: isDoFiz.value ? null : Number(studyLoadOption.value),
-        opt_document: Number(optDocumentSelected.value),
-        dogovor_age: ageCategory.value,
-        opt_price: optPriceValue
-      }
+      id_executor: selectedExecutorId.value || null,
+      FrontData: frontData
     }
+
+
 
     const docRes = await fetch(`${API_URL_CORE}/document/`, {
       method: 'POST',
@@ -743,7 +775,7 @@ const createEnrollment = async () => {
 
     if (!docRes.ok) {
       const e = await docRes.json().catch(() => ({}))
-      throw new Error(e.message || 'Ошибка создания документов(стоит проверить может быть запись создалась, тогда стоит её удалить)')
+      throw new Error(e.message || 'Ошибка создания документов (проверь тело запроса и права)')
     }
 
     toast.success('Документы успешно созданы')
@@ -754,7 +786,6 @@ const createEnrollment = async () => {
     saving.value = false
   }
 }
-
 
 const goBack = () => router.push(`/listeners/${listenerId}`)
 
@@ -783,5 +814,9 @@ onMounted(async () => {
 }
 th, td {
   vertical-align: middle;
+}
+.form-text {
+  font-size: 0.85rem;
+  color: #6c757d;
 }
 </style>

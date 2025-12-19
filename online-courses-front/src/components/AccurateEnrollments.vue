@@ -4,7 +4,7 @@
   <div style="padding: 100px 20px 20px 20px;">
     <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
       <div style="display:flex; gap:10px; align-items:center;">
-        <input v-model="filter" placeholder="Фильтр по курсу" class="form-control" style="min-width: 260px;" />
+        <input v-model="filter" placeholder="Фильтр по фамилии" class="form-control" style="min-width: 260px;" />
         <button class="btn btn-secondary" @click="refresh">Обновить</button>
       </div>
       <button class="btn btn-secondary" @click="goBack">Назад</button>
@@ -16,8 +16,10 @@
       <table class="table table-striped table-hover w-100" style="min-width: 900px;">
         <thead class="table-light sticky-top" style="top: 0; z-index: 2;">
           <tr>
-            <th>Курс (NameProfEducation)</th>
-            <th>Часы (TimeEducation)</th>
+            <th>Слушатель</th>
+            <th>Телефон</th>
+            <th>Курс</th>
+            <th>Часы</th>
             <th>Инд. цена</th>
             <th>Групповая цена</th>
             <th>Кампус цена</th>
@@ -27,6 +29,9 @@
         </thead>
         <tbody>
           <tr v-for="item in filtered" :key="item.ID_Listener + item.NameProfEducation">
+            <td>{{ item.listenerFio}}</td>
+            <td>{{ item.listenerPhone}}</td>
+
             <td :title="item.NameProfEducation">{{ item.NameProfEducation }}</td>
             <td>{{ item.TimeEducation }}</td>
             <td>{{ formatPrice(item.IndividualPrice) }}</td>
@@ -72,6 +77,18 @@ const fetchAccurate = async () => {
     }
     const data = await res.json()
     accurateList.value = Array.isArray(data) ? data : (data.data || [])
+
+    for (const item of accurateList.value) {
+      if (!item.ID_Listener) continue
+
+      const info = await fetchListenerDetails(item.ID_Listener)
+      if (!info) continue
+
+      item.listenerFio = info.fio
+      item.listenerPhone = info.phone
+    }
+
+
   } catch (err) {
     toast.error(err.message || 'Ошибка при загрузке точных записей')
   } finally {
@@ -79,11 +96,42 @@ const fetchAccurate = async () => {
   }
 }
 
+
+const fetchListenerDetails = async (listenerId) => {
+  try {
+    const res = await fetch(
+      `${API_URL_CORE}/listener/details/${listenerId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json'
+        }
+      }
+    )
+    if (!res.ok) throw new Error('Ошибка загрузки слушателя')
+
+    const json = await res.json()
+    const l = json?.data?.listener
+    if (!l) return null
+
+    return {
+      fio: [l.second_name, l.first_name, l.middle_name].filter(Boolean).join(' '),
+      phone: l.contact_phone || ''
+    }
+  } catch {
+    return null
+  }
+}
+
 const filtered = computed(() => {
   if (!filter.value) return accurateList.value
   const f = filter.value.toLowerCase().trim()
-  return accurateList.value.filter(i => (i.NameProfEducation || '').toLowerCase().includes(f))
+
+  return accurateList.value.filter(i =>
+    (i.listenerFio || '').toLowerCase().startsWith(f)
+  )
 })
+
 
 const formatPrice = p => p == null || p === 0 ? '—' : `${Number(p).toLocaleString('ru-RU')} ₽`
 

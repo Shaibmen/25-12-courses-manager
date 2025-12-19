@@ -172,41 +172,6 @@ func (e *EnrollmentListenerHandler) DeleteEnrollment(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 1*time.Second)
 	defer cancel()
 
-	// dto, err := e.handler.GetListenerFIO(ctx, id_listener)
-	// if err != nil {
-	// 	c.Error(err)
-	// 	return
-	// }
-
-	// fio := dto.SecondName + "_" + dto.FirstName + "_" + dto.MiddleName
-
-	// url := "http://localhost:8082/v1/doc/delete?card-name=" + fio
-
-	// req, err := http.NewRequest("DELETE", url, nil)
-	// if err != nil {
-	// 	c.Error(err)
-	// 	return
-	// }
-
-	// authHeader := c.Request.Header.Get("Authorization")
-	// field := strings.Fields(authHeader)
-
-	// req.Header.Set("Content-Type", "application/json")
-	// req.Header.Set("Authorization", "Bearer "+field[1])
-
-	// client := &http.Client{}
-	// response, err := client.Do(req)
-	// if err != nil {
-	// 	c.Error(err)
-	// 	return
-	// }
-
-	// if response.StatusCode != http.StatusOK {
-	// 	err = errors.New("личное дело не удалено ошибка сервиса документов")
-	// 	c.Error(err)
-	// 	return
-	// }
-
 	if err := e.handler.Delete(ctx, id_listener, id_program); err != nil {
 		c.Error(err)
 		return

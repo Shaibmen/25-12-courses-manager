@@ -75,7 +75,7 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 
 func RequestToDoc(data dto.FullDocumentInfoDTO, endpoint string, c *gin.Context) (int, error) {
 	requestBody, _ := json.Marshal(data)
-	req, err := http.NewRequest("POST", "http://localhost:8082/v1/doc/"+endpoint, bytes.NewBuffer(requestBody))
+	req, err := http.NewRequest("POST", "http://apidoc:8082/v1/doc/"+endpoint, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return 0, err
 	}

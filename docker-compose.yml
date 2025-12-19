@@ -2,61 +2,63 @@
 services:
   db:
     image: postgres:17
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1
-      POSTGRES_DB: 25-12courses
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
     volumes: 
       - db_data:/var/lib/postgresql/data
-      - ./db/init:/docker-entrypoint-initdb.d
+      - ./db/init:/docker-entrypoint-initdb.d/init.sql
     
   apicore:
-    image: shaibmen/online-courses:latest
+    image: shaibmen/online-courses:v1.3
     env_file:
-      - ./online-courses/.env
+      - .env
     depends_on:
       - db
       - apiauth
-    environment:
-      DB: "host=db port=5432 user=postgres password=1 dbname=25-12courses sslmode=disable"
-      LEVEL_LOG: Debug
-      JWT_SECRET_KEY: gfhxg32q450uh3erfnsdf08najkytg49
-      DB_USER: postgres
-      DB_PASSWORD: 1
-      DB_NAME: 25-12courses
-      HOST: DB
+    # environment:
+    #   DB: ${DB}
+    #   LEVEL_LOG: Debug
+    #   JWT_SECRET_KEY: gfhxg32q450uh3erfnsdf08najkytg49
+    #   DB_USER: postgres
+    #   DB_PASSWORD: 1
+    #   DB_NAME: 25-12courses
+    #   HOST: DB
     ports:
       - "8080:8080"
 
   apiauth:
     image: shaibmen/auth-service:latest
     env_file:
-      - ./auth-service/.env
+      - .env
     depends_on:
       - db
-    environment:
-      DB: "host=db port=5432 user=postgres password=1 dbname=25-12courses sslmode=disable"
-      JWT_SECRET_KEY: gfhxg32q450uh3erfnsdf08najkytg49
+    # environment:
+    #   DB: "host=db port=5432 user=postgres password=1 dbname=25-12courses sslmode=disable"
+    #   JWT_SECRET_KEY: gfhxg32q450uh3erfnsdf08najkytg49
     ports:
       - "8081:8081"
     
   apidoc:
     image: metapohuism/document-service:latest
     env_file:
-      - ./document-service/.env
+      - .env
     depends_on:
       - db
       - apiauth
       - apicore
-    environment:
-      PORT: :8082
+    # environment:
+    #   PORT: :8082
     ports:
       - "8082:8082"
 
   frontend:
-    image: shaibmen/online-courses-front:latest
+    image: shaibmen/online-courses-front:v1.2
     depends_on:
       - apicore
       - apiauth
