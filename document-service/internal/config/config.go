@@ -1,10 +1,7 @@
 package config
 
 import (
-	"log"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -12,11 +9,11 @@ type Config struct {
 }
 
 func MustInitConfig() *Config {
-	err := godotenv.Load()
+	// err := godotenv.Load()
 
-	if err != nil {
-		log.Printf("ошибка при загрузке конфига: %s", err.Error())
-	}
+	// if err != nil {
+	// 	log.Printf("ошибка при загрузке конфига: %s", err.Error())
+	// }
 
 	PORT := os.Getenv("PORT")
 
