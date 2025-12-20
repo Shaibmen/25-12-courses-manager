@@ -54,6 +54,8 @@ services:
     ports:
       - "8082:8082"
 
+      #
+
   frontend:
     image: shaibmen/online-courses-front:latest
     depends_on:
