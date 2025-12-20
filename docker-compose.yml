@@ -4,8 +4,6 @@ services:
     image: postgres:17
     env_file:
       - .env
-    env_file:
-      - .env
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -25,20 +23,11 @@ services:
     image: shaibmen/online-courses:latest
     env_file:
       - .env
-      - .env
     depends_on:
       db:
         condition: service_healthy
       apiauth:
         condition: service_started
-    # environment:
-    #   DB: ${DB}
-    #   LEVEL_LOG: Debug
-    #   JWT_SECRET_KEY: gfhxg32q450uh3erfnsdf08najkytg49
-    #   DB_USER: postgres
-    #   DB_PASSWORD: 1
-    #   DB_NAME: 25-12courses
-    #   HOST: DB
     ports:
       - "8080:8080"
 
@@ -46,21 +35,15 @@ services:
     image: shaibmen/auth-service:latest
     env_file:
       - .env
-      - .env
     depends_on:
       db:
         condition: service_healthy 
-    # environment:
-    #   DB: "host=db port=5432 user=postgres password=1 dbname=25-12courses sslmode=disable"
-    #   JWT_SECRET_KEY: gfhxg32q450uh3erfnsdf08najkytg49
     ports:
       - "8081:8081"
     
   apidoc:
     image: metapohuism/document-service:latest
-    image: metapohuism/document-service:latest
     env_file:
-      - .env
       - .env
     depends_on:
       db:
@@ -69,8 +52,6 @@ services:
         condition: service_started
       apicore:
         condition: service_started
-    # environment:
-    #   PORT: :8082
     ports:
       - "8082:8082"
 
