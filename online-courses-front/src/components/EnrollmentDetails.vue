@@ -27,6 +27,8 @@
             <th>Курс</th>
             <th>Тип</th>
             <th>Подразделение</th>
+            <th>Группа</th>
+            <th>Тип обучения</th>
             <th>Начало</th>
             <th>Окончание</th>
             <th>Цена</th>
@@ -36,15 +38,19 @@
 
         <tbody>
           <tr v-for="item in enrollments" :key="item.id_program_education">
-            <td>{{ item.name_prof_education }}</td>
+             <td>{{ item.name_prof_education }}</td>
             <td>{{ item.education_type }}</td>
             <td>{{ item.division_education }}</td>
+
+            <td>{{ item.group || '—' }}</td>
+            <td>{{ item.type_of_retraining || '—' }}</td>
+
             <td>{{ formatDate(item.start_date) }}</td>
             <td>{{ formatDate(item.end_date) }}</td>
             <td>{{ item.current_price }} ₽</td>
             <td style="white-space: nowrap;">
               <div style="display: flex; gap: 8px;">
-                <button class="btn btn-warning btn-sm" @click="editRecord(item)">Изменить</button>
+                <!-- <button class="btn btn-warning btn-sm" @click="editRecord(item)">Изменить</button> -->
                 <button class="btn btn-danger btn-sm" @click="deleteRecord(item)">Удалить</button>
               </div>
             </td>

@@ -20,6 +20,10 @@ func SetupRoutes(server *gin.Engine,
 	dashboardHandler *handlers.DashboardHandler,
 	backupHandler *handlers.BackupHandler,
 	reportHandler *handlers.ReportHandler,
+	contractorHandler *handlers.ContractHandler,
+	legalEntityHandler *handlers.LegalEntityHandler,
+	executerHandler *handlers.ExecutorHandler,
+	documentHandler *handlers.DocumentHandler,
 	Logger *slog.Logger) {
 
 	server.Use(cors.New(cors.Config{
@@ -46,6 +50,7 @@ func SetupRoutes(server *gin.Engine,
 			listener.GET("/", middleware.RoleProtecteMiddleware("worker"), listenerHandler.GetListener) // :page
 			listener.GET("/details/:id", middleware.RoleProtecteMiddleware("worker"), listenerHandler.GetFullListener)
 			listener.PUT("/:id", middleware.RoleProtecteMiddleware("worker"), listenerHandler.UpdateListener)
+			listener.GET("/legalentity/:id", middleware.RoleProtecteMiddleware("worker"), listenerHandler.FindByLegalEntity)
 		}
 
 		divisions := api.Group("/divisions")
@@ -88,7 +93,8 @@ func SetupRoutes(server *gin.Engine,
 			enrollment.DELETE("/:id_listener/:id_program", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.DeleteEnrollment)
 			enrollment.GET("/details/:id", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.ReadDetailListener)
 			enrollment.GET("/:id", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.ReadByProgram) // :page
-			enrollment.GET("/application-data-card", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.GetInfoToCreateCard)
+			// enrollment.GET("/application-data-card", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.GetInfoToCreateCard)
+			enrollment.GET("/accurate", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.GetAccurateEnrollment)
 		}
 
 		dashboard := api.Group("/dashboard")
@@ -108,6 +114,35 @@ func SetupRoutes(server *gin.Engine,
 		{
 			report.GET("/period", middleware.RoleProtecteMiddleware("accountant"), reportHandler.ReportPeriod)
 			report.GET("/expensive", middleware.RoleProtecteMiddleware("accountant"), reportHandler.MostExpensiveProgram)
+		}
+
+		contractor := api.Group("/contractor")
+		{
+
+			contractor.POST("/:id", middleware.RoleProtecteMiddleware("worker"), contractorHandler.CreateContract)
+			contractor.DELETE("/:id", middleware.RoleProtecteMiddleware("worker"), contractorHandler.Delete)
+			contractor.PUT("/:id", middleware.RoleProtecteMiddleware("worker"), contractorHandler.UpdateContractor)
+		}
+
+		legalEntity := api.Group("/legalentity")
+		{
+
+			legalEntity.POST("/", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.CreateLegalEntity)
+			legalEntity.DELETE("/:id", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.DeleteLegalEntity)
+			legalEntity.GET("/", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.ReadLegalEntity) // :page
+			legalEntity.GET("/details/:id", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.ReadFullData)
+			legalEntity.PUT("/:id", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.UpdateLegalEntity)
+		}
+
+		executer := api.Group("/executer")
+		{
+			executer.POST("/", middleware.RoleProtecteMiddleware("worker"), executerHandler.CreateExecutor)
+			executer.DELETE("/:id", middleware.RoleProtecteMiddleware("worker"), executerHandler.DeleteExecutor)
+			executer.GET("/", middleware.RoleProtecteMiddleware("worker"), executerHandler.ReadExecutor)
+		}
+		document := api.Group("/document")
+		{
+			document.POST("/", middleware.RoleProtecteMiddleware("worker"), documentHandler.DocumentDataDeliver)
 		}
 	}
 }

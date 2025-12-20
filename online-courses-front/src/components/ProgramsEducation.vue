@@ -33,7 +33,7 @@
         <thead class="table-light sticky-top" style="top: 0; z-index: 2;">
           <tr>
             <th>Название программы</th>
-            <th>Длительность (мес.)</th>
+            <th>Длительность (часы)</th>
             <th>Индивидуально (₽)</th>
             <th>Групповое (₽)</th>
             <th>На кампусе (₽)</th>

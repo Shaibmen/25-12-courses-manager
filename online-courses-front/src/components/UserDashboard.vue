@@ -31,6 +31,8 @@ onMounted(async () => {
       <button class="btn btn-primary" @click="$router.push('/levels')">Уровни обучения</button>
       <button class="btn btn-primary" @click="$router.push('/programs')">Программы обучения</button>
       <button class="btn btn-primary" @click="$router.push('/enrollments')">Запись на курс</button>
+      <button class="btn btn-primary" @click="$router.push('/legalentities')">Юридические лица</button>
+      <button class="btn btn-primary" @click="$router.push('/executers')">Исполнители</button>
     </div>
 
     <div style="display: flex; flex-wrap: wrap; gap: 20px; padding: 0 20px;">

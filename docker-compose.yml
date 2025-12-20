@@ -4,6 +4,8 @@ services:
     image: postgres:17
     env_file:
       - .env
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -22,6 +24,7 @@ services:
   apicore:
     image: shaibmen/online-courses:latest
     env_file:
+      - .env
       - .env
     depends_on:
       db:
@@ -43,6 +46,7 @@ services:
     image: shaibmen/auth-service:latest
     env_file:
       - .env
+      - .env
     depends_on:
       db:
         condition: service_healthy 
@@ -54,7 +58,9 @@ services:
     
   apidoc:
     image: metapohuism/document-service:latest
+    image: metapohuism/document-service:latest
     env_file:
+      - .env
       - .env
     depends_on:
       db:

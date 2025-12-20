@@ -35,7 +35,7 @@ func NewListenerService(db database.DB,
 	}
 }
 
-func (l *listenerService) CreateFullListener(ctx context.Context, models *dto.CreateListenerDTO) error {
+func (l *listenerService) CreateFullListener(ctx context.Context, models *dto.CreateListenerDTO, idLegalEntity, idContractor *uuid.UUID) error {
 
 	tx, err := l.db.BeginTx(ctx)
 	if err != nil {
@@ -44,14 +44,19 @@ func (l *listenerService) CreateFullListener(ctx context.Context, models *dto.Cr
 
 	defer tx.Rollback()
 
-	passportID := uuid.New()
-	passport, err := mapping.MapPassportToEntity(models.Passport, passportID)
-	if err != nil {
-		return err
-	}
+	var passportID *uuid.UUID = nil
 
-	if err = l.passportRepo.CreateInTx(ctx, tx, passport); err != nil {
-		return err
+	if models.Passport != (dto.PassportDTO{}) {
+		newID := uuid.New()
+		passportID = &newID
+		passport, err := mapping.MapPassportToEntity(models.Passport, *passportID)
+		if err != nil {
+			return err
+		}
+
+		if err = l.passportRepo.CreateInTx(ctx, tx, passport); err != nil {
+			return err
+		}
 	}
 
 	var placeWorkID *uuid.UUID = nil
@@ -99,6 +104,8 @@ func (l *listenerService) CreateFullListener(ctx context.Context, models *dto.Cr
 		ID_RegAddress:        registrationID,
 		ID_EducationListener: educationID,
 		ID_PlaceWork:         placeWorkID,
+		ID_LegalEntity:       idLegalEntity,
+		ID_Contractor:        idContractor,
 	}
 
 	if err = l.listenerRepo.CreateInTx(ctx, tx, listener, optionalID); err != nil {
@@ -159,7 +166,48 @@ func (l *listenerService) ReadFullListener(ctx context.Context, id uuid.UUID) (*
 		result.PlaceWork = *placework
 	}
 
-	return mapping.MapListenerEntityToDTO(result), nil
+	if result.ID_Passport != nil {
+		passport, err := l.passportRepo.Read(ctx, *result.ID_Passport)
+		if err != nil {
+			return nil, err
+		}
+		result.Passport = *passport
+	}
+
+	contractor := dto.ContractorCreateDTO{
+		Contractor: dto.ContractorDTO{
+			ID_Contractor: result.Contractor.ID_Contractor,
+			FirstName:     result.Contractor.FirstName,
+			SecondName:    result.Contractor.SecondName,
+			MiddleName:    result.Contractor.MiddleName,
+			Contact_phone: result.Contractor.Contact_phone,
+			Email:         result.Contractor.Email,
+		},
+		Passport: dto.PassportDTO{
+			PlaceBirth:    result.Contractor.Passport.PlaceBirth,
+			Citizenship:   result.Contractor.Passport.Citizenship,
+			Gender:        result.Contractor.Passport.Gender,
+			Seria:         result.Contractor.Passport.Seria,
+			Number:        result.Contractor.Passport.Number,
+			PassportGiven: result.Contractor.Passport.PassportGiven,
+			DateGiven:     result.Contractor.Passport.DateGiven.String(),
+			Code:          result.Contractor.Passport.Code,
+		},
+		RegAddress: dto.RegistrationAddressDTO{
+			MailIndex: result.Contractor.RegistrationAddress.MailIndex,
+			Region:    result.Contractor.RegistrationAddress.Region,
+			City:      result.Contractor.RegistrationAddress.City,
+			Street:    result.Contractor.RegistrationAddress.Street,
+			House:     result.Contractor.RegistrationAddress.House,
+			Building:  result.Contractor.RegistrationAddress.Building,
+			Apartment: result.Contractor.RegistrationAddress.Apartment,
+		},
+	}
+
+	listener := mapping.MapListenerEntityToDTO(result)
+	listener.Contractor = &contractor
+
+	return listener, nil
 }
 
 func (l *listenerService) UpdateListener(ctx context.Context, models *dto.CreateListenerDTO, id uuid.UUID) error {
@@ -179,7 +227,7 @@ func (l *listenerService) UpdateListener(ctx context.Context, models *dto.Create
 		return err
 	}
 
-	passport, err := mapping.MapPassportToEntity(models.Passport, ids.ID_Passport)
+	passport, err := mapping.MapPassportToEntity(models.Passport, *ids.ID_Passport)
 	if err != nil {
 		return err
 	}
@@ -242,8 +290,10 @@ func (l *listenerService) DeleteListener(ctx context.Context, id uuid.UUID) erro
 		return err
 	}
 
-	if err = l.passportRepo.DeleteInTx(ctx, tx, ids.ID_Passport); err != nil {
-		return err
+	if ids.ID_Passport != nil {
+		if err = l.passportRepo.DeleteInTx(ctx, tx, *ids.ID_Passport); err != nil {
+			return err
+		}
 	}
 
 	if err = l.registrationRepo.DeleteInTx(ctx, tx, ids.ID_RegAddress); err != nil {
@@ -268,4 +318,26 @@ func (l *listenerService) DeleteListener(ctx context.Context, id uuid.UUID) erro
 
 	return nil
 
+}
+
+func (l *listenerService) FindByLegalEntity(ctx context.Context, id uuid.UUID) ([]dto.ListenerLegalEntity, error) {
+
+	data, err := l.listenerRepo.FindByLegalEntity(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var listeneres []dto.ListenerLegalEntity
+
+	for _, i := range data {
+		listeneres = append(listeneres, dto.ListenerLegalEntity{
+			ID_Listener: i.ID_Listener,
+			FirstName:   i.FirstName,
+			SecondName:  i.SecondName,
+			MiddleName:  i.MiddleName,
+			SNILS:       i.SNILS,
+		})
+	}
+
+	return listeneres, nil
 }

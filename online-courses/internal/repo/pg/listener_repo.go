@@ -23,10 +23,10 @@ func NewListenerRepo(db database.DB, logger *slog.Logger) *ListenerRepo {
 }
 
 func (l *ListenerRepo) CreateInTx(ctx context.Context, tx database.Tx, m *entity.Listener, i dto.ListenerIDDTO) error {
-	query := `INSERT INTO listener (id_listener, first_name, second_name, middle_name, date_of_birth, snils, contact_phone, email, id_passport, id_regaddress, id_educationlistener, id_placework)
-	          Values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`
+	query := `INSERT INTO listener (id_listener, first_name, second_name, middle_name, date_of_birth, snils, contact_phone, email, id_passport, id_regaddress, id_educationlistener, id_placework, id_legalentity, id_contractor)
+	          Values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`
 
-	_, err := tx.ExecContext(ctx, query, m.ID_Listener, m.FirstName, m.SecondName, m.MiddleName, m.DateOfBirth, m.SNILS, m.ContactPhone, m.Email, i.ID_Passport, i.ID_RegAddress, i.ID_EducationListener, i.ID_PlaceWork)
+	_, err := tx.ExecContext(ctx, query, m.ID_Listener, m.FirstName, m.SecondName, m.MiddleName, m.DateOfBirth, m.SNILS, m.ContactPhone, m.Email, i.ID_Passport, i.ID_RegAddress, i.ID_EducationListener, i.ID_PlaceWork, i.ID_LegalEntity, i.ID_Contractor)
 	if err != nil {
 		l.logger.Error("database error",
 			"operation", "insert_listener",
@@ -107,11 +107,16 @@ func (l *ListenerRepo) ReadFullData(ctx context.Context, id uuid.UUID) (*entity.
 	query := `
 	select
 	l.*, 
+	r.mail_index, r.region, r.city, r.street, r.house, r.building, r.apartment,
+	c.id_contractor, c.first_name, c.second_name, c.middle_name, c.contact_phone, c.email,
 	p.place_birth, p.citizenship, p.gender, p.seria, p.number, p.passport_given, p.date_given, p.code,
-	r.mail_index, r.region, r.city, r.street, r.house, r.building, r.apartment
-	from listener as l
-	inner join passport p on l.id_passport = p.id_passport 
-	inner join registrationaddress r on l.id_regaddress = r.id_regaddress 
+	reg.mail_index, reg.region, reg.city, reg.street, reg.house, reg.building, reg.apartment
+	from listener as l 
+	inner join registrationaddress r on l.id_regaddress = r.id_regaddress
+	left join contractor c on l.id_contractor = c.id_contractor
+	left join passport p on c.id_passport = p.id_passport
+	left join registrationaddress reg on c.id_regaddress = reg.id_regaddress
+
 	where id_listener = $1;`
 
 	rows, err := l.repo.QueryContext(ctx, query, id)
@@ -132,6 +137,29 @@ func (l *ListenerRepo) ReadFullData(ctx context.Context, id uuid.UUID) (*entity.
 
 	for rows.Next() {
 
+		var (
+			contractorID                           sql.NullString
+			contractorFirstName                    sql.NullString
+			contractorSecondName                   sql.NullString
+			contractorMiddleName                   sql.NullString
+			contractorContact_phone                sql.NullString
+			contractorEmail                        sql.NullString
+			contractorPassportPlaceBirth           sql.NullString
+			contractorPassportCitizenship          sql.NullString
+			contractorPassportGender               sql.NullString
+			contractorPassportSeria                sql.NullInt64
+			contractorPassportNumber               sql.NullInt64
+			contractorPassportPassportGiven        sql.NullString
+			contractorPassportDateGiven            sql.NullTime
+			contractorPassportCode                 sql.NullString
+			contractorRegistrationAddressMailIndex sql.NullInt64
+			contractorRegistrationAddressRegion    sql.NullString
+			contractorRegistrationAddressCity      sql.NullString
+			contractorRegistrationAddressStreet    sql.NullString
+			contractorRegistrationAddressHouse     sql.NullString
+			contractorRegistrationAddressBuilding  sql.NullString
+			contractorRegistrationAddressApartment sql.NullString
+		)
 		if err = rows.Scan(
 			&data.ID_Listener,
 			&data.FirstName,
@@ -145,14 +173,9 @@ func (l *ListenerRepo) ReadFullData(ctx context.Context, id uuid.UUID) (*entity.
 			&data.ID_RegAddress,
 			&data.ID_EducationListener,
 			&data.ID_PlaceWork,
-			&data.Passport.PlaceBirth,
-			&data.Passport.Citizenship,
-			&data.Passport.Gender,
-			&data.Passport.Seria,
-			&data.Passport.Number,
-			&data.Passport.PassportGiven,
-			&data.Passport.DateGiven,
-			&data.Passport.Code,
+			&data.ID_Legalentity,
+			&data.ID_Contractor,
+			&data.Looting_education,
 			&data.RegistrationAddress.MailIndex,
 			&data.RegistrationAddress.Region,
 			&data.RegistrationAddress.City,
@@ -160,6 +183,27 @@ func (l *ListenerRepo) ReadFullData(ctx context.Context, id uuid.UUID) (*entity.
 			&data.RegistrationAddress.House,
 			&data.RegistrationAddress.Building,
 			&data.RegistrationAddress.Apartment,
+			&contractorID,
+			&contractorFirstName,
+			&contractorSecondName,
+			&contractorMiddleName,
+			&contractorContact_phone,
+			&contractorEmail,
+			&contractorPassportPlaceBirth,
+			&contractorPassportCitizenship,
+			&contractorPassportGender,
+			&contractorPassportSeria,
+			&contractorPassportNumber,
+			&contractorPassportPassportGiven,
+			&contractorPassportDateGiven,
+			&contractorPassportCode,
+			&contractorRegistrationAddressMailIndex,
+			&contractorRegistrationAddressRegion,
+			&contractorRegistrationAddressCity,
+			&contractorRegistrationAddressStreet,
+			&contractorRegistrationAddressHouse,
+			&contractorRegistrationAddressBuilding,
+			&contractorRegistrationAddressApartment,
 		); err != nil {
 
 			l.logger.Error("database error",
@@ -170,6 +214,39 @@ func (l *ListenerRepo) ReadFullData(ctx context.Context, id uuid.UUID) (*entity.
 			)
 
 			return nil, repoutils.HandleRepoErr(err)
+		}
+		if contractorFirstName.Valid {
+			uuidContractor, err := uuid.Parse(contractorID.String)
+			if err != nil {
+				return nil, repoutils.HandleRepoErr(err)
+			}
+			data.Contractor = entity.Contractor{
+				ID_Contractor: uuidContractor,
+				FirstName:     contractorFirstName.String,
+				SecondName:    contractorSecondName.String,
+				MiddleName:    contractorMiddleName.String,
+				Contact_phone: contractorContact_phone.String,
+				Email:         contractorEmail.String,
+				Passport: entity.Passport{
+					PlaceBirth:    contractorPassportPlaceBirth.String,
+					Citizenship:   contractorPassportCitizenship.String,
+					Gender:        contractorPassportGender.String,
+					Seria:         int(contractorPassportSeria.Int64),
+					Number:        int(contractorPassportNumber.Int64),
+					PassportGiven: contractorPassportPassportGiven.String,
+					DateGiven:     contractorPassportDateGiven.Time,
+					Code:          contractorPassportCode.String,
+				},
+				RegistrationAddress: entity.RegistrationAddress{
+					MailIndex: int(contractorRegistrationAddressMailIndex.Int64),
+					Region:    contractorRegistrationAddressRegion.String,
+					City:      contractorRegistrationAddressCity.String,
+					Street:    contractorRegistrationAddressStreet.String,
+					House:     contractorRegistrationAddressHouse.String,
+					Building:  contractorRegistrationAddressBuilding.String,
+					Apartment: contractorRegistrationAddressApartment.String,
+				},
+			}
 		}
 	}
 
@@ -319,4 +396,95 @@ func (l *ListenerRepo) UpdateInTx(ctx context.Context, tx database.Tx, listener 
 
 	return nil
 
+}
+
+func (l *ListenerRepo) UpdateContractor(ctx context.Context, tx database.Tx, idListener uuid.UUID, idContractor *uuid.UUID) error {
+	exists, err := repoutils.Exists(ctx, l.repo, "listener", "id_listener", idListener)
+	if err != nil {
+
+		l.logger.Debug("database error",
+			"operation", "check_unique",
+			"table", "listener",
+			"row", "id_listener",
+			"type", "exist",
+			"err", err,
+		)
+
+		return repoutils.HandleRepoErr(err)
+	}
+
+	if !exists {
+		return apperrors.ErrNoExists
+	}
+
+	query := `
+	update listener
+	set
+	id_contractor = coalesce($1, id_contractor)
+	where id_listener = $2;`
+
+	if _, err := tx.ExecContext(ctx, query, idContractor, idListener); err != nil {
+
+		l.logger.Error("database error",
+			"operation", "update_listener",
+			"id_listener", idListener,
+			"type", "exec",
+			"err", err,
+		)
+
+		return repoutils.HandleRepoErr(err)
+	}
+
+	return nil
+}
+
+func (l *ListenerRepo) FindByLegalEntity(ctx context.Context, id uuid.UUID) ([]entity.ListenerLegalEntity, error) {
+
+	query :=
+		`
+	select
+	l.id_listener, l.first_name, l.second_name, middle_name, l.snils
+	from listener as l 
+	where id_legalentity = $1;
+	`
+
+	rows, err := l.repo.QueryContext(ctx, query, id)
+	if err != nil {
+
+		l.logger.Error("database error",
+			"operation", "find_by_legal_entity_listener",
+			"id_legalentity", id,
+			"type", "query",
+			"err", err,
+		)
+
+		return nil, repoutils.HandleRepoErr(err)
+	}
+	defer rows.Close()
+
+	var listeners []entity.ListenerLegalEntity
+
+	for rows.Next() {
+		var list entity.ListenerLegalEntity
+
+		if err = rows.Scan(
+			&list.ID_Listener,
+			&list.FirstName,
+			&list.SecondName,
+			&list.MiddleName,
+			&list.SNILS,
+		); err != nil {
+
+			l.logger.Error("database error",
+				"operation", "read_mapping_listener",
+				"type", "query",
+				"err", err,
+			)
+
+			return nil, repoutils.HandleRepoErr(err)
+		}
+		listeners = append(listeners, list)
+	}
+
+	return listeners, nil
 }

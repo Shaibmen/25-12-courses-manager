@@ -76,8 +76,8 @@ func (s *ZayavlenieService) CreateZayavlenie(zayavlenieData *dto.ZayavlenieDTO, 
 		replaceZayavlenieEighteen(doc, zayavlenieData)
 	}
 
-	err = doc.Replace("DIVISONEDUCATION", zayavlenieData.ProgramEducation.DivisionEducation, -1)
-	err = doc.Replace("NAMEPROFEDUCATION", zayavlenieData.ProgramEducation.DivisionEducation, -1)
+	doc.Replace("DIVISONEDUCATION", zayavlenieData.ProgramEducation.DivisionEducation, -1)
+	doc.Replace("NAMEPROFEDUCATION", zayavlenieData.ProgramEducation.DivisionEducation, -1)
 
 	variantsIntToString := make(map[int]string)
 

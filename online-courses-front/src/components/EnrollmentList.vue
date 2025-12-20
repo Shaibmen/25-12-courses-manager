@@ -10,7 +10,7 @@
           Цена {{ sortOrder === 'asc' ? '↑' : sortOrder === 'desc' ? '↓' : '' }}
         </button>
         <button class="btn btn-success" @click="goCourseSearch">Поиск по курсу</button>
-        
+        <button class="btn btn-info" @click="goAccurateEnrollments">Точные записи на курс</button>
       </div>
 
       <button class="btn btn-secondary" @click="goBack">Назад</button>
@@ -28,6 +28,8 @@
             <th>Цена</th>
             <th>Начало</th>
             <th>Окончание</th>
+            <th>Группа</th>
+            <th>Тип обучения</th>
             <th>Действия</th>
           </tr>
         </thead>
@@ -39,6 +41,8 @@
             <td>{{ enr.current_price }} ₽</td>
             <td>{{ formatDate(enr.start_date) }}</td>
             <td>{{ formatDate(enr.end_date) }}</td>
+            <td>{{ enr.group || '—' }}</td>
+            <td>{{ enr.type_of_retraining || '—' }}</td>
             <td style="white-space: nowrap;">
               <button class="btn btn-success btn-sm" @click="openDetails(enr.id_listener)">Подробнее</button>
             </td>
@@ -119,6 +123,7 @@ watch(filter, () => {
 const openDetails = (id) => router.push(`/enrollment/details/${id}`)
 const goBack = () => router.push('/dashboard/worker')
 const goCourseSearch = () => router.push('/enrollment/by-course')
+const goAccurateEnrollments = () => router.push('/enrollment/accurate')
 
 const formatDate = d => d?.split(' ')[0] || ''
 

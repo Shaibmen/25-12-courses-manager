@@ -14,6 +14,6 @@ type EnrollmentListenerService interface {
 	Delete(ctx context.Context, id_listener, id_program uuid.UUID) error
 	ReadDetailListener(ctx context.Context, id uuid.UUID) ([]dto.EnrollmentProgramDetailsDTO, error)
 	ReadByProgram(ctx context.Context, id uuid.UUID, page int) ([]dto.EnrollmentListenerDetailsDTO, error)
-	InfoToPersonalCard(ctx context.Context, listenerID, programID uuid.UUID) (*dto.PersonalCardInfoDTO, error)
 	GetListenerFIO(ctx context.Context, listenerID uuid.UUID) (*dto.ListenerFIODTO, error)
+	GetAccurateEnrollment(ctx context.Context) ([]dto.AccurateProgramDTO, error)
 }

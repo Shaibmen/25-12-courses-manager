@@ -8,6 +8,8 @@
       <button class="btn btn-primary btn-sm" @click="$router.push('/levels')">Уровни</button>
       <button class="btn btn-primary btn-sm" @click="$router.push('/programs')">Программы</button>
       <button class="btn btn-primary btn-sm" @click="$router.push('/enrollments')">Записи на курс</button>
+      <button class="btn btn-primary btn-sm" @click="$router.push('/executers')">Исполнители</button>
+
     </nav>
     <main>
       <slot />

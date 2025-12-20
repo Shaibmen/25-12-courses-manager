@@ -4,6 +4,8 @@ import AdminDashboard from '../components/AdminDashboard.vue'
 import UserDashboard from '../components/UserDashboard.vue'
 import AccountantDashboard from '../components/AccountantDashboard.vue'
 import Listeners from '../components/Listeners.vue'
+import Executers from '../components/Executers.vue'
+
 
 const routes = [
   { path: '/', redirect: '/login' },
@@ -17,6 +19,9 @@ const routes = [
 { path: '/listeners/create', component: () => import('../components/CreateListener.vue') },
 { path: '/listeners/edit/:id', component: () => import('../components/EditListener.vue') },
 { path: '/listeners/:id', component: () => import('../components/ListenerDetails.vue') },
+
+  { path: '/executers', component: Executers },
+{ path: '/executers/create', component: () => import('../components/CreateExecuters.vue') },
 
 
   { path: '/divisions', component: () => import('../components/Divisions.vue') },
@@ -33,14 +38,18 @@ const routes = [
   { path: '/programs/create', component: () => import('../components/ProgramEducationCreate.vue') },
   { path: '/programs/edit/:id', component: () => import('../components/ProgramEducationEdit.vue') },
 
-{ path: '/enrollments', component: () => import('../components/EnrollmentList.vue') },
-{ path: '/enrollment/details/:listenerId', component: () => import('../components/EnrollmentDetails.vue') },
-{ path: '/enrollment/edit/:idStudent/:idProgram', component: () => import('../components/EnrollmentEdit.vue') },
-{ path: '/enrollment/create/:listenerId', component: () => import('../components/EnrollmentCreate.vue') },
-{ path: '/enrollment/by-course', component: () => import('../components/EnrollmentByCourse.vue') }
+  { path: '/enrollments', component: () => import('../components/EnrollmentList.vue') },
+  { path: '/enrollment/details/:listenerId', component: () => import('../components/EnrollmentDetails.vue') },
+  { path: '/enrollment/edit/:idStudent/:idProgram', component: () => import('../components/EnrollmentEdit.vue') },
+  { path: '/enrollment/create/:listenerId', component: () => import('../components/EnrollmentCreate.vue') },
+  { path: '/enrollment/by-course', component: () => import('../components/EnrollmentByCourse.vue') },
 
+  { path: '/legalentities', component: () => import('../components/LegalEntity.vue') },
+   { path: '/legalentity/create', component: () => import('../components/CreateLegalEntity.vue') },
+   { path: '/legalentity/edit/:id', component: () => import('../components/EditLegalEntity.vue') },
+{ path: '/legalentity/:id', component: () => import('../components/LegalEntityDetails.vue') },
 
-
+{ path: '/enrollment/accurate', component: () => import('../components/AccurateEnrollments.vue') },
 
 ]
 

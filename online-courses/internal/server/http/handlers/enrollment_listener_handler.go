@@ -1,9 +1,7 @@
 package handlers
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"net/http"
 	"online-courses/internal/domain/dto"
 	"online-courses/internal/domain/service"
@@ -12,7 +10,6 @@ import (
 	"online-courses/internal/server/http/request"
 	"online-courses/internal/validate"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -44,12 +41,14 @@ func (e *EnrollmentListenerHandler) CreateEnrollment(c *gin.Context) {
 	}
 
 	dto := dto.EnrollmentListenerDTO{
-		ID_Listener:  request.ID_Listener,
-		ID_Program:   request.ID_ProgramEducation,
-		StartDate:    request.StartDate,
-		EndDate:      request.EndDate,
-		CurrentPrice: request.CurrentPrice,
-		Is_active:    request.Is_active,
+		ID_Listener:      request.ID_Listener,
+		ID_Program:       request.ID_ProgramEducation,
+		StartDate:        request.StartDate,
+		EndDate:          request.EndDate,
+		CurrentPrice:     request.CurrentPrice,
+		Is_active:        request.Is_active,
+		Group:            request.Group,
+		TypeOfRetraining: request.TypeOfRetraining,
 	}
 
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 1*time.Second)
@@ -60,47 +59,22 @@ func (e *EnrollmentListenerHandler) CreateEnrollment(c *gin.Context) {
 		return
 	}
 
-	info, err := e.handler.InfoToPersonalCard(ctx, request.ID_Listener, request.ID_ProgramEducation)
+	c.JSON(http.StatusOK, models.HttpResponse{Message: "слушатель записан на курс"})
+
+}
+
+func (e *EnrollmentListenerHandler) GetAccurateEnrollment(c *gin.Context) {
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 1*time.Second)
+	defer cancel()
+
+	data, err := e.handler.GetAccurateEnrollment(ctx)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	requestBody, _ := json.Marshal(info)
-
-	req, err := http.NewRequest("POST", "http://apidoc:8082/v1/doc/personal-card", bytes.NewBuffer(requestBody))
-	if err != nil {
-		c.Error(err)
-		return
-	}
-
-	authHeader := c.Request.Header.Get("Authorization")
-	field := strings.Fields(authHeader)
-
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+field[1])
-
-	client := &http.Client{}
-	response, err := client.Do(req)
-
-	if err != nil {
-		c.Error(err)
-		return
-	}
-
-	if response.StatusCode != http.StatusOK {
-
-		err := e.handler.Delete(ctx, request.ID_Listener, request.ID_ProgramEducation)
-		if err != nil {
-			c.Error(err)
-		}
-
-		c.JSON(http.StatusInternalServerError, models.HttpResponse{Message: "ошибка создания личного дела"})
-		return
-	}
-
-	c.JSON(http.StatusOK, models.HttpResponse{Message: "слушатель записан на курс, личное дело сформировано"})
-
+	c.JSON(http.StatusOK, models.HttpResponseWithData{Data: data})
 }
 
 //	READ
@@ -158,11 +132,13 @@ func (e *EnrollmentListenerHandler) UpdateEnrollment(c *gin.Context) {
 	}
 
 	dto := dto.EnrollmentListenerDTO{
-		ID_Listener:  idListener,
-		ID_Program:   request.ID_ProgramEducation,
-		StartDate:    request.StartDate,
-		EndDate:      request.EndDate,
-		CurrentPrice: request.CurrentPrice,
+		ID_Listener:      idListener,
+		ID_Program:       request.ID_ProgramEducation,
+		StartDate:        request.StartDate,
+		EndDate:          request.EndDate,
+		CurrentPrice:     request.CurrentPrice,
+		Group:            request.Group,
+		TypeOfRetraining: request.TypeOfRetraining,
 	}
 
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 1*time.Second)
@@ -288,22 +264,22 @@ func (e *EnrollmentListenerHandler) ReadByProgram(c *gin.Context) {
 	c.JSON(http.StatusOK, models.HttpResponseWithData{Data: data})
 }
 
-func (e *EnrollmentListenerHandler) GetInfoToCreateCard(c *gin.Context) {
-	var request request.CreateCardRequest
+// func (e *EnrollmentListenerHandler) GetInfoToCreateCard(c *gin.Context) {
+// 	var request request.CreateCardRequest
 
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.Error(err)
-		return
-	}
+// 	if err := c.ShouldBindJSON(&request); err != nil {
+// 		c.Error(err)
+// 		return
+// 	}
 
-	ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
-	defer cancel()
+// 	ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
+// 	defer cancel()
 
-	data, err := e.handler.InfoToPersonalCard(ctx, request.ID_listener, request.ID_program)
-	if err != nil {
-		c.Error(err)
-		return
-	}
+// 	data, err := e.handler.InfoToPersonalCard(ctx, request.ID_listener, request.ID_program)
+// 	if err != nil {
+// 		c.Error(err)
+// 		return
+// 	}
 
-	c.JSON(http.StatusOK, data)
-}
+// 	c.JSON(http.StatusOK, data)
+// }
