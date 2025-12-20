@@ -8,19 +8,26 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
     ports:
       - "5432:5432"
     volumes: 
       - db_data:/var/lib/postgresql/data
-      - ./db/init:/docker-entrypoint-initdb.d/init.sql
+      - ./db/init/init.sql:/docker-entrypoint-initdb.d/init.sql
     
   apicore:
     image: shaibmen/online-courses:latest
     env_file:
       - .env
     depends_on:
-      - db
-      - apiauth
+      db:
+        condition: service_healthy
+      apiauth:
+        condition: service_started
     # environment:
     #   DB: ${DB}
     #   LEVEL_LOG: Debug
@@ -37,7 +44,8 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy 
     # environment:
     #   DB: "host=db port=5432 user=postgres password=1 dbname=25-12courses sslmode=disable"
     #   JWT_SECRET_KEY: gfhxg32q450uh3erfnsdf08najkytg49
@@ -49,9 +57,12 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
-      - apiauth
-      - apicore
+      db:
+        condition: service_healthy
+      apiauth:
+        condition: service_started
+      apicore:
+        condition: service_started
     # environment:
     #   PORT: :8082
     ports:
