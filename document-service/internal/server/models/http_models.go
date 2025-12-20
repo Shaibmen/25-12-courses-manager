@@ -67,7 +67,7 @@ type EnrollmentListenerRequest struct {
 
 type FullListenerRequest struct {
 	Listener            ListenerRequest           `json:"listener"`
-	Passport            PassportRequest           `json:"passport"`
+	Passport            PassportRequest           `json:"passport" validate:"omitempty"`
 	RegistrationAddress RegAddressRequest         `json:"registration_address"`
 	EducationListener   EducationListenerRequest  `json:"education"`
 	PlaceWork           PlaceWorkRequest          `json:"placeWork"`

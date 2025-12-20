@@ -29,7 +29,6 @@ func (h *ZayavlenieHandler) CreateZayavlenie(c *gin.Context) {
 	}
 
 	request := fullRequest.ZayavlenieData
-
 	dto := mapper.ZayavlenieMapping(request)
 
 	err := h.service.CreateZayavlenie(dto, request.DogovorAgeType)

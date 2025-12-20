@@ -1,3 +1,3 @@
-export const API_URL_CORE = "http://localhost:8080/api/v1"
-export const API_URL_AUTH = "http://localhost:8081/auth/v1"
-export const API_URL_DOC = "http://localhost:8082/v1/doc"
+export const API_URL_CORE = import.meta.env.VITE_API_URL_CORE
+export const API_URL_AUTH = import.meta.env.VITE_API_URL_AUTH
+export const API_URL_DOC  = import.meta.env.VITE_API_URL_DOC

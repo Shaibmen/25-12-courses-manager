@@ -64,9 +64,9 @@ services:
     ports:
       - "5173:80"
     environment:
-      VITE_API1_URL: http://localhost:8080
-      VITE_API2_URL: http://localhost:8081
-      VITE_API3_URL: http://localhost:8082
+      VITE_API1_URL: http://apicore:8080
+      VITE_API2_URL: http://apiauth:8081
+      VITE_API3_URL: http://apidoc:8082
 
 volumes:
   db_data:

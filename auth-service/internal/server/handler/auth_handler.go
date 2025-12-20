@@ -63,13 +63,13 @@ func (a *AuthHandler) LoginHandler(c *gin.Context) {
 		return
 	}
 
-	accessToken, accessClaims, err := a.tokenMaker.CreateJwt(id, request.UserName, role, 2*time.Hour)
+	accessToken, accessClaims, err := a.tokenMaker.CreateJwt(id, request.UserName, role, 12*time.Hour)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	refreshToken, refreshClaims, err := a.tokenMaker.CreateJwt(id, request.UserName, role, 2*time.Hour)
+	refreshToken, refreshClaims, err := a.tokenMaker.CreateJwt(id, request.UserName, role, 12*time.Hour)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

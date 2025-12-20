@@ -26,7 +26,7 @@ func main() {
 	Logger := logger.MustInitLogger(cfg.Logger)
 	Logger.Info("логгер инициализирован без ошибок")
 
-	db := postgres.MustNewConnectionPostgresSQL(cfg.DB, Logger)
+	db := postgres.MustNewConnectionPostgresSQL(cfg.DB_STRING_CONN, Logger)
 
 	validate.InitValid()
 	repoutils.InitRepoLogger(Logger)
@@ -42,7 +42,7 @@ func main() {
 	programEducationRepo := pg.NewProgramEducationRepo(db, Logger)
 	enrollmentRepo := pg.NewEnrollmentListenerRepo(db, Logger)
 	dashboardRepo := pg.NewDashboardRepo(db, Logger)
-	backupRepo := pg.NewBackupRepo(db, cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.Host, Logger)
+	backupRepo := pg.NewBackupRepo(db, cfg.DBUSER, cfg.DBPASSWORD, cfg.DBNAME, cfg.DBHOST, Logger)
 	reportRepo := pg.NewReportRepo(db, Logger)
 	procedureRepo := pg.NewProcedureRepo(db, Logger)
 	contractorRepo := pg.NewContractorRepo(db, Logger)
@@ -95,7 +95,7 @@ func main() {
 	contractorHandler := handlers.NewContractHandler(contractorService)
 	legalEntityHandler := handlers.NewLegalEntityHandler(legalEntityService)
 	executerHandler := handlers.NewExecutorHandler(executerService)
-	documentHandler := handlers.NewDocumentHandler(documentService)
+	documentHandler := handlers.NewDocumentHandler(documentService, cfg)
 
 	r := gin.Default()
 
@@ -114,6 +114,7 @@ func main() {
 		legalEntityHandler,
 		executerHandler,
 		documentHandler,
+		cfg,
 		Logger)
 
 	r.Run(":8080")
