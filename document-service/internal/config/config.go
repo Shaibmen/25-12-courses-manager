@@ -17,7 +17,7 @@ type Config struct {
 }
 
 func MustInitConfig() *Config {
-	err := godotenv.Load()
+	err := godotenv.Load("../.env")
 
 	if err != nil {
 		log.Printf("ошибка при загрузке конфига: %s", err.Error())

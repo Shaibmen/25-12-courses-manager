@@ -22,7 +22,7 @@ type Config struct {
 }
 
 func MustInitConfig() *Config {
-	_ = godotenv.Load()
+	_ = godotenv.Load("../.env")
 
 	JWTKey := os.Getenv("JWT_SECRET_KEY")
 

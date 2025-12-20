@@ -24,7 +24,7 @@ type Config struct {
 
 func MustLoadConfig() *Config {
 
-	_ = godotenv.Load()
+	_ = godotenv.Load("../.env")
 
 	logger := os.Getenv("LEVEL_LOG")
 	JWTKey := os.Getenv("JWT_SECRET_KEY")
