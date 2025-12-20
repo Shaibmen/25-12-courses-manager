@@ -29,7 +29,7 @@ func SetupRoutes(server *gin.Engine,
 	Logger *slog.Logger) {
 
 	server.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{cfg.SERVICE_FRONT + ":5173"},
+		AllowOrigins:     []string{cfg.SERVICE_FRONT + ":5173", "http://localhost:5173"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
