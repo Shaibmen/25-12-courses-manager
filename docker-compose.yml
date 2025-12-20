@@ -12,11 +12,7 @@ services:
       - "5432:5432"
     volumes: 
       - db_data:/var/lib/postgresql/data
-<<<<<<< HEAD
       - ./db/init:/docker-entrypoint-initdb.d/db/init.sql
-=======
-      - ./db/init:/docker-entrypoint-initdb.d/init.sql
->>>>>>> 8e0a6bc2785419f226b9a725ecf1e7ba211d4621
     
   apicore:
     image: shaibmen/online-courses:latest
