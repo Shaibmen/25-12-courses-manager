@@ -12,7 +12,11 @@ services:
       - "5432:5432"
     volumes: 
       - db_data:/var/lib/postgresql/data
+<<<<<<< HEAD
       - ./db/init:/docker-entrypoint-initdb.d/db/init.sql
+=======
+      - ./db/init:/docker-entrypoint-initdb.d/init.sql
+>>>>>>> 8e0a6bc2785419f226b9a725ecf1e7ba211d4621
     
   apicore:
     image: shaibmen/online-courses:latest
@@ -66,9 +70,9 @@ services:
     ports:
       - "5173:80"
     environment:
-      VITE_API1_URL: http://localhost:8080
-      VITE_API2_URL: http://localhost:8081
-      VITE_API3_URL: http://localhost:8082
+      VITE_API1_URL: http://apicore:8080
+      VITE_API2_URL: http://apiauth:8081
+      VITE_API3_URL: http://apidoc:8082
 
 volumes:
   db_data:

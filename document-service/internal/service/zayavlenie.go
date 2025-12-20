@@ -76,8 +76,8 @@ func (s *ZayavlenieService) CreateZayavlenie(zayavlenieData *dto.ZayavlenieDTO, 
 		replaceZayavlenieEighteen(doc, zayavlenieData)
 	}
 
-	doc.Replace("DIVISONEDUCATION", zayavlenieData.ProgramEducation.DivisionEducation, -1)
-	doc.Replace("NAMEPROFEDUCATION", zayavlenieData.ProgramEducation.DivisionEducation, -1)
+	err = doc.Replace("DIVISONEDUCATION", zayavlenieData.ProgramEducation.DivisionEducation, -1)
+	err = doc.Replace("NAMEPROFEDUCATION", zayavlenieData.ProgramEducation.DivisionEducation, -1)
 
 	variantsIntToString := make(map[int]string)
 
@@ -284,7 +284,7 @@ func (s *ZayavlenieService) ExistsZayavlenie(fileName string) ([]string, error) 
 	if len(documents) > 0 {
 		return documents, nil
 	} else {
-		return []string{}, errors.New("не найдено ни одного документа")
+		return []string{}, errors.New("Не найдено ни одного документа")
 	}
 }
 

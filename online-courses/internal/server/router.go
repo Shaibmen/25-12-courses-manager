@@ -2,6 +2,7 @@ package server
 
 import (
 	"log/slog"
+	"online-courses/internal/config"
 	"online-courses/internal/server/http/handlers"
 	"online-courses/internal/server/http/middleware"
 	"time"
@@ -24,10 +25,11 @@ func SetupRoutes(server *gin.Engine,
 	legalEntityHandler *handlers.LegalEntityHandler,
 	executerHandler *handlers.ExecutorHandler,
 	documentHandler *handlers.DocumentHandler,
+	cfg *config.Config,
 	Logger *slog.Logger) {
 
 	server.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8081"},
+		AllowOrigins:     []string{cfg.SERVICE_FRONT + ":5173"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -40,7 +42,7 @@ func SetupRoutes(server *gin.Engine,
 	{
 
 		api.Use(middleware.LoggerMiddleware(Logger))
-		api.Use(middleware.AuthMiddleware())
+		api.Use(middleware.AuthMiddleware(cfg))
 
 		listener := api.Group("/listener")
 		{

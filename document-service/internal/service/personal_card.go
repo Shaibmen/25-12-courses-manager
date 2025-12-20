@@ -213,7 +213,7 @@ func (p *PersonalCardService) ExistsPersonalCard(fileName string) ([]string, err
 	if len(documents) > 0 {
 		return documents, nil
 	} else {
-		return []string{}, errors.New("не найдено ни одного документа")
+		return []string{}, errors.New("Не найдено ни одного документа")
 	}
 }
 

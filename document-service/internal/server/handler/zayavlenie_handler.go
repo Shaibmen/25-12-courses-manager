@@ -4,7 +4,6 @@ import (
 	"document-service/internal/mapper"
 	"document-service/internal/server/models"
 	"document-service/internal/service"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -24,13 +23,12 @@ func (h *ZayavlenieHandler) CreateZayavlenie(c *gin.Context) {
 	var fullRequest models.FullRequest
 
 	if err := c.ShouldBindJSON(&fullRequest); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "invalid parameter request", "err": err.Error()})
 		return
 	}
 
 	request := fullRequest.ZayavlenieData
-
 	dto := mapper.ZayavlenieMapping(request)
 
 	err := h.service.CreateZayavlenie(dto, request.DogovorAgeType)

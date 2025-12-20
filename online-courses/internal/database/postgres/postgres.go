@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"log"
 	"log/slog"
 	"online-courses/internal/database"
 
@@ -16,6 +17,7 @@ type PostgresSQL struct {
 
 func MustNewConnectionPostgresSQL(cfg string, logger *slog.Logger) *PostgresSQL {
 
+	log.Println(cfg)
 	connx, err := sqlx.Open("postgres", cfg)
 	if err != nil {
 		logger.Error("ошибка подключения к базе данных x",

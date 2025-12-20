@@ -144,7 +144,7 @@ const router = useRouter()
 const loading = ref(false)
 
 const listener = ref({ first_name: '', second_name: '', middle_name: '', date_of_birth: '', snils: '', contact_phone: '', email: '', looting_education: false })
-const passport = ref({ place_birth: '', citizenship: '', gender: 'Мужской', seria: '', number: '', passport_given: '', date_given: '', code: '' })
+const passport = ref({ place_birth: '', citizenship: '', gender: '', seria: '', number: '', passport_given: '', date_given: '', code: '' })
 const registration_address = ref({ mail_index: '', region: '', city: '', street: '', house: '', building: '', apartment: '' })
 const education = ref({ diplom_seria: '', diplom_number: '', date_given: '', city: '', region: '', educational_institution: '', speciality: '', level_education: '' })
 const placeWork = ref({ name_company: '', job_title: '', all_experience: '', job_title_expirience: '' })
@@ -212,18 +212,25 @@ const createListener = async () => {
   loading.value = true
   const token = localStorage.getItem('access_token')
   const listenerPayload = { ...listener.value }
-  // Явно указываем флаг, чтобы не зависеть от пропусков сериализации
   listenerPayload.looting_education = !!listener.value.looting_education
   if (idLegalEntity) listenerPayload.id_legalentity = idLegalEntity
 
   const payload = {
     listener: listenerPayload,
-    passport: passport.value,
     registration_address: registration_address.value
   }
 
-  if (!listener.value.looting_education && Object.values(education.value).some(v => v)) payload.education = education.value
-  if (Object.values(placeWork.value).some(v => v)) payload.placeWork = placeWork.value
+  if (Object.values(passport.value).some(v => v)) {
+    payload.passport = passport.value
+  }
+
+  if (!listener.value.looting_education && Object.values(education.value).some(v => v)) {
+    payload.education = education.value
+  }
+
+  if (Object.values(placeWork.value).some(v => v)) {
+    payload.placeWork = placeWork.value
+  }
 
   try {
     const res = await fetch(`${API_URL_CORE}/listener/`, {
@@ -244,6 +251,7 @@ const createListener = async () => {
     loading.value = false
   }
 }
+
 
 </script>
 

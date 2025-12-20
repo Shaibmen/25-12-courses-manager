@@ -32,5 +32,5 @@ func main() {
 		os.MkdirAll("./personal_card", 0755)
 	}
 
-	server.MustServerInit(r, cfg.PORT, personalCardHandler, zayavlenieHandler, dogovorHandler)
+	server.MustServerInit(r, cfg.PORT, personalCardHandler, zayavlenieHandler, dogovorHandler, cfg)
 }
