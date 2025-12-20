@@ -304,7 +304,8 @@ func replaceDO3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("EXECUTORFIO", executorFio, -1)
 
 	listenerFio := model.ListenerData.SecondName + " " + model.ListenerData.FirstName + " " + model.ListenerData.MiddleName
-	doc.Replace("LISTENERFIO", listenerFio, -1)
+	doc.Replace("LISTENER", listenerFio, -1)
+	doc.Replace("FIO", "", -1)
 
 	contractorFio := model.Contractor.SecondName + " " + model.Contractor.FirstName + " " + model.Contractor.MiddleName
 	doc.Replace("CONTRACTORFIO", contractorFio, -1)
