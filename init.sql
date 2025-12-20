@@ -378,22 +378,22 @@ VALUES (
 
 
 -- Passport
-INSERT INTO passport (id_passport, place_birth, citizenship, gender, seria, number, passport_given, date_given, code)
-VALUES
-(gen_random_uuid(), 'Москва', 'Россия', 'Мужской', 1234, 111111, 'ОВД Москвы', '2010-01-01', '770-101'),
-(gen_random_uuid(), 'Санкт-Петербург', 'Россия', 'Женский', 2345, 222222, 'ОВД СПБ', '2012-02-02', '780-002'),
-(gen_random_uuid(), 'Казань', 'Россия', 'Мужской', 3456, 333333, 'ОВД Казань', '2015-03-03', '160003'),
-(gen_random_uuid(), 'Новосибирск', 'Россия', 'Женский', 4567, 444444, 'ОВД Новосибирск', '2018-04-04', '540-004'),
-(gen_random_uuid(), 'Сочи', 'Россия', 'Мужской', 5678, 555555, 'ОВД Сочи', '2020-05-05', '230-005');
+-- INSERT INTO passport (id_passport, place_birth, citizenship, gender, seria, number, passport_given, date_given, code)
+-- VALUES
+-- (gen_random_uuid(), 'Москва', 'Россия', 'Мужской', 1234, 111111, 'ОВД Москвы', '2010-01-01', '770-101'),
+-- (gen_random_uuid(), 'Санкт-Петербург', 'Россия', 'Женский', 2345, 222222, 'ОВД СПБ', '2012-02-02', '780-002'),
+-- (gen_random_uuid(), 'Казань', 'Россия', 'Мужской', 3456, 333333, 'ОВД Казань', '2015-03-03', '160003'),
+-- (gen_random_uuid(), 'Новосибирск', 'Россия', 'Женский', 4567, 444444, 'ОВД Новосибирск', '2018-04-04', '540-004'),
+-- (gen_random_uuid(), 'Сочи', 'Россия', 'Мужской', 5678, 555555, 'ОВД Сочи', '2020-05-05', '230-005');
 
 -- Registration Address
-INSERT INTO registrationaddress (id_regaddress, mail_index, region, city, street, house, building, apartment)
-VALUES
-(gen_random_uuid(), 101000, 'Москва', 'Москва', 'Ленина', '1', 'А', '10'),
-(gen_random_uuid(), 102000, 'Санкт-Петербург', 'Санкт-Петербург', 'Невский', '2', 'Б', '20'),
-(gen_random_uuid(), 603000, 'Казань', 'Казань', 'Баумана', '3', 'В', '30'),
-(gen_random_uuid(), 630000, 'Новосибирск', 'Новосибирск', 'Ленина', '4', 'Г', '40'),
-(gen_random_uuid(), 354000, 'Сочи', 'Сочи', 'Пушкина', '5', 'Д', '50');
+-- INSERT INTO registrationaddress (id_regaddress, mail_index, region, city, street, house, building, apartment)
+-- VALUES
+-- (gen_random_uuid(), 101000, 'Москва', 'Москва', 'Ленина', '1', 'А', '10'),
+-- (gen_random_uuid(), 102000, 'Санкт-Петербург', 'Санкт-Петербург', 'Невский', '2', 'Б', '20'),
+-- (gen_random_uuid(), 603000, 'Казань', 'Казань', 'Баумана', '3', 'В', '30'),
+-- (gen_random_uuid(), 630000, 'Новосибирск', 'Новосибирск', 'Ленина', '4', 'Г', '40'),
+-- (gen_random_uuid(), 354000, 'Сочи', 'Сочи', 'Пушкина', '5', 'Д', '50');
 
 -- Level Education
 INSERT INTO leveleducation (id_leveleducation, education)
@@ -406,13 +406,13 @@ VALUES
 (gen_random_uuid(), 'Среднее образование');
 
 -- Education Listener
-INSERT INTO educationlistener (id_educationlistener, diplom_seria, diplom_number, date_given, city, region, educational_institution, speciality, level_education)
-VALUES
-(gen_random_uuid(), 101120, 1111321, '2010-06-01', 'Москва', 'Москва', 'МГУ', 'Информатика', (SELECT id_leveleducation FROM leveleducation LIMIT 1 OFFSET 0)),
-(gen_random_uuid(), 202320, 2223212, '2011-06-01', 'Санкт-Петербург', 'Санкт-Петербург', 'СПбГУ', 'Математика', (SELECT id_leveleducation FROM leveleducation LIMIT 1 OFFSET 1)),
-(gen_random_uuid(), 303120, 7434521, '2012-06-01', 'Казань', 'Казань', 'КФУ', 'Физика', (SELECT id_leveleducation FROM leveleducation LIMIT 1 OFFSET 2)),
-(gen_random_uuid(), 404320, 4442344, '2013-06-01', 'Новосибирск', 'Новосибирск', 'НГУ', 'Химия', (SELECT id_leveleducation FROM leveleducation LIMIT 1 OFFSET 3)),
-(gen_random_uuid(), 505310, 5554325, '2014-06-01', 'Сочи', 'Сочи', 'Сочинский университет', 'Биология', (SELECT id_leveleducation FROM leveleducation LIMIT 1 OFFSET 4));
+-- INSERT INTO educationlistener (id_educationlistener, diplom_seria, diplom_number, date_given, city, region, educational_institution, speciality, level_education)
+-- VALUES
+-- (gen_random_uuid(), 101120, 1111321, '2010-06-01', 'Москва', 'Москва', 'МГУ', 'Информатика', (SELECT id_leveleducation FROM leveleducation LIMIT 1 OFFSET 0)),
+-- (gen_random_uuid(), 202320, 2223212, '2011-06-01', 'Санкт-Петербург', 'Санкт-Петербург', 'СПбГУ', 'Математика', (SELECT id_leveleducation FROM leveleducation LIMIT 1 OFFSET 1)),
+-- (gen_random_uuid(), 303120, 7434521, '2012-06-01', 'Казань', 'Казань', 'КФУ', 'Физика', (SELECT id_leveleducation FROM leveleducation LIMIT 1 OFFSET 2)),
+-- (gen_random_uuid(), 404320, 4442344, '2013-06-01', 'Новосибирск', 'Новосибирск', 'НГУ', 'Химия', (SELECT id_leveleducation FROM leveleducation LIMIT 1 OFFSET 3)),
+-- (gen_random_uuid(), 505310, 5554325, '2014-06-01', 'Сочи', 'Сочи', 'Сочинский университет', 'Биология', (SELECT id_leveleducation FROM leveleducation LIMIT 1 OFFSET 4));
 
 -- Place Work
 INSERT INTO placework (id_placework, name_company, job_title, all_experience, job_title_experience)
@@ -448,36 +448,36 @@ VALUES
 (gen_random_uuid(), 'Математика для программистов Junior', 20, 20000, 20000, 20000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 4), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1));
 
 -- Listener (частично без работы или образования)
-INSERT INTO listener (id_listener, first_name, second_name, middle_name, date_of_birth, snils, contact_phone, email, id_passport, id_regaddress, id_educationlistener, id_placework)
-VALUES
-(gen_random_uuid(), 'Иван', 'Иванов', 'Иванович', '1990-01-01', '123-456-789 00', '+79001234567', 'ivanov@mail.ru',
- (SELECT id_passport FROM passport LIMIT 1 OFFSET 0),
- (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 0),
- (SELECT id_educationlistener FROM educationlistener LIMIT 1 OFFSET 0),
- (SELECT id_placework FROM placework LIMIT 1 OFFSET 0)),
+-- INSERT INTO listener (id_listener, first_name, second_name, middle_name, date_of_birth, snils, contact_phone, email, id_passport, id_regaddress, id_educationlistener, id_placework)
+-- VALUES
+-- (gen_random_uuid(), 'Иван', 'Иванов', 'Иванович', '1990-01-01', '123-456-789 00', '+79001234567', 'ivanov@mail.ru',
+--  (SELECT id_passport FROM passport LIMIT 1 OFFSET 0),
+--  (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 0),
+--  (SELECT id_educationlistener FROM educationlistener LIMIT 1 OFFSET 0),
+--  (SELECT id_placework FROM placework LIMIT 1 OFFSET 0)),
 
-(gen_random_uuid(), 'Петр', 'Петров', 'Петрович', '1991-02-02', '223-456-789 11', '+79011234567', 'petrov@mail.ru',
- (SELECT id_passport FROM passport LIMIT 1 OFFSET 1),
- (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 1),
- NULL,
- (SELECT id_placework FROM placework LIMIT 1 OFFSET 1)),
+-- (gen_random_uuid(), 'Петр', 'Петров', 'Петрович', '1991-02-02', '223-456-789 11', '+79011234567', 'petrov@mail.ru',
+--  (SELECT id_passport FROM passport LIMIT 1 OFFSET 1),
+--  (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 1),
+--  NULL,
+--  (SELECT id_placework FROM placework LIMIT 1 OFFSET 1)),
 
-(gen_random_uuid(), 'Сергей', 'Сергеев', 'Сергеевич', '1992-03-03', '323-456-789 22', '+79021234567', 'sergeev@mail.ru',
- (SELECT id_passport FROM passport LIMIT 1 OFFSET 2),
- (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 2),
- (SELECT id_educationlistener FROM educationlistener LIMIT 1 OFFSET 2),
- NULL),
+-- (gen_random_uuid(), 'Сергей', 'Сергеев', 'Сергеевич', '1992-03-03', '323-456-789 22', '+79021234567', 'sergeev@mail.ru',
+--  (SELECT id_passport FROM passport LIMIT 1 OFFSET 2),
+--  (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 2),
+--  (SELECT id_educationlistener FROM educationlistener LIMIT 1 OFFSET 2),
+--  NULL),
 
-(gen_random_uuid(), 'Алексей', 'Алексеев', 'Алексеевич', '1993-04-04', '423-456-789 33', '+79031234567', 'alekseev@mail.ru',
- (SELECT id_passport FROM passport LIMIT 1 OFFSET 3),
- (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 3),
- NULL,
- NULL),
+-- (gen_random_uuid(), 'Алексей', 'Алексеев', 'Алексеевич', '1993-04-04', '423-456-789 33', '+79031234567', 'alekseev@mail.ru',
+--  (SELECT id_passport FROM passport LIMIT 1 OFFSET 3),
+--  (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 3),
+--  NULL,
+--  NULL),
 
-(gen_random_uuid(), 'Дмитрий', 'Дмитриев', 'Дмитриевич', '1994-05-05', '523-456-789 44', '+79041234567', 'dmitriev@mail.ru',
- (SELECT id_passport FROM passport LIMIT 1 OFFSET 4),
- (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 4),
- (SELECT id_educationlistener FROM educationlistener LIMIT 1 OFFSET 4),
- (SELECT id_placework FROM placework LIMIT 1 OFFSET 4));
+-- (gen_random_uuid(), 'Дмитрий', 'Дмитриев', 'Дмитриевич', '1994-05-05', '523-456-789 44', '+79041234567', 'dmitriev@mail.ru',
+--  (SELECT id_passport FROM passport LIMIT 1 OFFSET 4),
+--  (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 4),
+--  (SELECT id_educationlistener FROM educationlistener LIMIT 1 OFFSET 4),
+--  (SELECT id_placework FROM placework LIMIT 1 OFFSET 4));
 
 

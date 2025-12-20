@@ -17,7 +17,7 @@ services:
       - "5432:5432"
     volumes: 
       - db_data:/var/lib/postgresql/data
-      - ./db/init/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     
   apicore:
     image: shaibmen/online-courses:latest
@@ -58,7 +58,7 @@ services:
       #
 
   frontend:
-    image: shaibmen/online-courses-front:latest
+    image: shaibmen/online-courses-front:local
     depends_on:
       - apicore
       - apiauth
