@@ -6,7 +6,6 @@ import (
 	"document-service/internal/domain/dto"
 	"errors"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
@@ -35,8 +34,6 @@ func (s *ZayavlenieService) CreateZayavlenie(zayavlenieData *dto.ZayavlenieDTO, 
 
 	var doc *docx.Docx
 	var err error
-
-	log.Println("dogovorType:", dogovorType)
 
 	switch dogovorType {
 	case BELOW_EIGHTEEN:

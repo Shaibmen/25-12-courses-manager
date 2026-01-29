@@ -4,6 +4,7 @@ import (
 	"document-service/internal/domain/dto"
 	"document-service/internal/server/models"
 	"time"
+	"unsafe"
 )
 
 func FullListenerMapping(request models.FullListenerRequest) (*dto.FullListenerDataDTO, error) {
@@ -175,6 +176,19 @@ func DogovorMapping(request models.DogovorRequest) (*dto.DogovorDTO, error) {
 	}
 
 	dto := dto.DogovorDTO{
+		Zakazchik: dto.ZakazchikDTO{
+			Listeners:   *(*[]dto.ListenerDTO)(unsafe.Pointer(&request.ZakazchikData.Listeners)),
+			Address:     (dto.RegistrationAddressDTO)(request.ZakazchikData.Address),
+			CompanyName: request.ZakazchikData.CompanyName,
+			FIO:         request.ZakazchikData.FIO,
+			Status:      request.ZakazchikData.Status,
+			Osnovanie:   request.ZakazchikData.Osnovanie,
+			INN:         request.ZakazchikData.INN,
+			KPP:         request.ZakazchikData.KPP,
+			OGRN:        request.ZakazchikData.OGRN,
+			Phone:       request.ZakazchikData.Phone,
+			Email:       request.Contractor.Email,
+		},
 		ProgramEducation: dto.ProgramEducationDTO{
 			TimeEducation:     request.ProgramEducation.TimeEducation,
 			NameProfEducation: request.ProgramEducation.NameProfEducation,

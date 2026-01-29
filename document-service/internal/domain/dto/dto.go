@@ -106,6 +106,7 @@ type ZayavlenieDTO struct {
 }
 
 type DogovorDTO struct {
+	Zakazchik        ZakazchikDTO
 	ProgramEducation ProgramEducationDTO
 	ListenerData     ListenerDTO
 	Contractor       ContractorDTO
@@ -116,4 +117,18 @@ type DogovorDTO struct {
 	OptionNagruzka   int
 	OptionDocument   int
 	OptionPrice      string
+}
+
+type ZakazchikDTO struct {
+	Listeners   []ListenerDTO
+	Address     RegistrationAddressDTO
+	CompanyName string
+	FIO         string
+	Status      string
+	Osnovanie   string
+	INN         string
+	KPP         string
+	OGRN        string
+	Phone       string
+	Email       string
 }
