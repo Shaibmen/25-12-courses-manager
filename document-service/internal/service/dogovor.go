@@ -16,6 +16,8 @@ var dogovorPP_2_path = "./internal/documents/PP-FIZ-2.docx"
 var dogovorPK_3_path = "./internal/documents/PK-FIZ-3.docx"
 var dogovorPK_2_path = "./internal/documents/PK-FIZ-2.docx"
 var dogovorDO_3_path = "./internal/documents/DO-FIZ-3.docx"
+var dogovorPP_3_YUR_path = "./internal/documents/PP-YUR-3.docx"
+var dogovorPK_3_YUR_path = "./internal/documents/PK-YUR-3.docx"
 
 const (
 	PP_3_FIZ = "PP_3_FIZ"
@@ -114,6 +116,26 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		doc = r.Editable()
 
 		replaceDO3FIZ(doc, dogovor)
+	case PP_3_YUR:
+		r, err := docx.ReadDocxFile(dogovorDO_3_path)
+		if err != nil {
+			return err
+		}
+		defer r.Close()
+
+		doc = r.Editable()
+
+		replacePP3FIZ(doc, dogovor)
+	case PK_3_YUR:
+		r, err := docx.ReadDocxFile(dogovorDO_3_path)
+		if err != nil {
+			return err
+		}
+		defer r.Close()
+
+		doc = r.Editable()
+
+		replacePP3FIZ(doc, dogovor)
 	}
 
 	doc.Replace("OPTIOND", s.diplomMap[dogovor.OptionDocument], -1)
