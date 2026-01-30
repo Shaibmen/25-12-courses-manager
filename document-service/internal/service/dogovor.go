@@ -117,7 +117,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 
 		replaceDO3FIZ(doc, dogovor)
 	case PP_3_YUR:
-		r, err := docx.ReadDocxFile(dogovorDO_3_path)
+		r, err := docx.ReadDocxFile(dogovorPP_3_YUR_path)
 		if err != nil {
 			return err
 		}
@@ -125,9 +125,9 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 
 		doc = r.Editable()
 
-		replacePP3FIZ(doc, dogovor)
+		replacePP3YUR(doc, dogovor)
 	case PK_3_YUR:
-		r, err := docx.ReadDocxFile(dogovorDO_3_path)
+		r, err := docx.ReadDocxFile(dogovorPK_3_YUR_path)
 		if err != nil {
 			return err
 		}
@@ -135,7 +135,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 
 		doc = r.Editable()
 
-		replacePP3FIZ(doc, dogovor)
+		replacePK3YUR(doc, dogovor)
 	}
 
 	doc.Replace("OPTIOND", s.diplomMap[dogovor.OptionDocument], -1)
