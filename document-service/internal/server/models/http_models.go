@@ -67,7 +67,7 @@ type EnrollmentListenerRequest struct {
 
 type FullListenerRequest struct {
 	Listener            ListenerRequest           `json:"listener"`
-	Passport            PassportRequest           `json:"passport" validate:"omitempty"`
+	Passport            PassportRequest           `json:"passport"`
 	RegistrationAddress RegAddressRequest         `json:"registration_address"`
 	EducationListener   EducationListenerRequest  `json:"education"`
 	PlaceWork           PlaceWorkRequest          `json:"placeWork"`
@@ -114,7 +114,7 @@ type ZakazchikRequest struct {
 	Address     RegAddressRequest `json:"reg_address"`
 	CompanyName string            `json:"company_name"`
 	FIO         string            `json:"zakazchikfio"`
-	Status      string            `json:"status"`
+	Status      string            `json:"status"`    // директор и тд
 	Osnovanie   string            `json:"osnovanie"` // устав и что там еще может быть (начинается с большой буквы прим. "Устав")
 	INN         string            `json:"inn"`
 	KPP         string            `json:"kpp"`

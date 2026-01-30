@@ -9,9 +9,11 @@ import (
 	"github.com/nguyenthenguyen/docx"
 )
 
-var zayavlenieFourteenPath = "./internal/documents/zayavlenie-fourteen.docx"
-var zayavlenieEighteenPath = "./internal/documents/zayavlenie-eighteen.docx"
-var zayavlenieBelowEighteenPath = "./internal/documents/zayavlenie-below-eighteen.docx"
+const (
+	zayavlenieFourteenPath      = "./internal/documents/zayavlenie-fourteen.docx"
+	zayavlenieEighteenPath      = "./internal/documents/zayavlenie-eighteen.docx"
+	zayavlenieBelowEighteenPath = "./internal/documents/zayavlenie-below-eighteen.docx"
+)
 
 const (
 	BELOW_EIGHTEEN = "BELOW_EIGHTEEN"
