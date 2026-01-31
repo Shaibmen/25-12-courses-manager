@@ -125,7 +125,6 @@ type ZakazchikDTO struct {
 	CompanyName string
 	FIO         string
 	Status      string
-	Osnovanie   string
 	INN         string
 	KPP         string
 	OGRN        string

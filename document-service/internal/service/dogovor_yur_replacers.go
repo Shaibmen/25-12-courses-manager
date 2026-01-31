@@ -16,7 +16,6 @@ func replacePP3YUR(doc *docx.Docx, model *dto.DogovorDTO) {
 
 	doc.Replace("ZAKAZCHIKSTATUS", model.Zakazchik.Status, -1)
 	doc.Replace("ZAKAZCHIKFIO", model.Zakazchik.FIO, -1)
-	doc.Replace("ZAKAZCHIKOSNOVANIE", model.Zakazchik.Osnovanie, -1)
 	doc.Replace("INN", model.Zakazchik.INN, -1)
 	doc.Replace("KPP", model.Zakazchik.KPP, -1)
 	doc.Replace("OGRN", model.Zakazchik.OGRN, -1)
@@ -60,7 +59,6 @@ func replacePK3YUR(doc *docx.Docx, model *dto.DogovorDTO) {
 	doc.Replace("ZAKAZCHIKSTATUS", model.Zakazchik.Status, -1)
 	doc.Replace("ZAKAZCHIKFIO", model.Zakazchik.FIO, -1)
 	doc.Replace("ZFIO", model.Zakazchik.FIO, -1)
-	doc.Replace("ZAKAZCHIKOSNOVANIE", model.Zakazchik.Osnovanie, -1)
 	doc.Replace("INN", model.Zakazchik.INN, -1)
 	doc.Replace("KPP", model.Zakazchik.KPP, -1)
 	doc.Replace("OGRN", model.Zakazchik.OGRN, -1)

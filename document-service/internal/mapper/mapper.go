@@ -185,7 +185,6 @@ func DogovorMapping(request models.DogovorRequest) (*dto.DogovorDTO, error) {
 			CompanyName: request.ZakazchikData.CompanyName,
 			FIO:         request.ZakazchikData.FIO,
 			Status:      request.ZakazchikData.Status,
-			Osnovanie:   request.ZakazchikData.Osnovanie,
 			INN:         request.ZakazchikData.INN,
 			KPP:         request.ZakazchikData.KPP,
 			OGRN:        request.ZakazchikData.OGRN,

@@ -4,8 +4,12 @@ import (
 	"bytes"
 	"context"
 	"document-service/internal/domain/dto"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
+	"os/exec"
+	"strconv"
 	"time"
 
 	"github.com/nguyenthenguyen/docx"
@@ -65,11 +69,49 @@ func NewDogovorService(s3client S3ClientInterface) *DogovorService {
 func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType string) error {
 
 	var doc *docx.Docx
+	var r *docx.ReplaceDocx
 	var err error
+
+	type listenersTableData struct {
+		FIO       string `json:"fio"`
+		DateBirth string `json:"date_birth"`
+		Document  string `json:"document"`
+		SNILS     string `json:"SNILS"`
+		Email     string `json:"email"`
+		Period    string `json:"period"`
+		Obem      string `json:"obem"`
+		Cost      string `json:"cost"`
+	}
+
+	allListenersFormatData := make([]listenersTableData, 0)
+
+	for _, listener := range dogovor.Zakazchik.Listeners {
+		var dateBirth string
+		dob, err := time.Parse(time.RFC3339, dogovor.ListenerData.DateOfBirth)
+		if err == nil {
+			dateBirth = fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year())
+		}
+		allListenersFormatData = append(allListenersFormatData, listenersTableData{
+			FIO:       listener.SecondName + " " + listener.FirstName + " " + listener.MiddleName,
+			DateBirth: dateBirth,
+			Document:  "-",
+			SNILS:     listener.SNILS,
+			Email:     listener.Email,
+			Period:    dogovor.Enrollment.StartDate.Format("02.01.2006") + " - " + dogovor.Enrollment.EndDate.Format("02.01.2006"),
+			Obem:      strconv.Itoa(dogovor.ProgramEducation.TimeEducation),
+			Cost:      fmt.Sprintf("%.2f", dogovor.Enrollment.CurrentPrice) + " руб.",
+		})
+	}
+
+	jsonListenersData, err := json.Marshal(allListenersFormatData)
+	if err != nil {
+		log.Println("произошла ошибка при маршаллинге:", err)
+		return err
+	}
 
 	switch dogovorType {
 	case PP_3_FIZ:
-		r, err := docx.ReadDocxFile(dogovorPP_3_path)
+		r, err = docx.ReadDocxFile(dogovorPP_3_path)
 		if err != nil {
 			return err
 		}
@@ -79,7 +121,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 
 		replacePP3FIZ(doc, dogovor)
 	case PP_2_FIZ:
-		r, err := docx.ReadDocxFile(dogovorPP_2_path)
+		r, err = docx.ReadDocxFile(dogovorPP_2_path)
 		if err != nil {
 			return err
 		}
@@ -89,7 +131,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 
 		replacePP2FIZ(doc, dogovor)
 	case PK_3_FIZ:
-		r, err := docx.ReadDocxFile(dogovorPK_3_path)
+		r, err = docx.ReadDocxFile(dogovorPK_3_path)
 		if err != nil {
 			return err
 		}
@@ -99,7 +141,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 
 		replacePK3FIZ(doc, dogovor)
 	case PK_2_FIZ:
-		r, err := docx.ReadDocxFile(dogovorPK_2_path)
+		r, err = docx.ReadDocxFile(dogovorPK_2_path)
 		if err != nil {
 			return err
 		}
@@ -109,7 +151,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 
 		replacePK2FIZ(doc, dogovor)
 	case DO_3_FIZ:
-		r, err := docx.ReadDocxFile(dogovorDO_3_path)
+		r, err = docx.ReadDocxFile(dogovorDO_3_path)
 		if err != nil {
 			return err
 		}
@@ -119,7 +161,15 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 
 		replaceDO3FIZ(doc, dogovor)
 	case PP_3_YUR:
-		r, err := docx.ReadDocxFile(dogovorPP_3_YUR_path)
+
+		cmd := exec.Command("python", "./scripts/make_listeners_tables.py", "./internal/documents/PP-YUR-3.docx", "./internal/documents/PP-YUR-3-RAW.docx", string(jsonListenersData))
+
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Println("пиздец!", err, string(output))
+		}
+
+		r, err = docx.ReadDocxFile(dogovorPP_3_YUR_path)
 		if err != nil {
 			return err
 		}
@@ -129,7 +179,15 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 
 		replacePP3YUR(doc, dogovor)
 	case PK_3_YUR:
-		r, err := docx.ReadDocxFile(dogovorPK_3_YUR_path)
+
+		cmd := exec.Command("python", "./scripts/make_listeners_tables.py", "./internal/documents/PK-YUR-3.docx", "./internal/documents/PK-YUR-3-RAW.docx", string(jsonListenersData))
+
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Println("пиздец!", err, string(output))
+		}
+
+		r, err = docx.ReadDocxFile(dogovorPK_3_YUR_path)
 		if err != nil {
 			return err
 		}

@@ -12,9 +12,13 @@ RUN go build -o /app/main .
 
 FROM alpine:latest
 
+RUN apk add --no-cache python3 py3-pip
+
 WORKDIR /app
 
 COPY --from=builder /app/main .
 COPY --from=builder /app/internal/documents ./internal/documents
+
+RUN pip3 install --no-cache-dir python-docx
 
 CMD ["./main"]

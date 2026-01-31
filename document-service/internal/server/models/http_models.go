@@ -114,8 +114,7 @@ type ZakazchikRequest struct {
 	Address     RegAddressRequest `json:"reg_address"`
 	CompanyName string            `json:"company_name"`
 	FIO         string            `json:"zakazchikfio"`
-	Status      string            `json:"status"`    // директор и тд
-	Osnovanie   string            `json:"osnovanie"` // устав и что там еще может быть (начинается с большой буквы прим. "Устав")
+	Status      string            `json:"status"` // директор и тд
 	INN         string            `json:"inn"`
 	KPP         string            `json:"kpp"`
 	OGRN        string            `json:"ogrn"`
