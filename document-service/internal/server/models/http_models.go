@@ -75,23 +75,6 @@ type FullListenerRequest struct {
 	EnrollmentListener  EnrollmentListenerRequest `json:"enrollment_listener"`
 }
 
-// type ContractorRequest struct {
-// 	Passport            PassportRequest
-// 	RegistrationAddress RegAddressRequest
-// 	FirstName           string
-// 	SecondName          string
-// 	MiddleName          string
-// 	Contact_phone       string
-// 	Email               string
-// }
-
-//	type Zayavlenie struct {
-//		ProgramEducation ProgramEducationRequest
-//		Listener         ListenerRequest
-//		Contractor       ContractorRequest
-//		Variant          int
-//	}
-
 type ContractorRequest struct {
 	Passport            PassportRequest   `json:"passport"`
 	RegistrationAddress RegAddressRequest `json:"registration_address"`
@@ -149,6 +132,13 @@ type DogovorRequest struct {
 	DogovorType      string                    `json:"dogovor_type"`
 }
 
+/*
+когда отправляешь юрика, кидаешь только "dogovor_card": {}
+затем кидаешь на каждого пользователя "personal_card": {}, "zayavlenie_card": {}
+
+когда отправляешь просто слушателя, либо слушателя через третье лицо, кидаешь
+"personal_card": {}, "zayavlenie_card": {}, БЕЗ ZAKAZCHIK!!!!! "dogovor_card": {}
+*/
 type FullRequest struct {
 	PersonalCardData FullListenerRequest `json:"personal_card"`
 	ZayavlenieData   ZayavlenieRequest   `json:"zayavlenie_card"`

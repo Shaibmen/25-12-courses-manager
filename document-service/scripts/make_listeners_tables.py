@@ -1,3 +1,7 @@
+#
+# НЕ ТРОГАТЬ!!!!!!!!!!
+#
+
 import sys
 import json
 from docx import Document
