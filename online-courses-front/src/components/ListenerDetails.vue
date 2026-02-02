@@ -231,7 +231,7 @@ const loadDetails = async () => {
     education.value = data.data.education_listener || {}
     placework.value = data.data.placework || {}
     await loadEnrollments()
-    await fetchAllFiles(listener.value.snils)
+    fetchAllFiles(listener.value.snils)
   } catch (err) {
     toast.error(err.message || 'Ошибка загрузки данных')
   } finally {

@@ -27,6 +27,7 @@
             <th>Телефон</th>
             <th>Email</th>
             <th>Контактное лицо</th>
+            <th>Должность</th>
             <th>Действия</th>
           </tr>
         </thead>
@@ -41,6 +42,7 @@
             <td>
               {{ l.second_name }} {{ l.first_name }} {{ l.middle_name || '' }}
             </td>
+            <td>{{ l.status }}</td>
             <td style="white-space: nowrap;">
               <div style="display: flex; gap: 8px;">
                 <button class="btn btn-success btn-sm" @click="viewEntity(l.id_legalentity)">Подробнее</button>

@@ -109,6 +109,19 @@ type ExecutorRequest struct {
 	ExecutorMiddlename string `json:"executor_middlename"`
 }
 
+type ZakazchikRequest struct {
+	Listeners   []ListenerRequest `json:"listeners"` // срез слушателей, которых заносим в табличку
+	Address     RegAddressRequest `json:"reg_address"`
+	CompanyName string            `json:"company_name"`
+	FIO         string            `json:"zakazchikfio"`
+	Status      string            `json:"status"` // директор и тд
+	INN         string            `json:"inn"`
+	KPP         string            `json:"kpp"`
+	OGRN        string            `json:"ogrn"`
+	Phone       string            `json:"phone"`
+	Email       string            `json:"email"`
+}
+
 type ZayavlenieRequest struct {
 	ProgramEducation   ProgramEducationRequest   `json:"program_education"`
 	Listener           ListenerRequest           `json:"listener"`
@@ -122,6 +135,7 @@ type ZayavlenieRequest struct {
 }
 
 type DogovorRequest struct {
+	ZakazchikData    ZakazchikRequest          `json:"zakazchik"`
 	ProgramEducation ProgramEducationRequest   `json:"program_education"`
 	ListenerData     ListenerRequest           `json:"listener"`
 	Contractor       ContractorRequest         `json:"contractor"`

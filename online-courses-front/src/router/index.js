@@ -50,6 +50,7 @@ const routes = [
 { path: '/legalentity/:id', component: () => import('../components/LegalEntityDetails.vue') },
 
 { path: '/enrollment/accurate', component: () => import('../components/AccurateEnrollments.vue') },
+{ path: '/enrollment/yur/:id', component: () => import('../components/EnrollmentYUR.vue') },
 
 ]
 

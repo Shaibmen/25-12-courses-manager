@@ -79,7 +79,7 @@ func main() {
 	backupService := service.NewBackupService(backupRepo)
 	reportService := service.NewRepostService(reportRepo)
 	contractorService := service.NewContractorService(db, contractorRepo, listenerRepo, passportRepo, registrationAddressRepo)
-	legalEntityService := service.NewLegalEntityService(db, legalEntityRepo, registrationAddressRepo)
+	legalEntityService := service.NewLegalEntityService(db, legalEntityRepo, registrationAddressRepo, listenerRepo)
 	executerService := service.NewExecutorService(executerRepo)
 	documentService := service.NewDocumentService(documentRepo)
 

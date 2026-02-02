@@ -15,10 +15,11 @@ type LegalEntityService struct {
 	db             database.DB
 	service        repository.LegalEntityRepository
 	regAddressRepo repository.RegistrationAddressRepository
+	listenerRepo   repository.ListenerRepository
 }
 
-func NewLegalEntityService(db database.DB, service repository.LegalEntityRepository, regAddress repository.RegistrationAddressRepository) *LegalEntityService {
-	return &LegalEntityService{db: db, service: service, regAddressRepo: regAddress}
+func NewLegalEntityService(db database.DB, service repository.LegalEntityRepository, regAddress repository.RegistrationAddressRepository, listenerRepo repository.ListenerRepository) *LegalEntityService {
+	return &LegalEntityService{db: db, service: service, regAddressRepo: regAddress, listenerRepo: listenerRepo}
 }
 
 func (l *LegalEntityService) Create(ctx context.Context, dto dto.LegalEntityFullDTO) error {
@@ -50,6 +51,7 @@ func (l *LegalEntityService) Create(ctx context.Context, dto dto.LegalEntityFull
 		SecondName:     dto.LegalEntity.SecondName,
 		MiddleName:     dto.LegalEntity.MiddleName,
 		ID_RegAddress:  regAddressID,
+		Status:         dto.LegalEntity.Status,
 	}
 
 	if err = l.service.CreateInTx(ctx, tx, legalEntity); err != nil {
@@ -85,6 +87,7 @@ func (l *LegalEntityService) Read(ctx context.Context, page int, filter string) 
 			SecondName:     l.SecondName,
 			MiddleName:     l.MiddleName,
 			ID_RegAddress:  l.ID_RegAddress,
+			Status:         l.Status,
 		})
 	}
 
@@ -120,6 +123,7 @@ func (l *LegalEntityService) Update(ctx context.Context, dto *dto.LegalEntityFul
 		FirstName:      dto.LegalEntity.FirstName,
 		SecondName:     dto.LegalEntity.SecondName,
 		MiddleName:     dto.LegalEntity.MiddleName,
+		Status:         dto.LegalEntity.Status,
 	}
 
 	if err = l.service.UpdateInTx(ctx, tx, legalEntity); err != nil {
@@ -161,15 +165,33 @@ func (l *LegalEntityService) Delete(ctx context.Context, legalEntityID uuid.UUID
 	return nil
 }
 
-func (l *LegalEntityService) ReadFullData(ctx context.Context, id uuid.UUID) (*dto.LegalEntityFullDTO, error) {
+func (l *LegalEntityService) ReadFullData(ctx context.Context, id uuid.UUID) (*dto.LegalEntityWithListenersDTO, error) {
 
 	result, err := l.service.ReadFullData(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	dto := dto.LegalEntityFullDTO{
+	listener, err := l.listenerRepo.FindByLegalEntity(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var dtoListeners []dto.ListenerForLegalEntity
+
+	for _, i := range listener {
+		dtoListeners = append(dtoListeners, dto.ListenerForLegalEntity{
+			ID_Listener: i.ID_Listener,
+			FirstName:   i.FirstName,
+			SecondName:  i.SecondName,
+			MiddleName:  i.MiddleName,
+			SNILS:       i.SNILS,
+		})
+	}
+
+	dto := dto.LegalEntityWithListenersDTO{
 		LegalEntity: dto.LegalEntityDTO{
+			Listeners:      dtoListeners,
 			ID_Legalentity: result.ID_Legalentity,
 			NameCompany:    result.NameCompany,
 			Inn:            result.Inn,
@@ -181,6 +203,7 @@ func (l *LegalEntityService) ReadFullData(ctx context.Context, id uuid.UUID) (*d
 			SecondName:     result.SecondName,
 			MiddleName:     result.MiddleName,
 			ID_RegAddress:  result.ID_RegAddress,
+			Status:         result.Status,
 		},
 		RegAddress: dto.RegistrationAddressDTO{
 			MailIndex: result.RegistrationAddress.MailIndex,

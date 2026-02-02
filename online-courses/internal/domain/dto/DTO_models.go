@@ -17,13 +17,14 @@ type ListenerIDDTO struct {
 }
 
 type ListenerDTO struct {
-	FirstName    string `json:"first_name"`
-	SecondName   string `json:"second_name"`
-	MiddleName   string `json:"middle_name"`
-	DateOfBirth  string `json:"date_of_birth"`
-	SNILS        string `json:"snils"`
-	ContactPhone string `json:"contact_phone"`
-	Email        string `json:"email"`
+	FirstName        string `json:"first_name"`
+	SecondName       string `json:"second_name"`
+	MiddleName       string `json:"middle_name"`
+	DateOfBirth      string `json:"date_of_birth"`
+	SNILS            string `json:"snils"`
+	ContactPhone     string `json:"contact_phone"`
+	Email            string `json:"email"`
+	LootingEducation bool   `json:"looting_education"`
 }
 
 type ListenerDTOWithID struct {
@@ -341,20 +342,34 @@ type ContractorCreateDTO struct {
 }
 
 type LegalEntityDTO struct {
-	ID_Legalentity uuid.UUID `json:"id_legalentity"`
-	NameCompany    string    `json:"name_company"`
-	Inn            string    `json:"inn"`
-	Kpp            string    `json:"kpp"`
-	Ogrn           string    `json:"ogrn"`
-	Phone          string    `json:"phone"`
-	Email          string    `json:"email"`
-	FirstName      string    `json:"first_name"`
-	SecondName     string    `json:"second_name"`
-	MiddleName     string    `json:"middle_name"`
-	ID_RegAddress  uuid.UUID `json:"id_regaddress"`
+	Listeners      []ListenerForLegalEntity `json:"listeners"`
+	ID_Legalentity uuid.UUID                `json:"id_legalentity"`
+	NameCompany    string                   `json:"name_company"`
+	Inn            string                   `json:"inn"`
+	Kpp            string                   `json:"kpp"`
+	Ogrn           string                   `json:"ogrn"`
+	Phone          string                   `json:"phone"`
+	Email          string                   `json:"email"`
+	FirstName      string                   `json:"first_name"`
+	SecondName     string                   `json:"second_name"`
+	MiddleName     string                   `json:"middle_name"`
+	ID_RegAddress  uuid.UUID                `json:"id_regaddress"`
+	Status         string                   `json:"status"`
 }
 
 type LegalEntityFullDTO struct {
+	LegalEntity LegalEntityDTO         `json:"legal_entity"`
+	RegAddress  RegistrationAddressDTO `json:"reg_address"`
+}
+
+type ListenerForLegalEntity struct {
+	ID_Listener uuid.UUID `json:"id_listener"`
+	FirstName   string    `json:"first_name"`
+	SecondName  string    `json:"second_name"`
+	MiddleName  string    `json:"middle_name"`
+	SNILS       string    `json:"snils"`
+}
+type LegalEntityWithListenersDTO struct {
 	LegalEntity LegalEntityDTO         `json:"legal_entity"`
 	RegAddress  RegistrationAddressDTO `json:"reg_address"`
 }

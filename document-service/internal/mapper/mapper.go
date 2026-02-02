@@ -4,6 +4,7 @@ import (
 	"document-service/internal/domain/dto"
 	"document-service/internal/server/models"
 	"time"
+	"unsafe"
 )
 
 func FullListenerMapping(request models.FullListenerRequest) (*dto.FullListenerDataDTO, error) {
@@ -165,16 +166,31 @@ func ZayavlenieMapping(request models.ZayavlenieRequest) *dto.ZayavlenieDTO {
 }
 
 func DogovorMapping(request models.DogovorRequest) (*dto.DogovorDTO, error) {
+
 	startDate, err := time.Parse(time.RFC3339, request.Enrollment.StartDate)
 	if err != nil {
+		// log.Println("пиздец!", err, request.Enrollment.StartDate)
 		return &dto.DogovorDTO{}, err
 	}
 	endDate, err := time.Parse(time.RFC3339, request.Enrollment.EndDate)
 	if err != nil {
+		// log.Println("пиздец!", err, request.Enrollment.EndDate)
 		return &dto.DogovorDTO{}, err
 	}
 
 	dto := dto.DogovorDTO{
+		Zakazchik: dto.ZakazchikDTO{
+			Listeners:   *(*[]dto.ListenerDTO)(unsafe.Pointer(&request.ZakazchikData.Listeners)),
+			Address:     (dto.RegistrationAddressDTO)(request.ZakazchikData.Address),
+			CompanyName: request.ZakazchikData.CompanyName,
+			FIO:         request.ZakazchikData.FIO,
+			Status:      request.ZakazchikData.Status,
+			INN:         request.ZakazchikData.INN,
+			KPP:         request.ZakazchikData.KPP,
+			OGRN:        request.ZakazchikData.OGRN,
+			Phone:       request.ZakazchikData.Phone,
+			Email:       request.Contractor.Email,
+		},
 		ProgramEducation: dto.ProgramEducationDTO{
 			TimeEducation:     request.ProgramEducation.TimeEducation,
 			NameProfEducation: request.ProgramEducation.NameProfEducation,

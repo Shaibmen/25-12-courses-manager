@@ -25,11 +25,11 @@ func (l *LegalEntityRepo) CreateInTx(ctx context.Context, tx database.Tx, m *ent
 
 	query :=
 		`
-	insert into legal_entity (id_legalentity, name_company, inn, kpp, ogrn, phone, email, first_name, second_name, middle_name, id_regaddress)
-	values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+	insert into legal_entity (id_legalentity, name_company, inn, kpp, ogrn, phone, email, first_name, second_name, middle_name, id_regaddress, status)
+	values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 	`
 
-	_, err := tx.ExecContext(ctx, query, m.ID_Legalentity, m.NameCompany, m.Inn, m.Kpp, m.Ogrn, m.Phone, m.Email, m.FirstName, m.SecondName, m.MiddleName, m.ID_RegAddress)
+	_, err := tx.ExecContext(ctx, query, m.ID_Legalentity, m.NameCompany, m.Inn, m.Kpp, m.Ogrn, m.Phone, m.Email, m.FirstName, m.SecondName, m.MiddleName, m.ID_RegAddress, m.Status)
 	if err != nil {
 		return repoutils.HandleRepoErr(err)
 	}
@@ -73,6 +73,7 @@ func (l *LegalEntityRepo) Read(ctx context.Context, page int, filter string) ([]
 			&data.SecondName,
 			&data.MiddleName,
 			&data.ID_RegAddress,
+			&data.Status,
 		); err != nil {
 			return nil, repoutils.HandleRepoErr(err)
 		}
@@ -114,10 +115,11 @@ func (l *LegalEntityRepo) UpdateInTx(ctx context.Context, tx database.Tx, m enti
 	email = coalesce($6, email),
 	first_name = coalesce($7, first_name),
 	second_name = coalesce($8, second_name),
-	middle_name = coalesce($9, middle_name)
-	where id_legalentity = $10;`
+	middle_name = coalesce($9, middle_name),
+	status = coalesce($10, status)
+	where id_legalentity = $11;`
 
-	if _, err := tx.ExecContext(ctx, query, m.NameCompany, m.Inn, m.Kpp, m.Ogrn, m.Phone, m.Email, m.FirstName, m.SecondName, m.MiddleName, m.ID_Legalentity); err != nil {
+	if _, err := tx.ExecContext(ctx, query, m.NameCompany, m.Inn, m.Kpp, m.Ogrn, m.Phone, m.Email, m.FirstName, m.SecondName, m.MiddleName, m.Status, m.ID_Legalentity); err != nil {
 
 		l.logger.Error("database error",
 			"operation", "update_legal_entity",
@@ -188,6 +190,7 @@ func (c *LegalEntityRepo) ReadFullData(ctx context.Context, id uuid.UUID) (*enti
 	r.mail_index, r.region, r.city, r.street, r.house, r.building, r.apartment
 	from legal_entity as l
 	inner join registrationaddress r on l.id_regaddress = r.id_regaddress
+	
 	where id_legalentity = $1
 	`
 
@@ -220,6 +223,7 @@ func (c *LegalEntityRepo) ReadFullData(ctx context.Context, id uuid.UUID) (*enti
 			&data.SecondName,
 			&data.MiddleName,
 			&data.ID_RegAddress,
+			&data.Status,
 			&data.RegistrationAddress.MailIndex,
 			&data.RegistrationAddress.Region,
 			&data.RegistrationAddress.City,

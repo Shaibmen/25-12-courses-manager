@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"online-courses/internal/domain/service"
 	"online-courses/internal/mapping"
@@ -45,6 +46,7 @@ func (h *ListenerHandler) CreateListenerHandler(c *gin.Context) {
 		c.Error(err)
 		return
 	}
+	fmt.Println(dto.Listener.LootingEducation)
 
 	var idLegal *uuid.UUID = nil
 	if request.Listener.ID_LegalEntity != uuid.Nil {

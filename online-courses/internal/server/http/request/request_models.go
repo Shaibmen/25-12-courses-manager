@@ -58,15 +58,16 @@ type ProgramEducationRequest struct {
 }
 
 type ListenerRequest struct {
-	FirstName      string    `json:"first_name" validate:"required,max=50"`
-	SecondName     string    `json:"second_name" validate:"required,max=50"`
-	MiddleName     string    `json:"middle_name" validate:"max=50"`
-	DateOfBirth    string    `json:"date_of_birth" validate:"required"`
-	SNILS          string    `json:"snils" validate:"required,len=14"`
-	ContactPhone   string    `json:"contact_phone" validate:"required,len=12"`
-	Email          string    `json:"email" validate:"required,max=50,email"`
-	ID_LegalEntity uuid.UUID `json:"id_legalentity"`
-	ID_Contractor  uuid.UUID `json:"id_contractor"`
+	FirstName        string    `json:"first_name" validate:"required,max=50"`
+	SecondName       string    `json:"second_name" validate:"required,max=50"`
+	MiddleName       string    `json:"middle_name" validate:"max=50"`
+	DateOfBirth      string    `json:"date_of_birth" validate:"required"`
+	SNILS            string    `json:"snils" validate:"required,len=14"`
+	ContactPhone     string    `json:"contact_phone" validate:"required,len=12"`
+	Email            string    `json:"email" validate:"required,max=50,email"`
+	ID_LegalEntity   uuid.UUID `json:"id_legalentity"`
+	ID_Contractor    uuid.UUID `json:"id_contractor"`
+	LootingEducation bool      `json:"looting_education"`
 }
 
 type FullListenerRequest struct {
@@ -101,6 +102,7 @@ type LegalEntityRequest struct {
 	FirstName   string `json:"first_name" validate:"required,max=100"`
 	SecondName  string `json:"second_name" validate:"required,max=100"`
 	MiddleName  string `json:"middle_name" validate:"required,max=100"`
+	Status      string `json:"status" validate:"required,max=100"`
 }
 
 type FullLegalEntityRequest struct {

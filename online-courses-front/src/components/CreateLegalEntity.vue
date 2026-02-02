@@ -4,7 +4,6 @@
   <div style="padding: 100px 20px 20px 20px;">
     <form @submit.prevent="createEntity" class="row g-4">
 
-      <!-- Юридическое лицо -->
       <div class="col-md-4">
         <div class="card p-3 shadow-sm card-block">
           <h5 class="card-title mb-3">Юридическое лицо</h5>
@@ -20,7 +19,6 @@
         </div>
       </div>
 
-      <!-- Представитель -->
       <div class="col-md-4">
         <div class="card p-3 shadow-sm card-block">
           <h5 class="card-title mb-3">Представитель</h5>
@@ -28,11 +26,11 @@
             <input v-model="legal.first_name" @input="onlyLetters('first_name')" class="form-control" placeholder="Имя" required>
             <input v-model="legal.second_name" @input="onlyLetters('second_name')" class="form-control" placeholder="Фамилия" required>
             <input v-model="legal.middle_name" @input="onlyLetters('middle_name')" class="form-control" placeholder="Отчество">
+            <input v-model="legal.status" @input="onlyLetters('status')" class="form-control" placeholder="Должность">
           </div>
         </div>
       </div>
 
-      <!-- Адрес регистрации -->
       <div class="col-md-4">
         <div class="card p-3 shadow-sm card-block">
           <h5 class="card-title mb-3">Адрес регистрации</h5>
@@ -79,7 +77,8 @@ const legal = ref({
   email: '',
   first_name: '',
   second_name: '',
-  middle_name: ''
+  middle_name: '',
+  status: ''
 })
 
 const reg = ref({

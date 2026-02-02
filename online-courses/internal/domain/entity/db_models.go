@@ -150,6 +150,7 @@ type LegalEntity struct {
 	MiddleName          string
 	ID_RegAddress       uuid.UUID
 	RegistrationAddress RegistrationAddress
+	Status              string
 }
 
 func (LegalEntity) TableName() string {
@@ -182,7 +183,7 @@ type Listener struct {
 	SNILS                string
 	ContactPhone         string
 	Email                string
-	Looting_education    bool
+	LootingEducation     bool
 	ID_Passport          *uuid.UUID
 	Passport             Passport
 	ID_RegAddress        uuid.UUID

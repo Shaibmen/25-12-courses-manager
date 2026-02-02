@@ -81,14 +81,15 @@ func MapListenerToEntity(dto dto.ListenerDTO, id uuid.UUID) (*entity.Listener, e
 	}
 
 	return &entity.Listener{
-		ID_Listener:  id,
-		FirstName:    dto.FirstName,
-		SecondName:   dto.SecondName,
-		MiddleName:   dto.MiddleName,
-		DateOfBirth:  *DateOfBirth,
-		SNILS:        dto.SNILS,
-		ContactPhone: dto.ContactPhone,
-		Email:        dto.Email,
+		ID_Listener:      id,
+		FirstName:        dto.FirstName,
+		SecondName:       dto.SecondName,
+		MiddleName:       dto.MiddleName,
+		DateOfBirth:      *DateOfBirth,
+		SNILS:            dto.SNILS,
+		ContactPhone:     dto.ContactPhone,
+		Email:            dto.Email,
+		LootingEducation: dto.LootingEducation,
 	}, nil
 }
 
@@ -107,7 +108,7 @@ func MapListenerEntityToDTO(entity *entity.Listener) *dto.FullListenerDataDTO {
 		ID_RegAddress:        entity.ID_RegAddress,
 		ID_EducationListener: entity.ID_EducationListener,
 		ID_PlaceWork:         entity.ID_PlaceWork,
-		Looting_education:    entity.Looting_education,
+		Looting_education:    entity.LootingEducation,
 	}
 
 	var passport *dto.PassportDTO
@@ -234,13 +235,14 @@ func MapListenerReqToDto(request request.FullListenerRequest) (*dto.CreateListen
 
 	return &dto.CreateListenerDTO{
 		Listener: dto.ListenerDTO{
-			FirstName:    request.Listener.FirstName,
-			SecondName:   request.Listener.SecondName,
-			MiddleName:   request.Listener.MiddleName,
-			DateOfBirth:  request.Listener.DateOfBirth,
-			SNILS:        request.Listener.SNILS,
-			ContactPhone: request.Listener.ContactPhone,
-			Email:        request.Listener.Email,
+			FirstName:        request.Listener.FirstName,
+			SecondName:       request.Listener.SecondName,
+			MiddleName:       request.Listener.MiddleName,
+			DateOfBirth:      request.Listener.DateOfBirth,
+			SNILS:            request.Listener.SNILS,
+			ContactPhone:     request.Listener.ContactPhone,
+			Email:            request.Listener.Email,
+			LootingEducation: request.Listener.LootingEducation,
 		},
 		Passport:            passport,
 		RegistrationAddress: regAddress,
@@ -314,6 +316,7 @@ func LegalEntityFullMappping(request request.FullLegalEntityRequest) (*dto.Legal
 			FirstName:   request.LegalEntity.FirstName,
 			SecondName:  request.LegalEntity.SecondName,
 			MiddleName:  request.LegalEntity.MiddleName,
+			Status:      request.LegalEntity.Status,
 		},
 		RegAddress: dto.RegistrationAddressDTO{
 			MailIndex: mailIndex,

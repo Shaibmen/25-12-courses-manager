@@ -23,10 +23,10 @@ func NewListenerRepo(db database.DB, logger *slog.Logger) *ListenerRepo {
 }
 
 func (l *ListenerRepo) CreateInTx(ctx context.Context, tx database.Tx, m *entity.Listener, i dto.ListenerIDDTO) error {
-	query := `INSERT INTO listener (id_listener, first_name, second_name, middle_name, date_of_birth, snils, contact_phone, email, id_passport, id_regaddress, id_educationlistener, id_placework, id_legalentity, id_contractor)
-	          Values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`
+	query := `INSERT INTO listener (id_listener, first_name, second_name, middle_name, date_of_birth, snils, contact_phone, email, id_passport, id_regaddress, id_educationlistener, id_placework, id_legalentity, id_contractor, looting_education)
+	          Values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`
 
-	_, err := tx.ExecContext(ctx, query, m.ID_Listener, m.FirstName, m.SecondName, m.MiddleName, m.DateOfBirth, m.SNILS, m.ContactPhone, m.Email, i.ID_Passport, i.ID_RegAddress, i.ID_EducationListener, i.ID_PlaceWork, i.ID_LegalEntity, i.ID_Contractor)
+	_, err := tx.ExecContext(ctx, query, m.ID_Listener, m.FirstName, m.SecondName, m.MiddleName, m.DateOfBirth, m.SNILS, m.ContactPhone, m.Email, i.ID_Passport, i.ID_RegAddress, i.ID_EducationListener, i.ID_PlaceWork, i.ID_LegalEntity, i.ID_Contractor, m.LootingEducation)
 	if err != nil {
 		l.logger.Error("database error",
 			"operation", "insert_listener",
@@ -175,7 +175,7 @@ func (l *ListenerRepo) ReadFullData(ctx context.Context, id uuid.UUID) (*entity.
 			&data.ID_PlaceWork,
 			&data.ID_Legalentity,
 			&data.ID_Contractor,
-			&data.Looting_education,
+			&data.LootingEducation,
 			&data.RegistrationAddress.MailIndex,
 			&data.RegistrationAddress.Region,
 			&data.RegistrationAddress.City,

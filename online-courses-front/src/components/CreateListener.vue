@@ -4,7 +4,6 @@
   <div style="padding: 100px 20px 20px 20px;">
     <form @submit.prevent="createListener" class="row g-4">
 
-      <!-- Основная информация -->
       <div class="col-md-4">
         <div class="card p-3 shadow-sm card-block">
           <h5 class="card-title mb-3">Основная информация</h5>
@@ -30,7 +29,6 @@
         </div>
       </div>
 
-      <!-- Паспорт -->
       <div class="col-md-4">
         <div class="card p-3 shadow-sm card-block">
           <h5 class="card-title mb-3">Паспорт</h5>
@@ -52,8 +50,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Адрес регистрации -->
       <div class="col-md-4">
         <div class="card p-3 shadow-sm card-block">
           <h5 class="card-title mb-3">Адрес регистрации</h5>
@@ -72,7 +68,6 @@
         </div>
       </div>
 
-      <!-- Образование -->
       <div class="col-md-6">
         <div class="card p-3 shadow-sm card-block">
           <h5 class="card-title mb-3">Образование</h5>
@@ -102,7 +97,6 @@
         </div>
       </div>
 
-      <!-- Место работы -->
       <div class="col-md-6">
         <div class="card p-3 shadow-sm card-block">
           <h5 class="card-title mb-3">Место работы</h5>

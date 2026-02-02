@@ -4,7 +4,6 @@
   <div style="padding: 100px 20px 20px 20px;">
     <form @submit.prevent="updateLegalEntity" class="row g-4">
 
-      <!-- Данные компании -->
       <div class="col-md-4">
         <div class="card p-3 shadow-sm card-block">
           <h5 class="card-title mb-3">Данные компании</h5>
@@ -24,7 +23,6 @@
         </div>
       </div>
 
-      <!-- Представитель -->
       <div class="col-md-4">
         <div class="card p-3 shadow-sm card-block">
           <h5 class="card-title mb-3">Представитель</h5>
@@ -32,11 +30,11 @@
             <input v-model="legalEntity.first_name" @input="onlyLetters('first_name')" class="form-control" placeholder="Имя" required />
             <input v-model="legalEntity.second_name" @input="onlyLetters('second_name')" class="form-control" placeholder="Фамилия" required />
             <input v-model="legalEntity.middle_name" @input="onlyLetters('middle_name')" class="form-control" placeholder="Отчество" />
+            <input v-model="legalEntity.status" @input="onlyLetters('status')" class="form-control" placeholder="Должность">
           </div>
         </div>
       </div>
 
-      <!-- Адрес регистрации -->
       <div class="col-md-4">
         <div class="card p-3 shadow-sm card-block">
           <h5 class="card-title mb-3">Адрес регистрации</h5>
@@ -130,7 +128,8 @@ const loadLegalEntity = async () => {
       email: le.email || '',
       first_name: le.first_name || '',
       second_name: le.second_name || '',
-      middle_name: le.middle_name || ''
+      middle_name: le.middle_name || '',
+      status: le.status || ''
     }
 
     regAddress.value = {

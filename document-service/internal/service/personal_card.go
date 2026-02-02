@@ -14,7 +14,7 @@ import (
 	"github.com/nguyenthenguyen/docx"
 )
 
-var (
+const (
 	personalCardPath = "./internal/documents/personal-card.docx"
 )
 
