@@ -208,6 +208,7 @@ type ListenerLegalEntity struct {
 	SecondName  string
 	MiddleName  string
 	SNILS       string
+	DateOfBirth string
 }
 
 type Executor struct {

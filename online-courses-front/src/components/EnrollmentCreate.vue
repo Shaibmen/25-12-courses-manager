@@ -764,7 +764,7 @@ const createEnrollment = async () => {
       id_listener: listenerId,
       id_program: selectedProgramId.value,
       id_executor: selectedExecutorId.value || null,
-      FrontData: frontData
+      front_data: frontData
     }
 
 

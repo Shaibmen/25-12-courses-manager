@@ -12,13 +12,13 @@ type PassportRequest struct {
 }
 
 type RegAddressRequest struct {
-	MailIndex string `json:"mail_index" validate:"required,len=6"`
-	Region    string `json:"region" validate:"required,max=100"`
-	City      string `json:"city" validate:"required,max=100"`
-	Street    string `json:"street" validate:"required,max=100"`
-	House     string `json:"house" validate:"required,max=25"`
-	Building  string `json:"building" validate:"required,max=50"`
-	Apartment string `json:"apartment" validate:"required,max=50"`
+	MailIndex string `json:"mail_index" validate:"len=6"`
+	Region    string `json:"region" validate:"max=100"`
+	City      string `json:"city" validate:"max=100"`
+	Street    string `json:"street" validate:"max=100"`
+	House     string `json:"house" validate:"max=25"`
+	Building  string `json:"building" validate:"max=50"`
+	Apartment string `json:"apartment" validate:"max=50"`
 }
 
 type EducationListenerRequest struct {
@@ -47,13 +47,13 @@ type ProgramEducationRequest struct {
 }
 
 type ListenerRequest struct {
-	FirstName    string `json:"first_name" validate:"required,max=50"`
-	SecondName   string `json:"second_name" validate:"required,max=50"`
+	FirstName    string `json:"first_name" validate:"max=50"`
+	SecondName   string `json:"second_name" validate:"max=50"`
 	MiddleName   string `json:"middle_name" validate:"max=50"`
-	DateOfBirth  string `json:"date_of_birth" validate:"required"`
-	SNILS        string `json:"snils" validate:"required,len=14"`
-	ContactPhone string `json:"contact_phone" validate:"required,len=12"`
-	Email        string `json:"email" validate:"required,max=50,email"`
+	DateOfBirth  string `json:"date_of_birth"`
+	SNILS        string `json:"snils" validate:"len=14"`
+	ContactPhone string `json:"contact_phone" validate:"len=12"`
+	Email        string `json:"email" validate:"max=50,email"`
 }
 
 type EnrollmentListenerRequest struct {
@@ -66,9 +66,9 @@ type EnrollmentListenerRequest struct {
 }
 
 type FullListenerRequest struct {
-	Listener            ListenerRequest           `json:"listener"`
+	Listener            ListenerRequest           `json:"listener" validate:"omitempty"`
 	Passport            PassportRequest           `json:"passport" validate:"omitempty"`
-	RegistrationAddress RegAddressRequest         `json:"registration_address"`
+	RegistrationAddress RegAddressRequest         `json:"registration_address" validate:"omitempty"`
 	EducationListener   EducationListenerRequest  `json:"education"`
 	PlaceWork           PlaceWorkRequest          `json:"placeWork"`
 	ProgramEducation    ProgramEducationRequest   `json:"program_education"`
@@ -137,11 +137,11 @@ type ZayavlenieRequest struct {
 type DogovorRequest struct {
 	ZakazchikData    ZakazchikRequest          `json:"zakazchik"`
 	ProgramEducation ProgramEducationRequest   `json:"program_education"`
-	ListenerData     ListenerRequest           `json:"listener"`
+	ListenerData     ListenerRequest           `json:"listener" validate:"omitempty"`
 	Contractor       ContractorRequest         `json:"contractor"`
 	Executor         ExecutorRequest           `json:"executor"`
-	Passport         PassportRequest           `json:"passport"`
-	Registration     RegAddressRequest         `json:"reg_address"`
+	Passport         PassportRequest           `json:"passport" validate:"omitempty"`
+	Registration     RegAddressRequest         `json:"reg_address" validate:"omitempty"`
 	Enrollment       EnrollmentListenerRequest `json:"enrollment_listener"`
 	OptionNagruzka   int                       `json:"opion_nagruz"`
 	OptionDocument   int                       `json:"opt_document"`

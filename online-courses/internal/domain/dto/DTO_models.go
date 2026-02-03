@@ -283,7 +283,39 @@ type ZayavlenieCardInfo struct {
 	DogovorType        string                     `json:"dogovor_type"`
 }
 
+type ListenerInLegalEntity struct {
+	FirstName   string `json:"first_name"`
+	SecondName  string `json:"second_name"`
+	MiddleName  string `json:"middle_name"`
+	SNILS       string `json:"snils"`
+	DateOfBirth string `json:"date_of_birth"`
+}
+
+type RegistrationAddressLegalEntity struct {
+	MailIndex string `json:"mail_index"`
+	Region    string `json:"region"`
+	City      string `json:"city"`
+	Street    string `json:"street"`
+	House     string `json:"house"`
+	Building  string `json:"building"`
+	Apartment string `json:"apartment"`
+}
+
+type LegalEntity struct {
+	Listeners   []ListenerInLegalEntity        `json:"listeners"`
+	Address     RegistrationAddressLegalEntity `json:"reg_address"`
+	CompanyName string                         `json:"company_name"`
+	FIO         string                         `json:"zakazchikfio"`
+	Status      string                         `json:"status"`
+	INN         string                         `json:"inn"`
+	KPP         string                         `json:"kpp"`
+	OGRN        string                         `json:"ogrn"`
+	Phone       string                         `json:"phone"`
+	Email       string                         `json:"email"`
+}
+
 type DogovorCardInfo struct {
+	LegalEntity      LegalEntity                `json:"zakazchik"`
 	ProgramEducation ProgramEducationToCardDTO  `json:"program_education"`
 	ListenerData     ListenerDTO                `json:"listener"`
 	Contractor       ContractorCardInfo         `json:"contractor"`
@@ -304,12 +336,13 @@ type FullDocumentInfoDTO struct {
 }
 
 type FrontDataDeliver struct {
-	Variant        int    `json:"variant"`
-	DogovorType    string `json:"dogovor_type"`
-	OptionNagruzka int    `json:"opion_nagruz"`
-	OptionDocument int    `json:"opt_document"`
-	DogovorAgeType string `json:"dogovor_age"`
-	OptionPrice    string `json:"opt_price"`
+	LegalEntity    LegalEntity `json:"legal_entity"`
+	Variant        int         `json:"variant"`
+	DogovorType    string      `json:"dogovor_type"`
+	OptionNagruzka int         `json:"opion_nagruz"`
+	OptionDocument int         `json:"opt_document"`
+	DogovorAgeType string      `json:"dogovor_age"`
+	OptionPrice    string      `json:"opt_price"`
 }
 
 //card dto over
@@ -368,6 +401,7 @@ type ListenerForLegalEntity struct {
 	SecondName  string    `json:"second_name"`
 	MiddleName  string    `json:"middle_name"`
 	SNILS       string    `json:"snils"`
+	DateOfBirth string    `json:"date_of_birth"`
 }
 type LegalEntityWithListenersDTO struct {
 	LegalEntity LegalEntityDTO         `json:"legal_entity"`

@@ -186,6 +186,7 @@ func (l *LegalEntityService) ReadFullData(ctx context.Context, id uuid.UUID) (*d
 			SecondName:  i.SecondName,
 			MiddleName:  i.MiddleName,
 			SNILS:       i.SNILS,
+			DateOfBirth: i.DateOfBirth,
 		})
 	}
 

@@ -2,6 +2,7 @@ package pg
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"online-courses/internal/database"
@@ -54,10 +55,7 @@ func (d *DocumentsRepo) PrepareDataDocument(ctx context.Context, idListener, idP
 
 	info := entity.PersonalCardInfo{}
 	err := d.repo.GetContext(ctx, &info, query, idListener, idProgram)
-	if err != nil {
-		fmt.Println("asdfasdf")
-		return nil, repoutils.HandleRepoErr(err)
-	}
+	repoutils.HandleRepoErr(errors.New("формируется юрик или ошибка поиска слушателя"))
 
 	queryExecutor :=
 		`
@@ -88,10 +86,7 @@ func (d *DocumentsRepo) PrepareDataDocument(ctx context.Context, idListener, idP
 	`
 	contractor := entity.ContractorDoc{}
 	err = d.repo.GetContext(ctx, &contractor, queryContractor, idListener, idProgram)
-	if err != nil {
-		fmt.Println("780967")
-		return nil, repoutils.HandleRepoErr(err)
-	}
+	repoutils.HandleRepoErr(errors.New("формируется юрик или нет контрактора"))
 
 	prepareInfo := entity.FullDocument{
 		PersonalInfo: info,

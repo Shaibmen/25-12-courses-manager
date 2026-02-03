@@ -1,5 +1,7 @@
 <template>
+  <div>
   <Header title="Запись на курс" />
+    </div>
 
   <div style="padding: 100px 20px 20px 20px; max-width: 1200px; margin: 0 auto;">
     <div>
@@ -25,13 +27,6 @@
           <select v-model="studyLoadOption" class="form-select" :disabled="isDO">
             <option value="">— Недельная учебная нагрузка —</option>
             <option v-for="(label, key) in loadVariantsNotDO" :key="key" :value="key">
-              {{ label }}
-            </option>
-          </select>
-
-          <select v-model="loadVariant" class="form-select" :disabled="isPKorPP">
-            <option value="">— Вариант учебной нагрузки —</option>
-            <option v-for="(label, key) in loadVariantsDO" :key="key" :value="key">
               {{ label }}
             </option>
           </select>
@@ -73,10 +68,11 @@
         </div>
       </div>
 
-      
+      <!---->
       <div class="card p-3 shadow-sm card-block mt-4">
         <h5 class="card-title mb-3">
           Слушатели <span class="text-danger">*</span>
+          <span class="badge bg-secondary ms-2">{{ selectedListenerIds.length }} выбрано</span>
         </h5>
 
         <div v-if="loadingLegalEntityListeners" class="text-center py-3">
@@ -91,6 +87,19 @@
         </div>
 
         <div v-else class="d-flex flex-column gap-2">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              v-model="selectAllListeners"
+              :disabled="saving"
+              :id="'select-all-listeners'"
+            />
+            <label class="form-check-label fw-bold" :for="'select-all-listeners'">
+              Выбрать всех
+            </label>
+          </div>
+          
           <div 
             v-for="listenerItem in legalEntityListeners" 
             :key="listenerItem.id_listener" 
@@ -100,7 +109,7 @@
               class="form-check-input"
               type="checkbox"
               :value="listenerItem.id_listener"
-              v-model="selectedListenerId"
+              v-model="selectedListenerIds"
               :id="'listener-' + listenerItem.id_listener"
               :disabled="saving"
             />
@@ -110,7 +119,6 @@
             </label>
           </div>
         </div>
-        
       </div>
 
       <div class="card p-3 shadow-sm card-block mt-4">
@@ -238,8 +246,8 @@
       </div>
     </div>
   </div>
-</template>
 
+</template>
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -252,30 +260,43 @@ const router = useRouter()
 const legalentityID = route.params.id
 const token = localStorage.getItem('access_token')
 
+
+const legalEntityData = ref(null)
 const legalEntityListeners = ref([])
 const loadingLegalEntityListeners = ref(true)
 const loading = ref(true)
+
+
+const selectedListenerIds = ref([])
+const selectAllListeners = ref(false)
 
 const ageCategory = ref('')
 const loadVariant = ref('')
 const studyLoadOption = ref('')
 const paymentOption = ref('')
 const secondPaymentDate = ref('')
-const selectedListenerId = ref('')
+const optDocumentSelected = ref('')
+const contracts = ref([])
+const loadingContracts = ref(false)
+const executors = ref([])
+const selectedExecutorId = ref('')
+const programs = ref([])
+const selectedProgramId = ref('')
+const price = ref({ individual_price: 0, group_price: 0, campus_price: 0 })
+const currentPrice = ref(0)
+const startDate = ref('')
+const endDate = ref('')
+const group = ref('')
+const typeOfRetraining = ref('')
+const selectedContractId = ref('')
+const saving = ref(false)
 
-const loadVariantsDO = {
-  1: 'с пониженной недельной учебной нагрузкой (1 акад. час в неделю)',
-  2: 'с умеренной недельной учебной нагрузкой (2 акад. часа в неделю)',
-  3: 'со стандартной недельной учебной нагрузкой (3 акад. часа в неделю)',
-  4: 'с высокой недельной учебной нагрузкой (4 акад. часа в неделю)',
-  5: 'с повышенной недельной учебной нагрузкой (6 акад. часов в неделю)'
-}
 
 const loadVariantsNotDO = {
   1: 'с пониженной недельной учебной нагрузкой (3 акад. часа в неделю)',
-  2: 'с умеренной недельной учебной нагрузкой (6 акад. часа в неделю)',
-  3: 'со стандартной недельной учебной нагрузкой (12 акад. часа в неделю)',
-  4: 'с высокой недельной учебной нагрузкой (15 акад. часа в неделю)',
+  2: 'с умеренной недельной учебной нагрузкой (6 акад. часов в неделю)',
+  3: 'со стандартной недельной учебной нагрузкой (12 акад. часов в неделю)',
+  4: 'с высокой недельной учебной нагрузкой (15 акад. часов в неделю)',
   5: 'с повышенной недельной учебной нагрузкой (30 акад. часов в неделю)',
   6: 'с интенсивной недельной учебной нагрузкой (36 акад. часов в неделю)'
 }
@@ -286,23 +307,10 @@ const ageCategories = {
   EIGHTEEN: 'Восемнадцать'
 }
 
-const contracts = ref([])
-const loadingContracts = ref(false)
-const selectedListenerIds = ref([])
-
-const executors = ref([])
-const selectedExecutorId = ref('')
-
-const programs = ref([])
-const selectedProgramId = ref('')
-const price = ref({ individual_price: 0, group_price: 0, campus_price: 0 })
-const currentPrice = ref(0)
-const startDate = ref('')
-const endDate = ref('')
-const group = ref('')
-const typeOfRetraining = ref('')
-const saving = ref(false)
-
+const optDocumentOptions = {
+  1: 'удостоверение о повышении квалификации вручается по окончании',
+  2: 'удостоверение выдаётся одновременно с дипломом СПО/ВО (ч. 16 ст. 76 ФЗ-273). До этого момента удостоверение хранится у Исполнителя.'
+}
 
 const hasContractor = computed(() => {
   return legalentityID && legalEntityListeners.value.length > 0
@@ -328,27 +336,26 @@ const isPKorPP = computed(() => {
   return id.startsWith('PK') || id.startsWith('PP')
 })
 
-const optDocumentOptions = {
-  1: 'удостоверение о повышении квалификации вручается по окончании',
-  2: 'удостоверение выдаётся одновременно с дипломом СПО/ВО (ч. 16 ст. 76 ФЗ-273). До этого момента удостоверение хранится у Исполнителя.'
-}
-const optDocumentSelected = ref('')
 
-const isFormValid = computed(() => {
-  return (
-    selectedListenerIds.value.length > 0 &&
-    selectedListenerId.value &&
-    selectedProgramId.value &&
-    startDate.value &&
-    endDate.value &&
-    currentPrice.value &&
-    currentPrice.value > 0 &&
-    selectedExecutorId.value && 
-    (!hasContractor.value || selectedContractId.value)
-  )
+watch(selectAllListeners, (newValue) => {
+  if (newValue) {
+    selectedListenerIds.value = legalEntityListeners.value.map(l => l.id_listener)
+  } else {
+    selectedListenerIds.value = []
+  }
 })
 
-const loadLegalEntityListeners = async () => {
+watch(selectedListenerIds, (newIds) => {
+  if (newIds.length === legalEntityListeners.value.length) {
+    selectAllListeners.value = true
+  } else if (newIds.length > 0 && newIds.length < legalEntityListeners.value.length) {
+    selectAllListeners.value = false
+  } else if (newIds.length === 0) {
+    selectAllListeners.value = false
+  }
+})
+
+const loadLegalEntityDetails = async () => {
   loadingLegalEntityListeners.value = true
   try {
     const res = await fetch(`${API_URL_CORE}/legalentity/details/${legalentityID}`, {
@@ -364,6 +371,7 @@ const loadLegalEntityListeners = async () => {
     }
 
     const data = await res.json()
+    legalEntityData.value = data.data || null
     
     if (data.data?.legal_entity?.listeners) {
       legalEntityListeners.value = data.data.legal_entity.listeners
@@ -373,7 +381,8 @@ const loadLegalEntityListeners = async () => {
     
   } catch (err) {
     console.error('Ошибка загрузки юридического лица:', err)
-    toast.error(`Ошибка загрузки слушателей: ${err.message}`)
+    toast.error(`Ошибка загрузки данных: ${err.message}`)
+    legalEntityData.value = null
     legalEntityListeners.value = []
   } finally {
     loadingLegalEntityListeners.value = false
@@ -399,12 +408,7 @@ const loadContracts = async () => {
   loadingContracts.value = true
   try {
     contracts.value = [
-      { id_contract: 'DO_3_FIZ', name: 'ДО с оплатой физическим лицом', type: 'trilateral' },
-      { id_contract: 'PK_2_FIZ', name: 'ПК с оплатой физическим лицом', type: 'bilateral' },
-      { id_contract: 'PK_3_FIZ', name: 'ПК с оплатой физическим лицом', type: 'trilateral' },
       { id_contract: 'PK_3_YUR', name: 'ПК с оплатой юридическим лицом', type: 'trilateral' },
-      { id_contract: 'PP_2_FIZ', name: 'ПП с оплатой физическим лицом', type: 'bilateral' },
-      { id_contract: 'PP_3_FIZ', name: 'ПП с оплатой физическим лицом', type: 'trilateral' },
       { id_contract: 'PP_3_YUR', name: 'ПП с оплатой юридическим лицом', type: 'trilateral' }
     ]
   } catch (err) {
@@ -448,28 +452,21 @@ const onProgramChange = () => {
     currentPrice.value = 0
   }
 }
-watch(isDO, (val) => {
-  if (val) {
-    studyLoadOption.value = ''
-  }
-})
 
-watch(isPKorPP, (val) => {
-  if (val) {
-    loadVariant.value = ''
-  }
-})
 
-watch(selectedListenerIds, (newId) => {
-  const c = contracts.value.find(ci => ci.id_contract === newId)
-  const id = c?.id_contract?.toUpperCase() || ''
-  if (id.startsWith('DO')) typeOfRetraining.value = 'Дополнительное образование'
-  else if (id.startsWith('PK')) typeOfRetraining.value = 'Повышение квалификации'
-  else if (id.startsWith('PP')) typeOfRetraining.value = 'Профессиональная переподготовка'
-  else typeOfRetraining.value = ''
+const isFormValid = computed(() => {
+  return (
+    selectedListenerIds.value.length > 0 &&
+    selectedProgramId.value &&
+    startDate.value &&
+    endDate.value &&
+    currentPrice.value &&
+    currentPrice.value > 0 &&
+    selectedExecutorId.value &&
+    (!hasContractor.value || selectedContractId.value)
+  )
 })
-
-const createEnrollment = async () => {
+const createDogovor = async () => {
   if (!isFormValid.value) {
     toast.warn('Заполните все обязательные поля (отмечены *)')
     return
@@ -478,46 +475,138 @@ const createEnrollment = async () => {
   try {
     saving.value = true
 
-    const enrollmentBody = {
-      id_listener: selectedListenerId.value,
-      id_program: selectedProgramId.value,
-      start_date: startDate.value,
-      end_date: endDate.value,
-      current_price: Number(currentPrice.value),
-      group: group.value || null,
-      type_of_retraining: typeOfRetraining.value || null,
-      is_active: true
+    const selectedListeners = legalEntityListeners.value.filter(
+      listener => selectedListenerIds.value.includes(listener.id_listener)
+    )
+
+    const listenersData = selectedListeners.map(listener => ({
+      first_name: listener.first_name,
+      second_name: listener.second_name,
+      middle_name: listener.middle_name || '',
+      snils: listener.snils || '',
+      date_of_birth: listener.date_of_birth || ''
+    }))
+
+    let optPriceValue = ''
+    if (paymentOption.value === 'split') {
+      optPriceValue = `Оплата осуществляется в следующем порядке: аванс 50 % — предоплата до начала обучения, оставшиеся 50 % — в установленный срок${secondPaymentDate.value ? ' ' + secondPaymentDate.value : ''}`
+    } else if (paymentOption.value === 'full') {
+      optPriceValue = 'Оплата осуществляется в следующем порядке: 100% предоплата до начала обучения.'
+    } else if (paymentOption.value === 'halfsplit') {
+      optPriceValue = 'Оплата подлежит перечислению на расчётный счёт Исполнителя в срок до 5 (пяти) рабочих дней, считая с момента (даты) подписания Сторонами Акта оказанных услуг.'
     }
 
-    const res = await fetch(`${API_URL_CORE}/enrollment/`, {
+    let variantValue = null
+    if (isDO.value && loadVariant.value) {
+      variantValue = Number(loadVariant.value)
+    } else if (isPKorPP.value && studyLoadOption.value) {
+      variantValue = Number(studyLoadOption.value)
+    }
+
+    let optNagruzValue = null
+    if (isDO.value && loadVariant.value) {
+      optNagruzValue = Number(loadVariant.value)
+    } else if (isPKorPP.value && studyLoadOption.value) {
+      optNagruzValue = Number(studyLoadOption.value)
+    }
+
+    const legalEntity = legalEntityData.value?.legal_entity || {}
+    const regAddress = legalEntityData.value?.reg_address || {}
+    
+    const address = {
+      mail_index: String(regAddress.mail_index || ''),
+      city: regAddress.city || '',
+      street: regAddress.street || '',
+      house: regAddress.house || '',
+      apartment: regAddress.apartment || ''
+    }
+
+    const zakazchikFIO = `${legalEntity.second_name || ''} ${legalEntity.first_name || ''} ${legalEntity.middle_name || ''}`.trim()
+
+    const documentsDataRequest = {
+      id_executor: selectedExecutorId.value,
+      front_data: {
+        legal_entity: {
+          listeners: listenersData,
+          reg_address: address,
+          company_name: legalEntity.name_company || '',
+          zakazchikfio: zakazchikFIO,
+          status: legalEntity.status || '',
+          inn: legalEntity.inn || '',
+          kpp: legalEntity.kpp || '',
+          ogrn: legalEntity.ogrn || '',
+          phone: legalEntity.phone || '',
+          email: legalEntity.email || ''
+        },
+        variant: variantValue,
+        dogovor_type: selectedContractId.value || null,
+        opt_nagruz: optNagruzValue,
+        opt_document: optDocumentSelected.value ? Number(optDocumentSelected.value) : null,
+        dogovor_age: ageCategory.value || null,
+        opt_price: optPriceValue || null
+      }
+    }
+
+    const res = await fetch(`${API_URL_CORE}/document/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
       },
-      body: JSON.stringify(enrollmentBody)
+      body: JSON.stringify(documentsDataRequest)
     })
 
     if (!res.ok) {
-      const e = await res.json().catch(() => ({}))
-      throw new Error(e.message || 'Ошибка создания записи на обучение')
+      const errorData = await res.json().catch(() => ({}))
+      throw new Error(errorData.message || `Ошибка создания документов: ${res.status}`)
     }
 
-    toast.success('Запись на обучение успешно создана')
-    let optPriceValue = null
-    if (paymentOption.value === 'split') {
-      optPriceValue =
-        `Оплата осуществляется в следующем порядке: аванс 50 % — предоплата до начала обучения, ` +
-        `оставшиеся 50 % — в установленный срок${secondPaymentDate.value ? ' ' + secondPaymentDate.value : ''}`
-    } else if (paymentOption.value === 'full') {
-      optPriceValue =
-        'Оплата осуществляется в следующем порядке: 100% предоплата до начала обучения.'
-    } else if (paymentOption.value === 'halfsplit') {
-      optPriceValue =
-        'Оплата подлежит перечислению на расчётный счёт Исполнителя в срок до 5 (пяти) рабочих дней, считая с момента (даты) подписания Сторонами Акта оказанных услуг.'
+    toast.success('Документы (договор) успешно созданы')
+
+    const enrollmentsPromises = selectedListenerIds.value.map(async (listenerId) => {
+      const enrollmentBody = {
+        id_listener: listenerId,
+        id_program: selectedProgramId.value,
+        start_date: startDate.value,
+        end_date: endDate.value,
+        current_price: Number(currentPrice.value),
+        group: group.value || null,
+        type_of_retraining: typeOfRetraining.value || null,
+        is_active: true
+      }
+
+      const enrollmentRes = await fetch(`${API_URL_CORE}/enrollment/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(enrollmentBody)
+      })
+
+      if (!enrollmentRes.ok) {
+        const error = await enrollmentRes.json().catch(() => ({}))
+        throw new Error(`Ошибка создания записи для слушателя ${listenerId}: ${error.message || 'неизвестная ошибка'}`)
+      }
+
+      return enrollmentRes.json()
+    })
+
+    const enrollmentResults = await Promise.allSettled(enrollmentsPromises)
+
+    const failedEnrollments = enrollmentResults.filter(result => result.status === 'rejected')
+    const successfulEnrollments = enrollmentResults.filter(result => result.status === 'fulfilled')
+
+    if (successfulEnrollments.length > 0) {
+      toast.success(`Создано записей на обучение: ${successfulEnrollments.length}`)
     }
 
-    const frontData = {
+    if (failedEnrollments.length > 0) {
+      console.error('Не удалось создать некоторые записи:', failedEnrollments)
+      toast.warning(`Не удалось создать ${failedEnrollments.length} записей. Проверьте консоль для деталей.`)
+    }
+
+    const frontData2 = {
       dogovor_type: selectedContractId.value || null,
       dogovor_age: ageCategory.value || null,
       opt_document: optDocumentSelected.value ? Number(optDocumentSelected.value) : null,
@@ -525,45 +614,62 @@ const createEnrollment = async () => {
       opt_nagruz: null
     }
 
-    if (isDO.value) {
-      frontData.opt_nagruz = loadVariant.value ? Number(loadVariant.value) : null
-    } else if (isPKorPP.value) {
-      frontData.opt_nagruz = studyLoadOption.value ? Number(studyLoadOption.value) : null
-    }
+    const docsPromises = selectedListenerIds.value.map(async (listenerId) => {
+      const documentPayload = {
+        id_listener: listenerId,
+        id_program: selectedProgramId.value,
+        id_executor: selectedExecutorId.value || null,
+        front_data: frontData2
+      }
 
-    const documentPayload = {
-      id_listener: selectedListenerId.value,
-      id_program: selectedProgramId.value,
-      id_executor: selectedExecutorId.value || null,
-      FrontData: frontData
-    }
+      const docRes = await fetch(`${API_URL_CORE}/document/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(documentPayload)
+      })
 
-    const docRes = await fetch(`${API_URL_CORE}/document/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(documentPayload)
+      if (!docRes.ok) {
+        const error = await docRes.json().catch(() => ({}))
+        throw new Error(`Ошибка создания документов для слушателя ${listenerId}: ${error.message || 'неизвестная ошибка'}`)
+      }
+
+      return docRes.json()
     })
 
-    if (!docRes.ok) {
-      const e = await docRes.json().catch(() => ({}))
-      throw new Error(e.message || 'Ошибка создания документов')
+    const docsResults = await Promise.allSettled(docsPromises)
+
+    const failedDocs = docsResults.filter(result => result.status === 'rejected')
+    const successfulDocs = docsResults.filter(result => result.status === 'fulfilled')
+
+    if (successfulDocs.length > 0) {
+      toast.success(`Создано дополнительных документов: ${successfulDocs.length}`)
     }
 
-    toast.success('Документы успешно созданы')
+    if (failedDocs.length > 0) {
+      console.error('Не удалось создать некоторые документы:', failedDocs)
+      toast.warning(`Не удалось создать ${failedDocs.length} документов. Проверьте консоль для деталей.`)
+    }
 
-    setTimeout(() => {
-      router.push('/legalentities')
-    }, 1500)
+
+    if (selectedListenerIds.value.length > 0) {
+      toast.success(`Обработка завершена. Всего слушателей: ${selectedListenerIds.value.length}`)
+      
+
+    }
 
   } catch (err) {
-    console.error('Ошибка создания:', err)
-    toast.error(err.message || 'Произошла ошибка при создании записи')
+    console.error('Критическая ошибка при создании:', err)
+    toast.error(err.message || 'Произошла критическая ошибка при создании документов')
   } finally {
     saving.value = false
   }
+}
+
+const createEnrollment = () => {
+  createDogovor()
 }
 
 const goBack = () => {
@@ -575,7 +681,7 @@ const goBack = () => {
 onMounted(async () => {
   try {
     await Promise.all([
-      loadLegalEntityListeners(),
+      loadLegalEntityDetails(), 
       loadPrograms(),
       loadContracts(),
       loadExecutors()
@@ -585,6 +691,28 @@ onMounted(async () => {
     toast.error('Ошибка загрузки данных')
   } finally {
     loading.value = false
+  }
+})
+
+
+watch(selectedContractId, (newId) => {
+  const c = contracts.value.find(ci => ci.id_contract === newId)
+  const id = c?.id_contract?.toUpperCase() || ''
+  if (id.startsWith('DO')) typeOfRetraining.value = 'Дополнительное образование'
+  else if (id.startsWith('PK')) typeOfRetraining.value = 'Повышение квалификации'
+  else if (id.startsWith('PP')) typeOfRetraining.value = 'Профессиональная переподготовка'
+  else typeOfRetraining.value = ''
+})
+
+watch(isDO, (val) => {
+  if (val) {
+    studyLoadOption.value = ''
+  }
+})
+
+watch(isPKorPP, (val) => {
+  if (val) {
+    loadVariant.value = ''
   }
 })
 </script>

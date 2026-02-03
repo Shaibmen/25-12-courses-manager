@@ -149,18 +149,40 @@ type CreateCardRequest struct {
 	ID_program  uuid.UUID `json:"id_program" validate:"required,uuid"`
 }
 
+type ListenerInLegalEntity struct {
+	FirstName   string `json:"first_name"`
+	SecondName  string `json:"second_name"`
+	MiddleName  string `json:"middle_name"`
+	SNILS       string `json:"snils"`
+	DateOfBirth string `json:"date_of_birth"`
+}
+
+type LegalEntity struct {
+	Listeners   []ListenerInLegalEntity `json:"listeners"`
+	Address     RegAddressRequest       `json:"reg_address"`
+	CompanyName string                  `json:"company_name"`
+	FIO         string                  `json:"zakazchikfio"`
+	Status      string                  `json:"status"`
+	INN         string                  `json:"inn"`
+	KPP         string                  `json:"kpp"`
+	OGRN        string                  `json:"ogrn"`
+	Phone       string                  `json:"phone"`
+	Email       string                  `json:"email"`
+}
+
 type DocumentsDataRequest struct {
-	ID_Listener uuid.UUID `json:"id_listener"`
-	ID_Program  uuid.UUID `json:"id_program"`
-	ID_Executor uuid.UUID `json:"id_executor"`
-	FrontData   FrontDataDeliverRequest
+	ID_Listener uuid.UUID               `json:"id_listener"`
+	ID_Program  uuid.UUID               `json:"id_program"`
+	ID_Executor uuid.UUID               `json:"id_executor"`
+	FrontData   FrontDataDeliverRequest `json:"front_data"`
 }
 
 type FrontDataDeliverRequest struct {
-	Variant        int    `json:"variant"`
-	DogovorType    string `json:"dogovor_type"`
-	OptionNagruzka int    `json:"opt_nagruz"`
-	OptionDocument int    `json:"opt_document"`
-	DogovorAgeType string `json:"dogovor_age"`
-	OptionPrice    string `json:"opt_price"`
+	LegalEntity    LegalEntity `json:"legal_entity"`
+	Variant        int         `json:"variant"`
+	DogovorType    string      `json:"dogovor_type"`
+	OptionNagruzka int         `json:"opt_nagruz"`
+	OptionDocument int         `json:"opt_document"`
+	DogovorAgeType string      `json:"dogovor_age"`
+	OptionPrice    string      `json:"opt_price"`
 }

@@ -88,7 +88,7 @@
           <button 
         type="button" 
         class="btn btn-success mt-2"
-        @click="pushListener"
+        @click="goCreateListener(legal_entity.id_legalentity)"
       >
         Добавить слушателя
       </button>

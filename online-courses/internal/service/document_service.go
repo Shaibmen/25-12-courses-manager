@@ -4,6 +4,7 @@ import (
 	"context"
 	"online-courses/internal/domain/dto"
 	"online-courses/internal/domain/repository"
+	"online-courses/internal/server/http/request"
 
 	"github.com/google/uuid"
 )
@@ -16,11 +17,28 @@ func NewDocumentService(repo repository.DocumentRepository) *DocumentService {
 	return &DocumentService{repo: repo}
 }
 
-func (d *DocumentService) FormingDataDocument(ctx context.Context, idListener, idProgram, idExecutor uuid.UUID, frontData dto.FrontDataDeliver) (*dto.FullDocumentInfoDTO, error) {
+func (d *DocumentService) FormingDataDocument(ctx context.Context, idListener, idProgram, idExecutor uuid.UUID, frontData request.FrontDataDeliverRequest) (*dto.FullDocumentInfoDTO, error) {
 
 	prepareInfo, err := d.repo.PrepareDataDocument(ctx, idListener, idProgram, idExecutor)
 	if err != nil {
 		return nil, err
+	}
+
+	// mainIndexLegalEntity, err := strconv.Atoi(frontData.LegalEntity.Address.MailIndex)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	var dtoListenerLegalEntity []dto.ListenerInLegalEntity
+
+	for _, i := range frontData.LegalEntity.Listeners {
+		dtoListenerLegalEntity = append(dtoListenerLegalEntity, dto.ListenerInLegalEntity{
+			FirstName:   i.FirstName,
+			SecondName:  i.SecondName,
+			MiddleName:  i.MiddleName,
+			SNILS:       i.SNILS,
+			DateOfBirth: i.DateOfBirth,
+		})
 	}
 
 	dto := dto.FullDocumentInfoDTO{
@@ -162,6 +180,26 @@ func (d *DocumentService) FormingDataDocument(ctx context.Context, idListener, i
 			DogovorType: frontData.DogovorAgeType,
 		},
 		DogovorRequest: dto.DogovorCardInfo{
+			LegalEntity: dto.LegalEntity{
+				Listeners: dtoListenerLegalEntity,
+				Address: dto.RegistrationAddressLegalEntity{
+					MailIndex: frontData.LegalEntity.Address.MailIndex,
+					Region:    frontData.LegalEntity.Address.Region,
+					City:      frontData.LegalEntity.Address.City,
+					Street:    frontData.LegalEntity.Address.Street,
+					House:     frontData.LegalEntity.Address.House,
+					Building:  frontData.LegalEntity.Address.Building,
+					Apartment: frontData.LegalEntity.Address.Apartment,
+				},
+				CompanyName: frontData.LegalEntity.CompanyName,
+				FIO:         frontData.LegalEntity.FIO,
+				Status:      frontData.LegalEntity.Status,
+				INN:         frontData.LegalEntity.INN,
+				KPP:         frontData.LegalEntity.KPP,
+				OGRN:        frontData.LegalEntity.OGRN,
+				Phone:       frontData.LegalEntity.Phone,
+				Email:       frontData.LegalEntity.Email,
+			},
 			ProgramEducation: dto.ProgramEducationToCardDTO{
 				NameProfEducation: prepareInfo.PersonalInfo.NameProfEducation,
 				TimeEducation:     prepareInfo.PersonalInfo.TimeEducation,
