@@ -236,12 +236,13 @@ type EducationListenerCardDTO struct {
 }
 
 type EnrollmentListenerToCard struct {
-	StartDate        string  `json:"start_date"`
-	EndDate          string  `json:"end_date"`
-	CurrentPrice     float32 `json:"current_price"`
-	Is_active        bool    `json:"is_active"`
-	Group            string  `json:"group"`
-	TypeOfRetraining string  `json:"type_of_retraining"`
+	NameProfEducation string  `json:"name_prof_education"`
+	StartDate         string  `json:"start_date"`
+	EndDate           string  `json:"end_date"`
+	CurrentPrice      float32 `json:"current_price"`
+	Is_active         bool    `json:"is_active"`
+	Group             string  `json:"group"`
+	TypeOfRetraining  string  `json:"type_of_retraining"`
 }
 
 type PersonalCardInfoDTO struct {
@@ -284,11 +285,12 @@ type ZayavlenieCardInfo struct {
 }
 
 type ListenerInLegalEntity struct {
-	FirstName   string `json:"first_name"`
-	SecondName  string `json:"second_name"`
-	MiddleName  string `json:"middle_name"`
-	SNILS       string `json:"snils"`
-	DateOfBirth string `json:"date_of_birth"`
+	FirstName    string `json:"first_name"`
+	SecondName   string `json:"second_name"`
+	MiddleName   string `json:"middle_name"`
+	SNILS        string `json:"snils"`
+	DateOfBirth  string `json:"date_of_birth"`
+	ContactPhone string `json:"contact_phone"`
 }
 
 type RegistrationAddressLegalEntity struct {
@@ -396,12 +398,13 @@ type LegalEntityFullDTO struct {
 }
 
 type ListenerForLegalEntity struct {
-	ID_Listener uuid.UUID `json:"id_listener"`
-	FirstName   string    `json:"first_name"`
-	SecondName  string    `json:"second_name"`
-	MiddleName  string    `json:"middle_name"`
-	SNILS       string    `json:"snils"`
-	DateOfBirth string    `json:"date_of_birth"`
+	ID_Listener  uuid.UUID `json:"id_listener"`
+	FirstName    string    `json:"first_name"`
+	SecondName   string    `json:"second_name"`
+	MiddleName   string    `json:"middle_name"`
+	SNILS        string    `json:"snils"`
+	DateOfBirth  string    `json:"date_of_birth"`
+	ContactPhone string    `json:"contact_phone"`
 }
 type LegalEntityWithListenersDTO struct {
 	LegalEntity LegalEntityDTO         `json:"legal_entity"`

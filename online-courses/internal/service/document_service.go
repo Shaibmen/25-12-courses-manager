@@ -33,11 +33,12 @@ func (d *DocumentService) FormingDataDocument(ctx context.Context, idListener, i
 
 	for _, i := range frontData.LegalEntity.Listeners {
 		dtoListenerLegalEntity = append(dtoListenerLegalEntity, dto.ListenerInLegalEntity{
-			FirstName:   i.FirstName,
-			SecondName:  i.SecondName,
-			MiddleName:  i.MiddleName,
-			SNILS:       i.SNILS,
-			DateOfBirth: i.DateOfBirth,
+			FirstName:    i.FirstName,
+			SecondName:   i.SecondName,
+			MiddleName:   i.MiddleName,
+			SNILS:        i.SNILS,
+			DateOfBirth:  i.DateOfBirth,
+			ContactPhone: i.ContactPhone,
 		})
 	}
 
@@ -267,12 +268,13 @@ func (d *DocumentService) FormingDataDocument(ctx context.Context, idListener, i
 				Apartment: prepareInfo.PersonalInfo.Apartment,
 			},
 			Enrollment: dto.EnrollmentListenerToCard{
-				StartDate:        prepareInfo.PersonalInfo.StartDate,
-				EndDate:          prepareInfo.PersonalInfo.EndDate,
-				CurrentPrice:     prepareInfo.PersonalInfo.CurrentPrice,
-				Is_active:        prepareInfo.PersonalInfo.Is_active,
-				Group:            prepareInfo.PersonalInfo.Group,
-				TypeOfRetraining: prepareInfo.PersonalInfo.TypeOfRetraining,
+				NameProfEducation: prepareInfo.PersonalInfo.NameProfEducation,
+				StartDate:         prepareInfo.PersonalInfo.StartDate,
+				EndDate:           prepareInfo.PersonalInfo.EndDate,
+				CurrentPrice:      prepareInfo.PersonalInfo.CurrentPrice,
+				Is_active:         prepareInfo.PersonalInfo.Is_active,
+				Group:             prepareInfo.PersonalInfo.Group,
+				TypeOfRetraining:  prepareInfo.PersonalInfo.TypeOfRetraining,
 			},
 			OptionNagruzka: frontData.OptionNagruzka,
 			OptionDocument: frontData.OptionDocument,

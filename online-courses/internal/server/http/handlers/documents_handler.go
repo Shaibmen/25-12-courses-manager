@@ -33,7 +33,7 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(c.Request.Context(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 20*time.Second)
 	defer cancel()
 
 	data, err := d.handler.FormingDataDocument(ctx, request.ID_Listener, request.ID_Program, request.ID_Executor, request.FrontData)
@@ -43,6 +43,11 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 	}
 
 	if data.DogovorRequest.LegalEntity.CompanyName != "" {
+
+		data.DogovorRequest.Enrollment.StartDate = request.FrontData.StartDate
+		data.DogovorRequest.Enrollment.EndDate = request.FrontData.EndDate
+		data.DogovorRequest.Enrollment.NameProfEducation = request.FrontData.NameProfEducation
+
 		responseDogovor, err := RequestToDoc(*data, "dogovor", c, d.cfg)
 		if err != nil {
 			c.Error(err)
@@ -53,6 +58,7 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 			c.JSON(responseDogovor, nil)
 			return
 		}
+
 	} else {
 		responseCard, err := RequestToDoc(*data, "personal-card", c, d.cfg)
 		if err != nil {

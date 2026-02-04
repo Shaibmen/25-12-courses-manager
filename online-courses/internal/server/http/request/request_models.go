@@ -150,11 +150,12 @@ type CreateCardRequest struct {
 }
 
 type ListenerInLegalEntity struct {
-	FirstName   string `json:"first_name"`
-	SecondName  string `json:"second_name"`
-	MiddleName  string `json:"middle_name"`
-	SNILS       string `json:"snils"`
-	DateOfBirth string `json:"date_of_birth"`
+	FirstName    string `json:"first_name"`
+	SecondName   string `json:"second_name"`
+	MiddleName   string `json:"middle_name"`
+	SNILS        string `json:"snils"`
+	DateOfBirth  string `json:"date_of_birth"`
+	ContactPhone string `json:"contact_phone"`
 }
 
 type LegalEntity struct {
@@ -178,11 +179,14 @@ type DocumentsDataRequest struct {
 }
 
 type FrontDataDeliverRequest struct {
-	LegalEntity    LegalEntity `json:"legal_entity"`
-	Variant        int         `json:"variant"`
-	DogovorType    string      `json:"dogovor_type"`
-	OptionNagruzka int         `json:"opt_nagruz"`
-	OptionDocument int         `json:"opt_document"`
-	DogovorAgeType string      `json:"dogovor_age"`
-	OptionPrice    string      `json:"opt_price"`
+	LegalEntity       LegalEntity `json:"legal_entity"`
+	Variant           int         `json:"variant"`
+	DogovorType       string      `json:"dogovor_type"`
+	OptionNagruzka    int         `json:"opt_nagruz"`
+	OptionDocument    int         `json:"opt_document"`
+	DogovorAgeType    string      `json:"dogovor_age"`
+	OptionPrice       string      `json:"opt_price"`
+	StartDate         string      `json:"start_date"`
+	EndDate           string      `json:"end_date"`
+	NameProfEducation string      `json:"program_name"`
 }

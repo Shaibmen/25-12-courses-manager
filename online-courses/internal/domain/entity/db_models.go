@@ -203,12 +203,13 @@ func (Listener) TableName() string {
 }
 
 type ListenerLegalEntity struct {
-	ID_Listener uuid.UUID
-	FirstName   string
-	SecondName  string
-	MiddleName  string
-	SNILS       string
-	DateOfBirth string
+	ID_Listener  uuid.UUID
+	FirstName    string
+	SecondName   string
+	MiddleName   string
+	SNILS        string
+	DateOfBirth  string
+	ContactPhone string
 }
 
 type Executor struct {
