@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"online-courses/internal/config"
 	"online-courses/internal/domain/dto"
@@ -47,6 +48,10 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		data.DogovorRequest.Enrollment.StartDate = request.FrontData.StartDate
 		data.DogovorRequest.Enrollment.EndDate = request.FrontData.EndDate
 		data.DogovorRequest.Enrollment.NameProfEducation = request.FrontData.NameProfEducation
+		data.DogovorRequest.Enrollment.CurrentPrice = request.FrontData.CurrentPrice
+		data.DogovorRequest.ProgramEducation.TimeEducation = request.FrontData.TimeEducation
+
+		fmt.Println(data.DogovorRequest)
 
 		responseDogovor, err := RequestToDoc(*data, "dogovor", c, d.cfg)
 		if err != nil {

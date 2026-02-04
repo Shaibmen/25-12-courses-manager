@@ -285,12 +285,12 @@ type ZayavlenieCardInfo struct {
 }
 
 type ListenerInLegalEntity struct {
-	FirstName    string `json:"first_name"`
-	SecondName   string `json:"second_name"`
-	MiddleName   string `json:"middle_name"`
-	SNILS        string `json:"snils"`
-	DateOfBirth  string `json:"date_of_birth"`
-	ContactPhone string `json:"contact_phone"`
+	FirstName   string `json:"first_name"`
+	SecondName  string `json:"second_name"`
+	MiddleName  string `json:"middle_name"`
+	SNILS       string `json:"snils"`
+	DateOfBirth string `json:"date_of_birth"`
+	Email       string `json:"email"`
 }
 
 type RegistrationAddressLegalEntity struct {
@@ -398,13 +398,13 @@ type LegalEntityFullDTO struct {
 }
 
 type ListenerForLegalEntity struct {
-	ID_Listener  uuid.UUID `json:"id_listener"`
-	FirstName    string    `json:"first_name"`
-	SecondName   string    `json:"second_name"`
-	MiddleName   string    `json:"middle_name"`
-	SNILS        string    `json:"snils"`
-	DateOfBirth  string    `json:"date_of_birth"`
-	ContactPhone string    `json:"contact_phone"`
+	ID_Listener uuid.UUID `json:"id_listener"`
+	FirstName   string    `json:"first_name"`
+	SecondName  string    `json:"second_name"`
+	MiddleName  string    `json:"middle_name"`
+	SNILS       string    `json:"snils"`
+	DateOfBirth string    `json:"date_of_birth"`
+	Email       string    `json:"email"`
 }
 type LegalEntityWithListenersDTO struct {
 	LegalEntity LegalEntityDTO         `json:"legal_entity"`

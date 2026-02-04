@@ -488,7 +488,7 @@ const createDogovor = async () => {
       middle_name: listener.middle_name || '',
       snils: listener.snils || '',
       date_of_birth: listener.date_of_birth || '',
-      contact_phone: listener.contact_phone || '',
+      email: listener.email || '',
     }))
 
     let optPriceValue = ''
@@ -529,6 +529,21 @@ const createDogovor = async () => {
       prog => prog.id_program_education === selectedProgramId.value
     )
     const programName = selectedProgram ? selectedProgram.name_prof_education : ''
+    const programHours = selectedProgram ? selectedProgram.time_education : 0
+
+     let priceType = ''
+    let selectedPriceValue = Number(currentPrice.value)
+    
+    if (selectedProgram) {
+      if (selectedPriceValue === selectedProgram.individual_price) {
+        priceType = 'individual'
+      } else if (selectedPriceValue === selectedProgram.group_price) {
+        priceType = 'group'
+      } else if (selectedPriceValue === selectedProgram.campus_price) {
+        priceType = 'campus'
+      }
+    }
+
 
     const zakazchikFIO = `${legalEntity.second_name || ''} ${legalEntity.first_name || ''} ${legalEntity.middle_name || ''}`.trim()
 
@@ -550,6 +565,8 @@ const createDogovor = async () => {
         start_date: startDate.value,
         end_date: endDate.value,
         program_name: programName,
+        time_education: programHours,
+        price_enrollment: parseFloat(selectedPriceValue),
         variant: variantValue,
         dogovor_type: selectedContractId.value || null,
         opt_nagruz: optNagruzValue,
