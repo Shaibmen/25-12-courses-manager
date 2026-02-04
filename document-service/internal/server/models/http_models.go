@@ -126,7 +126,7 @@ type DogovorRequest struct {
 	Passport         PassportRequest           `json:"passport" validate:"omitempty"`
 	Registration     RegAddressRequest         `json:"reg_address" validate:"omitempty"`
 	Enrollment       EnrollmentListenerRequest `json:"enrollment_listener"`
-	OptionNagruzka   int                       `json:"opion_nagruz"`
+	OptionNagruzka   int                       `json:"opt_nagruz"`
 	OptionDocument   int                       `json:"opt_document"`
 	OptionPrice      string                    `json:"opt_price"`
 	DogovorType      string                    `json:"dogovor_type"`

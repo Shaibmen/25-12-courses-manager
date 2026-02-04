@@ -158,7 +158,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		replaceDO3FIZ(doc, dogovor)
 	case PP_3_YUR:
 
-		cmd := exec.Command("python", "./scripts/make_listeners_tables.py", "./internal/documents/PP-YUR-3.docx", "./internal/documents/PP-YUR-3-RAW.docx", string(jsonListenersData))
+		cmd := exec.Command("python", "scripts/make_listeners_tables.py", "/app/internal/documents/PP-YUR-3.docx", "/app/internal/documents/PP-YUR-3-RAW.docx", string(jsonListenersData))
 
 		output, err := cmd.CombinedOutput()
 		if err != nil {
@@ -176,7 +176,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		replacePP3YUR(doc, dogovor)
 	case PK_3_YUR:
 
-		cmd := exec.Command("python", "./scripts/make_listeners_tables.py", "./internal/documents/PK-YUR-3.docx", "./internal/documents/PK-YUR-3-RAW.docx", string(jsonListenersData))
+		cmd := exec.Command("python", "scripts/make_listeners_tables.py", "/app/internal/documents/PK-YUR-3.docx", "/app/internal/documents/PK-YUR-3-RAW.docx", string(jsonListenersData))
 
 		output, err := cmd.CombinedOutput()
 		if err != nil {

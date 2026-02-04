@@ -14,6 +14,8 @@ FROM alpine:latest
 
 RUN apk add --no-cache python3 py3-pip
 
+COPY scripts/ /app/scripts/
+
 WORKDIR /app
 
 COPY --from=builder /app/main .

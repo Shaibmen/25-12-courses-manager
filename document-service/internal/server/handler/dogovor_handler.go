@@ -30,8 +30,6 @@ func (h *DogovoreHandler) CreateDogovor(c *gin.Context) {
 
 	request := fullRequest.DogovorData
 
-	log.Println("request:", request)
-
 	dto, err := mapper.DogovorMapping(request)
 	if err != nil {
 		log.Println(err)

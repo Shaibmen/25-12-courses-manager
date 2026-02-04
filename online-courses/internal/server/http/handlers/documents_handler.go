@@ -46,7 +46,7 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 
 		data.DogovorRequest.Enrollment.StartDate = request.FrontData.StartDate
 		data.DogovorRequest.Enrollment.EndDate = request.FrontData.EndDate
-		data.DogovorRequest.Enrollment.NameProfEducation = request.FrontData.NameProfEducation
+		data.DogovorRequest.ProgramEducation.NameProfEducation = request.FrontData.NameProfEducation
 
 		responseDogovor, err := RequestToDoc(*data, "dogovor", c, d.cfg)
 		if err != nil {
