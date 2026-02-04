@@ -1,24 +1,24 @@
 package models
 
 type PassportRequest struct {
-	PlaceBirth    string `json:"place_birth" validate:"required,max=50"`
-	Citizenship   string `json:"citizenship" validate:"required,max=50"`
-	Gender        string `json:"gender" validate:"required,max=7"`
-	Seria         string `json:"seria" validate:"required,len=4,numeric"`
-	Number        string `json:"number" validate:"required,len=6,numeric"`
-	PassportGiven string `json:"passport_given" validate:"required,max=100"`
-	DateGiven     string `json:"date_given" validate:"required"`
-	Code          string `json:"code" validate:"required,len=7"`
+	PlaceBirth    string `json:"place_birth"`
+	Citizenship   string `json:"citizenship"`
+	Gender        string `json:"gender"`
+	Seria         string `json:"seria"`
+	Number        string `json:"number"`
+	PassportGiven string `json:"passport_given"`
+	Code          string `json:"code"`
+	DateGiven     string `json:"date_given"`
 }
 
 type RegAddressRequest struct {
-	MailIndex string `json:"mail_index" validate:"len=6"`
-	Region    string `json:"region" validate:"max=100"`
-	City      string `json:"city" validate:"max=100"`
-	Street    string `json:"street" validate:"max=100"`
-	House     string `json:"house" validate:"max=25"`
-	Building  string `json:"building" validate:"max=50"`
-	Apartment string `json:"apartment" validate:"max=50"`
+	MailIndex string `json:"mail_index"`
+	Region    string `json:"region"`
+	City      string `json:"city"`
+	Street    string `json:"street"`
+	House     string `json:"house"`
+	Building  string `json:"building"`
+	Apartment string `json:"apartment"`
 }
 
 type EducationListenerRequest struct {
@@ -47,13 +47,13 @@ type ProgramEducationRequest struct {
 }
 
 type ListenerRequest struct {
-	FirstName    string `json:"first_name" validate:"max=50"`
-	SecondName   string `json:"second_name" validate:"max=50"`
-	MiddleName   string `json:"middle_name" validate:"max=50"`
+	FirstName    string `json:"first_name"`
+	SecondName   string `json:"second_name"`
+	MiddleName   string `json:"middle_name"`
+	SNILS        string `json:"snils"`
+	ContactPhone string `json:"contact_phone"`
+	Email        string `json:"email"`
 	DateOfBirth  string `json:"date_of_birth"`
-	SNILS        string `json:"snils" validate:"len=14"`
-	ContactPhone string `json:"contact_phone" validate:"len=12"`
-	Email        string `json:"email" validate:"max=50,email"`
 }
 
 type EnrollmentListenerRequest struct {
