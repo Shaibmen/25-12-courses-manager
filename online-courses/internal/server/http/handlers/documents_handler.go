@@ -42,35 +42,48 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		return
 	}
 
-	responseCard, err := RequestToDoc(*data, "personal-card", c, d.cfg)
-	if err != nil {
-		c.Error(err)
-		return
-	}
-	if responseCard != http.StatusOK {
-		c.JSON(responseCard, nil)
-		return
-	}
+	if data.DogovorRequest.LegalEntity.CompanyName != "" {
+		responseDogovor, err := RequestToDoc(*data, "dogovor", c, d.cfg)
+		if err != nil {
+			c.Error(err)
+			return
+		}
 
-	responseZayvlenie, err := RequestToDoc(*data, "zayavlenie", c, d.cfg)
-	if err != nil {
-		c.Error(err)
-		return
-	}
-	if responseZayvlenie != http.StatusOK {
-		c.JSON(responseZayvlenie, nil)
-		return
-	}
+		if responseDogovor != http.StatusOK {
+			c.JSON(responseDogovor, nil)
+			return
+		}
+	} else {
+		responseCard, err := RequestToDoc(*data, "personal-card", c, d.cfg)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+		if responseCard != http.StatusOK {
+			c.JSON(responseCard, nil)
+			return
+		}
 
-	responseDogovor, err := RequestToDoc(*data, "dogovor", c, d.cfg)
-	if err != nil {
-		c.Error(err)
-		return
-	}
+		responseZayvlenie, err := RequestToDoc(*data, "zayavlenie", c, d.cfg)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+		if responseZayvlenie != http.StatusOK {
+			c.JSON(responseZayvlenie, nil)
+			return
+		}
 
-	if responseDogovor != http.StatusOK {
-		c.JSON(responseDogovor, nil)
-		return
+		responseDogovor, err := RequestToDoc(*data, "dogovor", c, d.cfg)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		if responseDogovor != http.StatusOK {
+			c.JSON(responseDogovor, nil)
+			return
+		}
 	}
 
 }

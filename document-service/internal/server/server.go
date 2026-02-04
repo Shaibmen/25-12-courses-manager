@@ -38,13 +38,13 @@ func MustServerInit(r *gin.Engine, port string, personalCard *handler.PersonalCa
 		api.GET("dogovor-exists", dogovor.ExistsDogovor)
 		api.GET("dogovor-download", dogovor.DownloadDogovor)
 		api.DELETE("dogovor-delete", dogovor.DeleteDogovor)
+		api.POST("dogovor", dogovor.CreateDogovor)
 
 		api.POST("zayavlenie", zayavlenie.CreateZayavlenie)
 		api.GET("zayavlenie-exists", zayavlenie.ExistsZayavlenie)
 		api.GET("zayavlenie-download", zayavlenie.DownloadZayavlenie)
 		api.DELETE("zayavlenie-delete", zayavlenie.DeleteZayavlenie)
 	}
-	r.POST("dogovor", dogovor.CreateDogovor)
 
 	r.Run(port)
 
