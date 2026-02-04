@@ -487,7 +487,8 @@ const createDogovor = async () => {
       second_name: listener.second_name,
       middle_name: listener.middle_name || '',
       snils: listener.snils || '',
-      date_of_birth: listener.date_of_birth || ''
+      date_of_birth: listener.date_of_birth || '',
+      contact_phone: listener.contact_phone || '',
     }))
 
     let optPriceValue = ''
@@ -524,6 +525,11 @@ const createDogovor = async () => {
       apartment: regAddress.apartment || ''
     }
 
+     const selectedProgram = programs.value.find(
+      prog => prog.id_program_education === selectedProgramId.value
+    )
+    const programName = selectedProgram ? selectedProgram.name_prof_education : ''
+
     const zakazchikFIO = `${legalEntity.second_name || ''} ${legalEntity.first_name || ''} ${legalEntity.middle_name || ''}`.trim()
 
     const documentsDataRequest = {
@@ -541,6 +547,9 @@ const createDogovor = async () => {
           phone: legalEntity.phone || '',
           email: legalEntity.email || ''
         },
+        start_date: startDate.value,
+        end_date: endDate.value,
+        program_name: programName,
         variant: variantValue,
         dogovor_type: selectedContractId.value || null,
         opt_nagruz: optNagruzValue,

@@ -443,7 +443,7 @@ func (l *ListenerRepo) FindByLegalEntity(ctx context.Context, id uuid.UUID) ([]e
 	query :=
 		`
 	select
-	l.id_listener, l.first_name, l.second_name, middle_name, l.snils, l.date_of_birth
+	l.id_listener, l.first_name, l.second_name, middle_name, l.snils, l.date_of_birth, contact_phone
 	from listener as l 
 	where id_legalentity = $1;
 	`
@@ -474,6 +474,7 @@ func (l *ListenerRepo) FindByLegalEntity(ctx context.Context, id uuid.UUID) ([]e
 			&list.MiddleName,
 			&list.SNILS,
 			&list.DateOfBirth,
+			&list.ContactPhone,
 		); err != nil {
 
 			l.logger.Error("database error",
