@@ -181,13 +181,13 @@ func (l *LegalEntityService) ReadFullData(ctx context.Context, id uuid.UUID) (*d
 
 	for _, i := range listener {
 		dtoListeners = append(dtoListeners, dto.ListenerForLegalEntity{
-			ID_Listener:  i.ID_Listener,
-			FirstName:    i.FirstName,
-			SecondName:   i.SecondName,
-			MiddleName:   i.MiddleName,
-			SNILS:        i.SNILS,
-			DateOfBirth:  i.DateOfBirth,
-			ContactPhone: i.ContactPhone,
+			ID_Listener: i.ID_Listener,
+			FirstName:   i.FirstName,
+			SecondName:  i.SecondName,
+			MiddleName:  i.MiddleName,
+			SNILS:       i.SNILS,
+			DateOfBirth: i.DateOfBirth,
+			Email:       i.Email,
 		})
 	}
 

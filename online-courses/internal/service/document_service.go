@@ -33,12 +33,12 @@ func (d *DocumentService) FormingDataDocument(ctx context.Context, idListener, i
 
 	for _, i := range frontData.LegalEntity.Listeners {
 		dtoListenerLegalEntity = append(dtoListenerLegalEntity, dto.ListenerInLegalEntity{
-			FirstName:    i.FirstName,
-			SecondName:   i.SecondName,
-			MiddleName:   i.MiddleName,
-			SNILS:        i.SNILS,
-			DateOfBirth:  i.DateOfBirth,
-			ContactPhone: i.ContactPhone,
+			FirstName:   i.FirstName,
+			SecondName:  i.SecondName,
+			MiddleName:  i.MiddleName,
+			SNILS:       i.SNILS,
+			DateOfBirth: i.DateOfBirth,
+			Email:       i.Email,
 		})
 	}
 

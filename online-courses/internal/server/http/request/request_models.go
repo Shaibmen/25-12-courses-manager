@@ -150,12 +150,12 @@ type CreateCardRequest struct {
 }
 
 type ListenerInLegalEntity struct {
-	FirstName    string `json:"first_name"`
-	SecondName   string `json:"second_name"`
-	MiddleName   string `json:"middle_name"`
-	SNILS        string `json:"snils"`
-	DateOfBirth  string `json:"date_of_birth"`
-	ContactPhone string `json:"contact_phone"`
+	FirstName   string `json:"first_name"`
+	SecondName  string `json:"second_name"`
+	MiddleName  string `json:"middle_name"`
+	SNILS       string `json:"snils"`
+	DateOfBirth string `json:"date_of_birth"`
+	Email       string `json:"email"`
 }
 
 type LegalEntity struct {
@@ -189,4 +189,6 @@ type FrontDataDeliverRequest struct {
 	StartDate         string      `json:"start_date"`
 	EndDate           string      `json:"end_date"`
 	NameProfEducation string      `json:"program_name"`
+	CurrentPrice      float32     `json:"price_enrollment"`
+	TimeEducation     int         `json:"time_education"`
 }
