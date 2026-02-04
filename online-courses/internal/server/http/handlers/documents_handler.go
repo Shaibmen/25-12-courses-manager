@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"online-courses/internal/config"
 	"online-courses/internal/domain/dto"
@@ -43,15 +42,18 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		return
 	}
 
+	// первый запрос приходит без цены и часов, но с почтой, второй запрос приходит с ценой и часами, но без почты
+	// opt_nagruz не отправялется совсем
+	// когда создаём личные дела от юрика - всегда ставим возрастную группу 18, потому что трехсторонние физик заявления будут смотреться кринжово
+	// кнопка удалить заказчика не работает
+
 	if data.DogovorRequest.LegalEntity.CompanyName != "" {
 
 		data.DogovorRequest.Enrollment.StartDate = request.FrontData.StartDate
 		data.DogovorRequest.Enrollment.EndDate = request.FrontData.EndDate
-		data.DogovorRequest.Enrollment.NameProfEducation = request.FrontData.NameProfEducation
 		data.DogovorRequest.Enrollment.CurrentPrice = request.FrontData.CurrentPrice
+		data.DogovorRequest.ProgramEducation.NameProfEducation = request.FrontData.NameProfEducation
 		data.DogovorRequest.ProgramEducation.TimeEducation = request.FrontData.TimeEducation
-
-		fmt.Println(data.DogovorRequest)
 
 		responseDogovor, err := RequestToDoc(*data, "dogovor", c, d.cfg)
 		if err != nil {

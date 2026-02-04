@@ -128,13 +128,13 @@ func replaceZayavlenieEighteen(doc *docx.Docx, model *dto.ZayavlenieDTO) {
 	numberSeria := fmt.Sprintf(": %s %s ", model.Passport.Seria, model.Passport.Number)
 
 	doc.Replace(": SERIAE NUMBERE ", numberSeria, -1)
-	doc.Replace("GIVEN", model.Passport.PassportGiven, -1)
 	doc.Replace("SNILS", model.ListenerData.SNILS, -1)
 
 	dob, err := time.Parse(time.RFC3339, model.Passport.DateGiven)
 	if err == nil {
 		doc.Replace("DATEGIVEN", fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year()), -1)
 	}
+	doc.Replace("GIVEN", model.Passport.PassportGiven, -1)
 
 	dob, err = time.Parse(time.RFC3339, model.ListenerData.DateOfBirth)
 	if err == nil {

@@ -30,6 +30,10 @@ func (h *DogovoreHandler) CreateDogovor(c *gin.Context) {
 
 	request := fullRequest.DogovorData
 
+	log.Println("price:", request.Enrollment.CurrentPrice)
+	log.Println("time:", request.ProgramEducation.TimeEducation)
+	log.Println("email:", request.ZakazchikData.Email)
+
 	dto, err := mapper.DogovorMapping(request)
 	if err != nil {
 		log.Println(err)
