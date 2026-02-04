@@ -86,14 +86,10 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 	allListenersFormatData := make([]listenersTableData, 0)
 
 	for _, listener := range dogovor.Zakazchik.Listeners {
-		var dateBirth string
-		dob, err := time.Parse(time.RFC3339, dogovor.ListenerData.DateOfBirth)
-		if err == nil {
-			dateBirth = fmt.Sprintf("%02d.%02d.%02d", dob.Day(), dob.Month(), dob.Year())
-		}
+
 		allListenersFormatData = append(allListenersFormatData, listenersTableData{
 			FIO:       listener.SecondName + " " + listener.FirstName + " " + listener.MiddleName,
-			DateBirth: dateBirth,
+			DateBirth: listener.DateOfBirth,
 			Document:  "-",
 			SNILS:     listener.SNILS,
 			Email:     listener.Email,

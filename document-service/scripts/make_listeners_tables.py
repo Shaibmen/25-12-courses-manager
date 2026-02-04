@@ -21,7 +21,7 @@ def add_data_to_table(path_to_docx, path_to_raw_docx, json_data):
         row_cells = found_table.add_row().cells
         row_cells[0].text = str(i)
         row_cells[1].text = listener.get("fio", "")
-        row_cells[2].text = listener.get("birth_date", "")
+        row_cells[2].text = listener.get("date_birth", "")
         row_cells[3].text = listener.get("document", "")
         row_cells[4].text = listener.get("SNILS", "")
         row_cells[5].text = listener.get("email", "")

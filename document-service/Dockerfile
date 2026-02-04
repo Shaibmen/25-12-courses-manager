@@ -19,6 +19,6 @@ WORKDIR /app
 COPY --from=builder /app/main .
 COPY --from=builder /app/internal/documents ./internal/documents
 
-RUN pip3 install --no-cache-dir python-docx
+RUN pip3 install --break-system-packages --no-cache-dir python-docx
 
 CMD ["./main"]

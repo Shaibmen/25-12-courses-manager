@@ -3,8 +3,8 @@ package mapper
 import (
 	"document-service/internal/domain/dto"
 	"document-service/internal/server/models"
+	"log"
 	"time"
-	"unsafe"
 )
 
 func FullListenerMapping(request models.FullListenerRequest) (*dto.FullListenerDataDTO, error) {
@@ -23,10 +23,12 @@ func FullListenerMapping(request models.FullListenerRequest) (*dto.FullListenerD
 
 	startDate, err := time.Parse(time.RFC3339, request.EnrollmentListener.StartDate)
 	if err != nil {
+		log.Println("пиздец!", err)
 		return &dto.FullListenerDataDTO{}, err
 	}
 	endDate, err := time.Parse(time.RFC3339, request.EnrollmentListener.EndDate)
 	if err != nil {
+		log.Println("пиздец!", err)
 		return &dto.FullListenerDataDTO{}, err
 	}
 
@@ -169,18 +171,41 @@ func DogovorMapping(request models.DogovorRequest) (*dto.DogovorDTO, error) {
 
 	startDate, err := time.Parse(time.RFC3339, request.Enrollment.StartDate)
 	if err != nil {
-		// log.Println("пиздец!", err, request.Enrollment.StartDate)
+		log.Println("пиздец!", err, request.Enrollment.StartDate)
 		return &dto.DogovorDTO{}, err
 	}
 	endDate, err := time.Parse(time.RFC3339, request.Enrollment.EndDate)
 	if err != nil {
-		// log.Println("пиздец!", err, request.Enrollment.EndDate)
+		log.Println("пиздец!", err, request.Enrollment.EndDate)
 		return &dto.DogovorDTO{}, err
+	}
+
+	listeners := make([]dto.ListenerDTO, 0)
+
+	for _, v := range request.ZakazchikData.Listeners {
+
+		birthDate, err := time.Parse(time.RFC3339, v.DateOfBirth)
+		if err != nil {
+			return &dto.DogovorDTO{}, err
+		}
+
+		listener := dto.ListenerDTO{
+			FirstName:    v.FirstName,
+			SecondName:   v.SecondName,
+			MiddleName:   v.MiddleName,
+			DateOfBirth:  birthDate.Format("02.01.2006"),
+			SNILS:        v.SNILS,
+			ContactPhone: v.ContactPhone,
+			Email:        v.Email,
+		}
+
+		listeners = append(listeners, listener)
+
 	}
 
 	dto := dto.DogovorDTO{
 		Zakazchik: dto.ZakazchikDTO{
-			Listeners:   *(*[]dto.ListenerDTO)(unsafe.Pointer(&request.ZakazchikData.Listeners)),
+			Listeners:   listeners,
 			Address:     (dto.RegistrationAddressDTO)(request.ZakazchikData.Address),
 			CompanyName: request.ZakazchikData.CompanyName,
 			FIO:         request.ZakazchikData.FIO,

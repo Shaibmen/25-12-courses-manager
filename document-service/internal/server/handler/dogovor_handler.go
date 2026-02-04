@@ -23,12 +23,14 @@ func (h *DogovoreHandler) CreateDogovor(c *gin.Context) {
 	var fullRequest models.FullRequest
 
 	if err := c.ShouldBindJSON(&fullRequest); err != nil {
-		log.Println(err)
+		log.Println("пиздец при шудбинджсон!", err)
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "invalid parameter request", "err": err.Error()})
 		return
 	}
 
 	request := fullRequest.DogovorData
+
+	log.Println("request:", request)
 
 	dto, err := mapper.DogovorMapping(request)
 	if err != nil {

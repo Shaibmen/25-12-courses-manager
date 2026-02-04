@@ -4,7 +4,6 @@ import (
 	"document-service/internal/mapper"
 	"document-service/internal/server/models"
 	"document-service/internal/service"
-	"document-service/internal/validate"
 	"io"
 	"log"
 	"net/http"
@@ -34,13 +33,7 @@ func (p *PersonalCardHandler) CreatePersonalCard(c *gin.Context) {
 	}
 
 	request := fullRequest.PersonalCardData
-
-	err := validate.Validator.Struct(&request)
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusBadRequest, gin.H{"msg": "invalid parameter validation", "err": err.Error()})
-		return
-	}
+	log.Println("request:", request)
 
 	dto, err := mapper.FullListenerMapping(request)
 	if err != nil {
