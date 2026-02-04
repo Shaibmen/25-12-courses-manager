@@ -66,9 +66,9 @@ type EnrollmentListenerRequest struct {
 }
 
 type FullListenerRequest struct {
-	Listener            ListenerRequest           `json:"listener" validate:"omitempty"`
-	Passport            PassportRequest           `json:"passport" validate:"omitempty"`
-	RegistrationAddress RegAddressRequest         `json:"registration_address" validate:"omitempty"`
+	Listener            ListenerRequest           `json:"listener"`
+	Passport            PassportRequest           `json:"passport"`
+	RegistrationAddress RegAddressRequest         `json:"registration_address"`
 	EducationListener   EducationListenerRequest  `json:"education"`
 	PlaceWork           PlaceWorkRequest          `json:"placeWork"`
 	ProgramEducation    ProgramEducationRequest   `json:"program_education"`
