@@ -466,6 +466,9 @@ const isFormValid = computed(() => {
     (!hasContractor.value || selectedContractId.value)
   )
 })
+
+
+//asdfasdf
 const createDogovor = async () => {
   if (!isFormValid.value) {
     toast.warn('Заполните все обязательные поля (отмечены *)')
