@@ -270,7 +270,7 @@ const loadDetails = async () => {
       apartment: ra.apartment || ''
     }
 
-    await fetchAllFiles(legal_entity.value.nameCompany)
+    fetchAllFiles(legal_entity.value.name_company)
 
   } catch (err) {
     toast.error(err.message || 'Ошибка при загрузке данных')
