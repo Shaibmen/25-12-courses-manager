@@ -416,6 +416,7 @@ const endDate = ref('')
 const group = ref('')
 const typeOfRetraining = ref('') 
 const saving = ref(false)
+const optNagruzValue = ref(null)
 
 const contractorModal = ref(false)
 const confirmModal = ref(null)
@@ -690,6 +691,8 @@ watch(selectedContractId, (newId) => {
   else typeOfRetraining.value = ''
 })
 
+
+
 const createEnrollment = async () => {
     
 
@@ -702,6 +705,8 @@ const createEnrollment = async () => {
     toast.warn('Выберите исполнителя')
     return
   }
+
+  
 
   try {
     saving.value = true
@@ -746,12 +751,14 @@ const createEnrollment = async () => {
       'Оплата подлежит перечислению на расчётный счёт Исполнителя в срок до 5 (пяти) рабочих дней, считая с момента (даты) подписания Сторонами Акта оказанных услуг.'
   }
 
+  
+
     const frontData = {
       dogovor_type: selectedContractId.value || null,
       dogovor_age: ageCategory.value || null,
       opt_document: optDocumentSelected.value ? Number(optDocumentSelected.value) : null,
       opt_price: optPriceValue || null,
-      opt_nagruz: null
+      opt_nagruz: optNagruzValue  || null
     }
 
     if (isDO.value) {
