@@ -24,7 +24,7 @@
             </option>
           </select>
 
-          <select v-model="studyLoadOption" class="form-select" :disabled="isDO">
+          <select v-model="studyLoadOption" class="form-select">
             <option value="">— Недельная учебная нагрузка —</option>
             <option v-for="(label, key) in loadVariantsNotDO" :key="key" :value="key">
               {{ label }}
@@ -324,10 +324,7 @@ const filteredContracts = computed(() => {
   }
 })
 
-const isDO = computed(() => {
-  const c = contracts.value.find(c => c.id_contract === selectedContractId.value)
-  return !!c && String(c.id_contract).toUpperCase().startsWith('DO')
-})
+
 
 const isPKorPP = computed(() => {
   const c = contracts.value.find(c => c.id_contract === selectedContractId.value)
@@ -501,16 +498,10 @@ const createDogovor = async () => {
     }
 
     let variantValue = null
-    if (isDO.value && loadVariant.value) {
-      variantValue = Number(loadVariant.value)
-    } else if (isPKorPP.value && studyLoadOption.value) {
-      variantValue = Number(studyLoadOption.value)
-    }
-
     let optNagruzValue = null
-    if (isDO.value && loadVariant.value) {
-      optNagruzValue = Number(loadVariant.value)
-    } else if (isPKorPP.value && studyLoadOption.value) {
+
+    if (studyLoadOption.value) {
+      variantValue = Number(studyLoadOption.value)
       optNagruzValue = Number(studyLoadOption.value)
     }
 
@@ -531,7 +522,7 @@ const createDogovor = async () => {
     const programName = selectedProgram ? selectedProgram.name_prof_education : ''
     const programHours = selectedProgram ? selectedProgram.time_education : 0
 
-     let priceType = ''
+    let priceType = ''
     let selectedPriceValue = Number(currentPrice.value)
     
     if (selectedProgram) {
@@ -598,6 +589,7 @@ const createDogovor = async () => {
         id_program: selectedProgramId.value,
         start_date: startDate.value,
         end_date: endDate.value,
+        opt_nagruz: optNagruzValue,
         current_price: Number(currentPrice.value),
         group: group.value || null,
         type_of_retraining: typeOfRetraining.value || null,
@@ -640,7 +632,7 @@ const createDogovor = async () => {
       dogovor_age: ageCategory.value || null,
       opt_document: optDocumentSelected.value ? Number(optDocumentSelected.value) : null,
       opt_price: optPriceValue || null,
-      opt_nagruz: null
+      opt_nagruz: optNagruzValue  || null
     }
 
     const docsPromises = selectedListenerIds.value.map(async (listenerId) => {
@@ -733,17 +725,6 @@ watch(selectedContractId, (newId) => {
   else typeOfRetraining.value = ''
 })
 
-watch(isDO, (val) => {
-  if (val) {
-    studyLoadOption.value = ''
-  }
-})
-
-watch(isPKorPP, (val) => {
-  if (val) {
-    loadVariant.value = ''
-  }
-})
 </script>
 
 <style scoped>
