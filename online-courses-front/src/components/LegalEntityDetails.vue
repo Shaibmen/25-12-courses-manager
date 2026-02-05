@@ -166,15 +166,15 @@ const goCreateListener = () => {
   })
 }
 
-const fetchAllFiles = async (contactphone) => {
-  if (!contactphone) {
+const fetchAllFiles = async (nameCompany) => {
+  if (!nameCompany) {
     toast.error('Контактный телефон не найден')
     return
   }
   filesLoading.value = true
   filesList.value = []
   try {
-    const res = await fetch(`${API_URL_DOC}/exists?card-name=${encodeURIComponent(contactphone)}`, {
+    const res = await fetch(`${API_URL_DOC}/exists?card-name=${encodeURIComponent(nameCompany)}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
 
@@ -196,7 +196,7 @@ const fetchAllFiles = async (contactphone) => {
   }
 }
 
-// Функция для скачивания файла
+
 const downloadFileByName = async (fileName) => {
   if (!fileName) return
   downloadLoading.value = fileName
@@ -270,7 +270,7 @@ const loadDetails = async () => {
       apartment: ra.apartment || ''
     }
 
-    await fetchAllFiles(legal_entity.value.phone)
+    await fetchAllFiles(legal_entity.value.nameCompany)
 
   } catch (err) {
     toast.error(err.message || 'Ошибка при загрузке данных')
