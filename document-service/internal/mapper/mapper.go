@@ -214,7 +214,7 @@ func DogovorMapping(request models.DogovorRequest) (*dto.DogovorDTO, error) {
 			KPP:         request.ZakazchikData.KPP,
 			OGRN:        request.ZakazchikData.OGRN,
 			Phone:       request.ZakazchikData.Phone,
-			Email:       request.Contractor.Email,
+			Email:       request.ZakazchikData.Email,
 		},
 		ProgramEducation: dto.ProgramEducationDTO{
 			TimeEducation:     request.ProgramEducation.TimeEducation,

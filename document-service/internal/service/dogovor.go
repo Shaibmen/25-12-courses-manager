@@ -182,7 +182,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		}
 		defer r.Close()
 
-		nameFile = "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + dogovor.Zakazchik.CompanyName + "_" + time.Now().Format("2001.02.01") + ".docx"
+		nameFile = "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + dogovor.Zakazchik.CompanyName + "_" + time.Now().Format("2006.02.01") + ".docx"
 
 		doc = r.Editable()
 
@@ -202,7 +202,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		}
 		defer r.Close()
 
-		nameFile = "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + dogovor.Zakazchik.CompanyName + "_" + time.Now().Format("2001.02.01") + ".docx"
+		nameFile = "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + dogovor.Zakazchik.CompanyName + "_" + time.Now().Format("2006.02.01") + ".docx"
 
 		doc = r.Editable()
 
