@@ -169,12 +169,12 @@ func ZayavlenieMapping(request models.ZayavlenieRequest) *dto.ZayavlenieDTO {
 
 func DogovorMapping(request models.DogovorRequest) (*dto.DogovorDTO, error) {
 
-	startDate, err := time.Parse(time.RFC3339, request.Enrollment.StartDate)
+	startDate, err := time.Parse("2006-01-02", request.Enrollment.StartDate)
 	if err != nil {
 		log.Println("пиздец!", err, request.Enrollment.StartDate)
 		return &dto.DogovorDTO{}, err
 	}
-	endDate, err := time.Parse(time.RFC3339, request.Enrollment.EndDate)
+	endDate, err := time.Parse("2006-01-02", request.Enrollment.EndDate)
 	if err != nil {
 		log.Println("пиздец!", err, request.Enrollment.EndDate)
 		return &dto.DogovorDTO{}, err

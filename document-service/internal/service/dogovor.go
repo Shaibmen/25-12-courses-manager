@@ -71,6 +71,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 	var doc *docx.Docx
 	var r *docx.ReplaceDocx
 	var err error
+	var nameFile string
 
 	type listenersTableData struct {
 		FIO       string `json:"fio"`
@@ -95,7 +96,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 			Email:     listener.Email,
 			Period:    dogovor.Enrollment.StartDate.Format("02.01.2006") + " - " + dogovor.Enrollment.EndDate.Format("02.01.2006"),
 			Obem:      strconv.Itoa(dogovor.ProgramEducation.TimeEducation),
-			Cost:      fmt.Sprintf("%.2f", dogovor.Enrollment.CurrentPrice) + " руб.",
+			Cost:      fmt.Sprintf("%.2f", dogovor.Enrollment.CurrentPrice),
 		})
 	}
 
@@ -113,6 +114,8 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		}
 		defer r.Close()
 
+		nameFile = "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + dogovor.ListenerData.SNILS + ".docx"
+
 		doc = r.Editable()
 
 		replacePP3FIZ(doc, dogovor)
@@ -122,6 +125,8 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 			return err
 		}
 		defer r.Close()
+
+		nameFile = "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + dogovor.ListenerData.SNILS + ".docx"
 
 		doc = r.Editable()
 
@@ -133,6 +138,8 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		}
 		defer r.Close()
 
+		nameFile = "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + dogovor.ListenerData.SNILS + ".docx"
+
 		doc = r.Editable()
 
 		replacePK3FIZ(doc, dogovor)
@@ -143,6 +150,8 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		}
 		defer r.Close()
 
+		nameFile = "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + dogovor.ListenerData.SNILS + ".docx"
+
 		doc = r.Editable()
 
 		replacePK2FIZ(doc, dogovor)
@@ -152,6 +161,8 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 			return err
 		}
 		defer r.Close()
+
+		nameFile = "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + dogovor.ListenerData.SNILS + ".docx"
 
 		doc = r.Editable()
 
@@ -171,6 +182,8 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		}
 		defer r.Close()
 
+		nameFile = "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + dogovor.Zakazchik.CompanyName + ".docx"
+
 		doc = r.Editable()
 
 		replacePP3YUR(doc, dogovor)
@@ -189,6 +202,8 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		}
 		defer r.Close()
 
+		nameFile = "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + dogovor.Zakazchik.CompanyName + ".docx"
+
 		doc = r.Editable()
 
 		replacePK3YUR(doc, dogovor)
@@ -199,7 +214,7 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 	doc.Replace("OPTIOND", s.diplomMap[dogovor.OptionDocument], -1)
 	doc.Replace("OPTIONH", s.nagruzkaMap[dogovor.OptionNagruzka], -1)
 	doc.Replace("OPTIONPRICE", dogovor.OptionPrice, -1)
-	doc.Replace("PRICE", fmt.Sprintf("%.2f", dogovor.Enrollment.CurrentPrice), -1)
+	doc.Replace("PRICE", fmt.Sprintf("%.2f руб.", dogovor.Enrollment.CurrentPrice), -1)
 	doc.Replace("OPTION", s.doMap[dogovor.OptionNagruzka], -1)
 
 	var buffer bytes.Buffer
@@ -207,9 +222,6 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 	if err != nil {
 		return err
 	}
-
-	uniqueParam := dogovor.ListenerData.SNILS
-	nameFile := "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + uniqueParam + ".docx"
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
