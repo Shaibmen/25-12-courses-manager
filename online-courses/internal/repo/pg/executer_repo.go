@@ -23,11 +23,11 @@ func NewExecutorRepo(repo database.DB, logger *slog.Logger) *ExecutorRepo {
 func (e *ExecutorRepo) Create(ctx context.Context, m entity.Executor) error {
 	query :=
 		`
-	insert into executor (id_executor, status, first_name, second_name, middle_name)
-	values ($1, $2, $3, $4, $5)
+	insert into executor (id_executor, status, first_name, second_name, middle_name, doverenost)
+	values ($1, $2, $3, $4, $5, $6)
 	`
 
-	_, err := e.repo.ExecContext(ctx, query, m.ID_Executor, m.Status, m.FirstName, m.SecondName, m.MiddleName)
+	_, err := e.repo.ExecContext(ctx, query, m.ID_Executor, m.Status, m.FirstName, m.SecondName, m.MiddleName, m.Doverenost)
 	if err != nil {
 		return repoutils.HandleRepoErr(err)
 	}
@@ -64,6 +64,7 @@ func (e *ExecutorRepo) Read(ctx context.Context, filter string) ([]entity.Execut
 			&l.FirstName,
 			&l.SecondName,
 			&l.MiddleName,
+			&l.Doverenost,
 		); err != nil {
 
 			e.logger.Error("database error",

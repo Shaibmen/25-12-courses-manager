@@ -33,6 +33,12 @@
               placeholder="Должность / Статус"
               required
             />
+             <input
+              v-model="executer.doverenost"
+              class="form-control"
+              placeholder="№ Доверенност(если не ген.дир.)"
+              required
+            />
           </div>
         </div>
       </div>
@@ -63,7 +69,8 @@ const executer = ref({
   first_name: '',
   second_name: '',
   middle_name: '',
-  status: ''
+  status: '',
+  doverenost:''
 })
 
 const onlyLetters = (field) => {

@@ -42,7 +42,10 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		return
 	}
 
-	// opt_nagruz не отправялется совсем
+	// opt_nagruz не отправялется совсемidi naxyoi
+
+	// fmt.Println(data.DogovorRequest.Executor.Doverenost)
+	// fmt.Println(data.ZayavlenieCardInfo.Executor.Doverenost)
 
 	if data.DogovorRequest.LegalEntity.CompanyName != "" {
 

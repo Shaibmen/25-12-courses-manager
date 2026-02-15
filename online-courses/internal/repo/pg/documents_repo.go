@@ -59,7 +59,7 @@ func (d *DocumentsRepo) PrepareDataDocument(ctx context.Context, idListener, idP
 
 	queryExecutor :=
 		`
-	select e.status, e.first_name, e.second_name, e.middle_name
+	select e.status, e.first_name, e.second_name, e.middle_name, e.doverenost
 	from executor as e
 	where e.id_executor = $1
 	`

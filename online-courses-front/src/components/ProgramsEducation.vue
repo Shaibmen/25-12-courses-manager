@@ -34,9 +34,9 @@
           <tr>
             <th>Название программы</th>
             <th>Длительность (часы)</th>
-            <th>Индивидуально (₽)</th>
-            <th>Групповое (₽)</th>
-            <th>На кампусе (₽)</th>
+            <th>Индивидуально с преподавателем (₽)</th>
+            <th>Гуппа с преподавателем (₽)</th>
+            <th>Самообучение (₽)</th>
             <th>Тип обучения</th>
             <th>Подразделение</th>
             <th>Действия</th>
@@ -46,9 +46,9 @@
           <tr v-for="program in sortedPrograms" :key="program.id_program_education">
             <td>{{ program.name_prof_education }}</td>
             <td>{{ program.time_education }}</td>
-            <td>{{ program.individual_price }}</td>
-            <td>{{ program.group_price }}</td>
-            <td>{{ program.campus_price }}</td>
+            <td>{{ formatPrice(program.individual_price) }}</td>
+            <td>{{ formatPrice(program.group_price) }}</td>
+            <td>{{ formatPrice(program.campus_price) }}</td>
             <td>{{ getTypeName(program.id_education_type) }}</td>
             <td>{{ getDivisionName(program.id_divisions_education) }}</td>
             <td style="white-space: nowrap;">
@@ -125,29 +125,44 @@ const loadPrograms = async () => {
 }
 
 const loadEducationTypes = async () => {
-  const res = await fetch(`${API_URL_CORE}/educationtype/?page=1&filter=`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-  const data = await res.json()
-  educationTypes.value = data.data || []
+  try {
+    const res = await fetch(`${API_URL_CORE}/educationtype/?page=1&filter=`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    const data = await res.json()
+    educationTypes.value = data.data || []
+  } catch (err) {
+    toast.error('Ошибка загрузки типов обучения')
+  }
 }
 
 const loadDivisions = async () => {
-  const res = await fetch(`${API_URL_CORE}/divisions/?page=1&filter=`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-  const data = await res.json()
-  divisions.value = data.data || []
+  try {
+    const res = await fetch(`${API_URL_CORE}/divisions/?page=1&filter=`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    const data = await res.json()
+    divisions.value = data.data || []
+  } catch (err) {
+    toast.error('Ошибка загрузки подразделений')
+  }
 }
 
 const getTypeName = (id) => {
-  const t = educationTypes.value.find(e => e.id_educationType === id)
-  return t ? t.typeName : '—'
+  if (!id) return '—'
+  const type = educationTypes.value.find(t => t.id_educationType === id)
+  return type ? type.typeName : '—'
 }
 
 const getDivisionName = (id) => {
-  const d = divisions.value.find(e => e.id_divisionsEducation === id)
-  return d ? d.divisions : '—'
+  if (!id) return '—'
+  const division = divisions.value.find(d => d.id_divisionsEducation === id)
+  return division ? division.divisions : '—'
+}
+
+const formatPrice = (price) => {
+  if (price === null || price === undefined) return '—'
+  return new Intl.NumberFormat('ru-RU').format(price)
 }
 
 const editProgram = (id) => router.push(`/programs/edit/${id}`)
@@ -184,7 +199,11 @@ const sortedPrograms = computed(() => {
   if (sortField.value && sortOrder.value) {
     const keyMap = { individual: 'individual_price', group: 'group_price', campus: 'campus_price' }
     const key = keyMap[sortField.value]
-    list.sort((a, b) => (sortOrder.value === 'asc' ? a[key] - b[key] : b[key] - a[key]))
+    list.sort((a, b) => {
+      const aVal = a[key] || 0
+      const bVal = b[key] || 0
+      return sortOrder.value === 'asc' ? aVal - bVal : bVal - aVal
+    })
   }
   return list
 })

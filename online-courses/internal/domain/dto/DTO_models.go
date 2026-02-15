@@ -270,6 +270,7 @@ type ExecutorCardInfo struct {
 	ExecutorName       string `json:"executor_name"`
 	ExecutorSurname    string `json:"executor_surname"`
 	ExecutorMiddlename string `json:"executor_middlename"`
+	Doverenost         string `json:"doverenost"`
 }
 
 type ZayavlenieCardInfo struct {
@@ -417,6 +418,7 @@ type ExecutorDTO struct {
 	FirstName   string    `json:"first_name"`
 	SecondName  string    `json:"second_name"`
 	MiddleName  string    `json:"middle_name"`
+	Doverenost  string    `json:"doverenost"`
 }
 
 type UserDashBoardDTO struct {

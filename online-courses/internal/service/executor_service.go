@@ -26,6 +26,7 @@ func (e *ExecutorService) Create(ctx context.Context, dto dto.ExecutorDTO) error
 		FirstName:   dto.FirstName,
 		SecondName:  dto.SecondName,
 		MiddleName:  dto.MiddleName,
+		Doverenost:  dto.Doverenost,
 	}
 
 	if err := e.service.Create(ctx, *entity); err != nil {
@@ -50,6 +51,7 @@ func (e *ExecutorService) Read(ctx context.Context, filter string) ([]dto.Execut
 			FirstName:   l.FirstName,
 			SecondName:  l.SecondName,
 			MiddleName:  l.MiddleName,
+			Doverenost:  l.Doverenost,
 		})
 	}
 

@@ -35,6 +35,7 @@ func (e *ExecutorHandler) CreateExecutor(c *gin.Context) {
 		FirstName:  request.FirstName,
 		SecondName: request.SecondName,
 		MiddleName: request.MiddleName,
+		Doverenost: request.Doverenost,
 	}
 
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 4*time.Second)

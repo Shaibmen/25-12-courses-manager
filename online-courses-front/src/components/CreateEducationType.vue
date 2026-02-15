@@ -9,7 +9,7 @@
           <h5 class="card-title mb-3">Название типа обучения</h5>
           <input
             v-model="typeName"
-            placeholder="Например: Очное"
+            placeholder="Например: Индивидуально с преподавателем"
             required
             class="form-control"
           />

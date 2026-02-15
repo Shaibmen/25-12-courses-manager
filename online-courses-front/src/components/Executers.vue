@@ -27,6 +27,7 @@
             <th>Имя</th>
             <th>Отчество</th>
             <th>Должность</th>
+            <th>Доверенность</th>
             <th>Действия</th>
           </tr>
         </thead>
@@ -36,6 +37,7 @@
             <td :title="executer.first_name">{{ executer.first_name }}</td>
             <td :title="executer.middle_name || '-'">{{ executer.middle_name || '-' }}</td>
             <td :title="executer.status">{{ executer.status }}</td>
+            <td :title="executer.doverenost">{{ executer.doverenost }}</td>
             <td style="white-space: nowrap;">
               <div style=" gap: 8px;">
                 <button class="btn btn-danger btn-sm" @click="deleteExecuter(executer.id_executor)">Удалить</button>

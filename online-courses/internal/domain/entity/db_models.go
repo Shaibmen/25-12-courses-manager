@@ -218,6 +218,7 @@ type Executor struct {
 	FirstName   string `db:"first_name"`
 	SecondName  string `db:"second_name"`
 	MiddleName  string `db:"middle_name"`
+	Doverenost  string `db:"doverenost"`
 }
 
 func (Executor) TableName() string {

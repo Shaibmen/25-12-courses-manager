@@ -36,7 +36,7 @@
             <input v-model="passport.place_birth" class="form-control" placeholder="Место рождения">
             <input v-model="passport.citizenship" class="form-control" placeholder="Гражданство">
             <select v-model="passport.gender" class="form-select">
-              <option>Мужской</option>
+              <option selected>Мужской</option>
               <option>Женский</option>
             </select>
             <input v-model="passport.seria" @input="numbersOnly('passport','seria',4)" class="form-control"
