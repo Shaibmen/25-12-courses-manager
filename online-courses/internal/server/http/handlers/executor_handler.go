@@ -30,6 +30,10 @@ func (e *ExecutorHandler) CreateExecutor(c *gin.Context) {
 		return
 	}
 
+	if request.Doverenost == "" {
+		request.Doverenost = "-"
+	}
+
 	dto := dto.ExecutorDTO{
 		Status:     request.Status,
 		FirstName:  request.FirstName,

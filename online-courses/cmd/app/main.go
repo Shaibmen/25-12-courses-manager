@@ -12,7 +12,6 @@ import (
 	"online-courses/internal/service"
 	"online-courses/internal/validate"
 	"os"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -44,22 +43,22 @@ func main() {
 	dashboardRepo := pg.NewDashboardRepo(db, Logger)
 	backupRepo := pg.NewBackupRepo(db, cfg.DBUSER, cfg.DBPASSWORD, cfg.DBNAME, cfg.DBHOST, Logger)
 	reportRepo := pg.NewReportRepo(db, Logger)
-	procedureRepo := pg.NewProcedureRepo(db, Logger)
+	// procedureRepo := pg.NewProcedureRepo(db, Logger)
 	contractorRepo := pg.NewContractorRepo(db, Logger)
 	legalEntityRepo := pg.NewLegalEntity(db, Logger)
 	executerRepo := pg.NewExecutorRepo(db, Logger)
 	documentRepo := pg.NewDocumentsRepo(db, Logger)
 
-	go func() {
-		for {
-			procedureRepo.DeactivationNoValidEnrollment()
-			procedureRepo.ShuffleLevelEducation()
-			procedureRepo.ShuffleProgram()
-
-			time.Sleep(1 * time.Hour)
-		}
-
-	}()
+	// go func() {
+	// 	for {
+	// 		procedureRepo.DeactivationNoValidEnrollment()
+	// 		procedureRepo.ShuffleLevelEducation()
+	// 		procedureRepo.ShuffleProgram()
+	//
+	// 		time.Sleep(1 * time.Hour)
+	// 	}
+	//
+	// }()
 
 	if _, err := os.Stat("reports/excel/"); os.IsNotExist(err) {
 		os.MkdirAll("reports/excel/", 0755)

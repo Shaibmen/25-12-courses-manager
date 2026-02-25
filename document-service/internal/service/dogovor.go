@@ -40,6 +40,7 @@ type DogovorService struct {
 	nagruzkaMap map[int]string
 	diplomMap   map[int]string
 	doMap       map[int]string
+	currentYearFormat string
 }
 
 func NewDogovorService(s3client S3ClientInterface) *DogovorService {
@@ -63,7 +64,9 @@ func NewDogovorService(s3client S3ClientInterface) *DogovorService {
 	doMap[4] = "Недельная учебная нагрузка по настоящему договору составляет 8 академических часов в неделю; общая продолжительность освоения — 2,5 недели."
 	doMap[5] = "Недельная учебная нагрузка по настоящему договору составляет 10 академических часов в неделю; общая продолжительность освоения — 2 недели."
 
-	return &DogovorService{s3client, nagruzkaMap, diplomMap, doMap}
+	currentYearFormat := strconv.Itoa(time.Now().Year())[2:]
+
+	return &DogovorService{s3client, nagruzkaMap, diplomMap, doMap, currentYearFormat}
 }
 
 func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType string) error {

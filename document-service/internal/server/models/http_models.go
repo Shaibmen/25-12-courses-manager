@@ -90,14 +90,15 @@ type ExecutorRequest struct {
 	ExecutorName       string `json:"executor_name"`
 	ExecutorSurname    string `json:"executor_surname"`
 	ExecutorMiddlename string `json:"executor_middlename"`
+	Doverennost 	   string `json:"doverenost"`
 }
 
 type ZakazchikRequest struct {
-	Listeners   []ListenerRequest `json:"listeners"` // срез слушателей, которых заносим в табличку
+	Listeners   []ListenerRequest `json:"listeners"` 
 	Address     RegAddressRequest `json:"reg_address"`
 	CompanyName string            `json:"company_name"`
 	FIO         string            `json:"zakazchikfio"`
-	Status      string            `json:"status"` // директор и тд
+	Status      string            `json:"status"` 
 	INN         string            `json:"inn"`
 	KPP         string            `json:"kpp"`
 	OGRN        string            `json:"ogrn"`
@@ -114,7 +115,7 @@ type ZayavlenieRequest struct {
 	Passport           PassportRequest           `json:"passport"`
 	Registration       RegAddressRequest         `json:"reg_address"`
 	DogovorAgeType     string                    `json:"dogovor_type"`
-	Variant            int                       `json:"opt_nagruz"`
+	Variant            int                       `json:"variant"`
 }
 
 type DogovorRequest struct {
@@ -126,7 +127,7 @@ type DogovorRequest struct {
 	Passport         PassportRequest           `json:"passport" validate:"omitempty"`
 	Registration     RegAddressRequest         `json:"reg_address" validate:"omitempty"`
 	Enrollment       EnrollmentListenerRequest `json:"enrollment_listener"`
-	OptionNagruzka   int                       `json:"opt_nagruz"`
+	OptionNagruzka   int                       `json:"opion_nagruz"`
 	OptionDocument   int                       `json:"opt_document"`
 	OptionPrice      string                    `json:"opt_price"`
 	DogovorType      string                    `json:"dogovor_type"`

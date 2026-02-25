@@ -115,7 +115,7 @@ type ExecutorRequest struct {
 	FirstName  string `json:"first_name" validate:"required"`
 	SecondName string `json:"second_name" validate:"required"`
 	MiddleName string `json:"middle_name" validate:"required"`
-	Doverenost string `json:"doverenost" validate:"required"`
+	Doverenost string `json:"doverenost"`
 }
 
 type DivisionsEducationRequest struct {

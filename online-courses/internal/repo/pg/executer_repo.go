@@ -24,7 +24,7 @@ func (e *ExecutorRepo) Create(ctx context.Context, m entity.Executor) error {
 	query :=
 		`
 	insert into executor (id_executor, status, first_name, second_name, middle_name, doverenost)
-	values ($1, $2, $3, $4, $5, $6)
+	values ($1, $2, $3, $4, $5, NULLIF($6, ''))
 	`
 
 	_, err := e.repo.ExecContext(ctx, query, m.ID_Executor, m.Status, m.FirstName, m.SecondName, m.MiddleName, m.Doverenost)

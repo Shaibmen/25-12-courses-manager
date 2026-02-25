@@ -131,3 +131,28 @@ type ZakazchikDTO struct {
 	Phone       string
 	Email       string
 }
+
+type DONumber struct {
+	Center string `json:"center"`
+	Year string `json:"year"`
+	Number string `json:"number"`
+}
+
+type PKNumber struct {
+	Center string `json:"center"`
+	Year string `json:"year"`
+	Number string `json:"number"`
+
+}
+
+type PPNumber struct {
+	Center string `json:"center"`
+	Year string `json:"year"`
+	Number string `json:"number"`
+}
+
+type NumbersJson struct {
+	Do DONumber `json:"do"`
+	Pk PKNumber `json:"pk"`
+	Pp PPNumber `json:"pp"`
+}

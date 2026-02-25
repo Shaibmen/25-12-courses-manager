@@ -30,14 +30,14 @@
           <button type="button" @click="openContractorModal" class="btn btn-primary">
             {{ contractor ? 'Изменить заказчика' : 'Добавить заказчика' }}
           </button>
-          <button
-            v-if="contractor"
-            type="button"
-            class="btn btn-danger"
-            @click="confirmDeleteContractor"
-          >
-            Удалить заказчика
-          </button>
+        <!--   <button -->
+        <!--     v-if="contractor" -->
+        <!--     type="button" -->
+        <!--     class="btn btn-danger" -->
+        <!--     @click="confirmDeleteContractor" -->
+        <!--   > -->
+        <!--     Удалить заказчика -->
+        <!--   </button> -->
         </div>
       </div>
 

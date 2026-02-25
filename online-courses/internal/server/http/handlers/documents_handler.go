@@ -42,11 +42,6 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		return
 	}
 
-	// opt_nagruz не отправялется совсемidi naxyoi
-
-	// fmt.Println(data.DogovorRequest.Executor.Doverenost)
-	// fmt.Println(data.ZayavlenieCardInfo.Executor.Doverenost)
-
 	if data.DogovorRequest.LegalEntity.CompanyName != "" {
 
 		data.DogovorRequest.Enrollment.StartDate = request.FrontData.StartDate
@@ -54,6 +49,8 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		data.DogovorRequest.Enrollment.CurrentPrice = request.FrontData.CurrentPrice
 		data.DogovorRequest.ProgramEducation.NameProfEducation = request.FrontData.NameProfEducation
 		data.DogovorRequest.ProgramEducation.TimeEducation = request.FrontData.TimeEducation
+		data.DogovorRequest.OptionNagruzka = request.FrontData.OptionNagruzka
+		data.ZayavlenieCardInfo.Variant = request.FrontData.Variant
 
 		responseDogovor, err := RequestToDoc(*data, "dogovor", c, d.cfg)
 		if err != nil {

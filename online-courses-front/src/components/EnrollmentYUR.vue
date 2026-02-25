@@ -52,12 +52,12 @@
             placeholder="Срок оплаты оставшихся 50 %"
           />
 
-          <select v-model="ageCategory" class="form-select">
-            <option value="">— Возрастная категория —</option>
-            <option v-for="(label, key) in ageCategories" :key="key" :value="key">
-              {{ label }}
-            </option>
-          </select>
+          <!-- <select v-model="ageCategory" class="form-select"> -->
+          <!--   <option value="">— Возрастная категория —</option> -->
+          <!--   <option v-for="(label, key) in ageCategories" :key="key" :value="key"> -->
+          <!--     {{ label }} -->
+          <!--   </option> -->
+          <!-- </select> -->
 
           <select v-model="optDocumentSelected" class="form-select">
             <option value="">— Итоговый документ и режим выдачи —</option>
@@ -505,8 +505,8 @@ const createDogovor = async () => {
       optNagruzValue = Number(studyLoadOption.value)
     }
 
-    const legalEntity = legalEntityData.value?.legal_entity || {}
-    const regAddress = legalEntityData.value?.reg_address || {}
+    const legalEntity = legalEntityData.value?.legal_entity ?? legalEntityData.value ?? {}
+    const regAddress = legalEntityData.value?.reg_address ?? legalEntityData.value?.legal_entity?.reg_address ?? {}
     
     const address = {
       mail_index: String(regAddress.mail_index || ''),
@@ -562,7 +562,7 @@ const createDogovor = async () => {
         dogovor_type: selectedContractId.value || null,
         opt_nagruz: optNagruzValue,
         opt_document: optDocumentSelected.value ? Number(optDocumentSelected.value) : null,
-        dogovor_age: ageCategory.value || null,
+        dogovor_age: ageCategory.value || 'EIGHTEEN',
         opt_price: optPriceValue || null
       }
     }
@@ -629,7 +629,7 @@ const createDogovor = async () => {
 
     const frontData2 = {
       dogovor_type: selectedContractId.value || null,
-      dogovor_age: ageCategory.value || null,
+      dogovor_age: ageCategory.value || 'EIGHTEEN',
       opt_document: optDocumentSelected.value ? Number(optDocumentSelected.value) : null,
       opt_price: optPriceValue || null,
       opt_nagruz: optNagruzValue  || null

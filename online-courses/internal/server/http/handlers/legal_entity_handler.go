@@ -10,6 +10,7 @@ import (
 	"online-courses/internal/server/http/request"
 	"strconv"
 	"time"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -130,6 +131,8 @@ func (l *LegalEntityHandler) ReadFullData(c *gin.Context) {
 		c.Error(err)
 		return
 	}
+
+	log.Println("отдаём легалентити:", data)
 
 	c.JSON(http.StatusOK, models.HttpResponseWithData{Data: data})
 }

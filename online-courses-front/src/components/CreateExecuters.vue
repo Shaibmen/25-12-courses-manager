@@ -36,8 +36,7 @@
              <input
               v-model="executer.doverenost"
               class="form-control"
-              placeholder="№ Доверенност(если не ген.дир.)"
-              required
+              placeholder="№ Доверенности"
             />
           </div>
         </div>

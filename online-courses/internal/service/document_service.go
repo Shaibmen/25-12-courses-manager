@@ -120,7 +120,7 @@ func (d *DocumentService) FormingDataDocument(ctx context.Context, idListener, i
 			},
 			EnrollmentListener: dto.EnrollmentListenerToCard{
 				StartDate:        prepareInfo.PersonalInfo.StartDate,
-				EndDate:          prepareInfo.PersonalInfo.EndDate,
+				EndDate:          prepareInfo.PersonalInfo.EndDate,				
 				CurrentPrice:     prepareInfo.PersonalInfo.CurrentPrice,
 				Is_active:        prepareInfo.PersonalInfo.Is_active,
 				Group:            prepareInfo.PersonalInfo.Group,

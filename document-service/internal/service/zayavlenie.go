@@ -5,6 +5,8 @@ import (
 	"context"
 	"document-service/internal/domain/dto"
 	"time"
+	"log"
+	"strconv"
 
 	"github.com/nguyenthenguyen/docx"
 )
@@ -23,16 +25,20 @@ const (
 
 type ZayavlenieService struct {
 	s3Client S3ClientInterface
+	currentYearFormat string
 }
 
 func NewZayavlenieService(client S3ClientInterface) *ZayavlenieService {
-	return &ZayavlenieService{client}
+	currentYearFormat := strconv.Itoa(time.Now().Year())[2:]
+	return &ZayavlenieService{client, currentYearFormat}
 }
 
 func (s *ZayavlenieService) CreateZayavlenie(zayavlenieData *dto.ZayavlenieDTO, dogovorType string) error {
 
 	var doc *docx.Docx
 	var err error
+
+	log.Println("dogovorType:", dogovorType)
 
 	switch dogovorType {
 	case BELOW_EIGHTEEN:

@@ -35,8 +35,9 @@
           <div class="d-flex flex-column gap-2">
             <input v-model="passport.place_birth" class="form-control" placeholder="Место рождения">
             <input v-model="passport.citizenship" class="form-control" placeholder="Гражданство">
-            <select v-model="passport.gender" class="form-select">
-              <option selected>Мужской</option>
+            <select v-model="passport.gender" class="form-select" required>
+              <option value="" selected disabled hidden>Пол</option>
+              <option>Мужской</option>
               <option>Женский</option>
             </select>
             <input v-model="passport.seria" @input="numbersOnly('passport','seria',4)" class="form-control"
