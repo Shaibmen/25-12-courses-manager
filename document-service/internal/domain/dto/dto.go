@@ -1,6 +1,9 @@
 package dto
 
-import "time"
+import (
+	"time"
+	"fmt"
+)
 
 type ListenerDTO struct {
 	FirstName    string
@@ -155,4 +158,16 @@ type NumbersJson struct {
 	Do DONumber `json:"do"`
 	Pk PKNumber `json:"pk"`
 	Pp PPNumber `json:"pp"`
+}
+
+func (d DONumber) GetDocumentNumber() string {
+	return fmt.Sprintf("%s-%s-%s", d.Center, d.Year, d.Number)
+}
+
+func (d PKNumber) GetDocumentNumber() string {
+	return fmt.Sprintf("%s-%s-%s", d.Center, d.Year, d.Number)
+}
+
+func (d PPNumber) GetDocumentNumber() string {
+	return fmt.Sprintf("%s-%s-%s", d.Center, d.Year, d.Number)
 }
