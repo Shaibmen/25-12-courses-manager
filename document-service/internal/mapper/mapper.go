@@ -49,7 +49,7 @@ func FullListenerMapping(request models.FullListenerRequest) (*dto.FullListenerD
 			DateOfBirth:  request.Listener.DateOfBirth,
 			SNILS:        request.Listener.SNILS,
 			ContactPhone: request.Listener.ContactPhone,
-			Email:        request.Listener.ContactPhone,
+			Email:        request.Listener.Email,
 		},
 		Passport: dto.PassportDTO{
 			PlaceBirth:    request.Passport.PlaceBirth,

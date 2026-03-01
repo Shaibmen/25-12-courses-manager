@@ -632,7 +632,8 @@ const createDogovor = async () => {
       dogovor_age: ageCategory.value || 'EIGHTEEN',
       opt_document: optDocumentSelected.value ? Number(optDocumentSelected.value) : null,
       opt_price: optPriceValue || null,
-      opt_nagruz: optNagruzValue  || null
+      opt_nagruz: optNagruzValue  || null,
+      variant: variantValue || null
     }
 
     const docsPromises = selectedListenerIds.value.map(async (listenerId) => {

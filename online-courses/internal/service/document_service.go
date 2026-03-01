@@ -247,7 +247,7 @@ func (d *DocumentService) FormingDataDocument(ctx context.Context, idListener, i
 				Status:             prepareInfo.Executor.Status,
 				ExecutorName:       prepareInfo.Executor.FirstName,
 				ExecutorSurname:    prepareInfo.Executor.SecondName,
-				ExecutorMiddlename: prepareInfo.PersonalInfo.MiddleName,
+				ExecutorMiddlename: prepareInfo.Executor.MiddleName,
 				Doverenost:         prepareInfo.Executor.Doverenost,
 			},
 			Passport: dto.PassportCardDTO{
