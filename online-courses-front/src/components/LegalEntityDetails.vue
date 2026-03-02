@@ -268,7 +268,7 @@ const loadDetails = async () => {
       house: ra.house || '',
       building: ra.building || '',
       apartment: ra.apartment || ''
-    }
+    },
 
     fetchAllFiles(legal_entity.value.name_company)
 

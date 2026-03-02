@@ -8,10 +8,10 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"strconv"
 	"time"
-	"os"
 
 	"github.com/nguyenthenguyen/docx"
 )
@@ -37,11 +37,11 @@ const (
 )
 
 type DogovorService struct {
-	s3client    S3ClientInterface
-	nagruzkaMap map[int]string
-	diplomMap   map[int]string
-	doMap       map[int]string
-	centerMap 	map[string]string
+	s3client          S3ClientInterface
+	nagruzkaMap       map[int]string
+	diplomMap         map[int]string
+	doMap             map[int]string
+	centerMap         map[string]string
 	currentYearFormat string
 }
 
@@ -229,7 +229,10 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		return errors.New("бро ты натворил ъуйни, ожидай последствия")
 	}
 
+	log.Println("division:", dogovor.ProgramEducation.DivisionEducation)
+	log.Println("division mapped:", s.centerMap[dogovor.ProgramEducation.DivisionEducation])
 	documentNumber := fmt.Sprintf("%s-%s-%d", s.centerMap[dogovor.ProgramEducation.DivisionEducation], s.currentYearFormat, countCenter(dogovor.ProgramEducation.DivisionEducation))
+	log.Println("docNumber:", documentNumber)
 
 	doc.Replace("OPTIOND", s.diplomMap[dogovor.OptionDocument], -1)
 	doc.Replace("OPTIONH", s.nagruzkaMap[dogovor.OptionNagruzka], -1)
@@ -297,7 +300,7 @@ func (s *DogovorService) DownloadDogovor(param string) ([]byte, error) {
 }
 
 func countCenter(center string) int {
-	data, err := os.ReadFile("./internal/count.json")
+	data, err := os.ReadFile("/app/internal/count.json")
 	if err != nil {
 		log.Println("Ошибка при чтении файла:", err)
 	}
@@ -310,7 +313,7 @@ func countCenter(center string) int {
 
 	counter := 0
 
-	switch (center) {
+	switch center {
 	case "Центр прикладных технологий":
 		counter = centers.CPK
 		centers.CPK += 1
@@ -336,7 +339,7 @@ func countCenter(center string) int {
 		log.Println("Ошибка при маршаллинге:", err)
 	}
 
-	os.WriteFile("./internal/count.json", data, 0644)
+	os.WriteFile("/app/internal/count.json", data, 0644)
 
 	return counter
-}	
+}
