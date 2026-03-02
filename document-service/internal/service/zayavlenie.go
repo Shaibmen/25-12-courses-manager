@@ -90,6 +90,8 @@ func (s *ZayavlenieService) CreateZayavlenie(zayavlenieData *dto.ZayavlenieDTO, 
 	variantsIntToString[5] = "FIVE"
 	variantsIntToString[6] = "SIX"
 
+	log.Println("variant:", zayavlenieData.Variant)
+
 	for number, token := range variantsIntToString {
 		if number != zayavlenieData.Variant {
 			doc.Replace(token, "[ ]", -1)
