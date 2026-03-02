@@ -2,7 +2,6 @@ package dto
 
 import (
 	"time"
-	"fmt"
 )
 
 type ListenerDTO struct {
@@ -135,39 +134,11 @@ type ZakazchikDTO struct {
 	Email       string
 }
 
-type DONumber struct {
-	Center string `json:"center"`
-	Year string `json:"year"`
-	Number string `json:"number"`
-}
-
-type PKNumber struct {
-	Center string `json:"center"`
-	Year string `json:"year"`
-	Number string `json:"number"`
-
-}
-
-type PPNumber struct {
-	Center string `json:"center"`
-	Year string `json:"year"`
-	Number string `json:"number"`
-}
-
-type NumbersJson struct {
-	Do DONumber `json:"do"`
-	Pk PKNumber `json:"pk"`
-	Pp PPNumber `json:"pp"`
-}
-
-func (d DONumber) GetDocumentNumber() string {
-	return fmt.Sprintf("%s-%s-%s", d.Center, d.Year, d.Number)
-}
-
-func (d PKNumber) GetDocumentNumber() string {
-	return fmt.Sprintf("%s-%s-%s", d.Center, d.Year, d.Number)
-}
-
-func (d PPNumber) GetDocumentNumber() string {
-	return fmt.Sprintf("%s-%s-%s", d.Center, d.Year, d.Number)
+type Centers struct {
+	CPK 	int `json:"Center prikladnih technologiy"`
+	CIO 	int `json:"Center individualnogo obuchenia"`
+	LC 		int `json:"Lingvisticheskiy center"`
+	CK 		int `json:"Cifrovoy kampus"`
+	CRCR 	int `json:"Center razrabotki i cifrovih resheniy"`
+	CABA 	int `json:"Center avtomatizacii i biznes-analiza"`
 }

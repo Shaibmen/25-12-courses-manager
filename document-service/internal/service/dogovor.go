@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"strconv"
 	"time"
+	"os"
 
 	"github.com/nguyenthenguyen/docx"
 )
@@ -40,6 +41,7 @@ type DogovorService struct {
 	nagruzkaMap map[int]string
 	diplomMap   map[int]string
 	doMap       map[int]string
+	centerMap 	map[string]string
 	currentYearFormat string
 }
 
@@ -68,9 +70,18 @@ func NewDogovorService(s3client S3ClientInterface) *DogovorService {
 	doMap[4] = "Недельная учебная нагрузка по настоящему договору составляет 8 академических часов в неделю; общая продолжительность освоения — 2,5 недели."
 	doMap[5] = "Недельная учебная нагрузка по настоящему договору составляет 10 академических часов в неделю; общая продолжительность освоения — 2 недели."
 
+	centerMap := make(map[string]string)
+
+	centerMap["Центр прикладных технологий"] = "ЦПТ"
+	centerMap["Центр индивидуального обучения"] = "ЦИО"
+	centerMap["Лингвистический центр"] = "ЛЦ"
+	centerMap["Цифровой кампус"] = "ЦК"
+	centerMap["Центр разработки и цифровых решений"] = "ЦРиЦР"
+	centerMap["Центр автоматизации и бизнес-анализа"] = "ЦАиБА"
+
 	currentYearFormat := strconv.Itoa(time.Now().Year())[2:]
 
-	return &DogovorService{s3client, nagruzkaMap, diplomMap, doMap, currentYearFormat}
+	return &DogovorService{s3client, nagruzkaMap, diplomMap, doMap, centerMap, currentYearFormat}
 }
 
 func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType string) error {
@@ -79,11 +90,6 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 	var r *docx.ReplaceDocx
 	var err error
 	var nameFile string
-	// var documentNumber string
-
-	// content, err := os.ReadFile("./internal/numbers.json")
-	// var docNumbers dto.NumbersJson
-	// json.Unmarshal(content, &docNumbers)
 
 	type listenersTableData struct {
 		FIO       string `json:"fio"`
@@ -118,8 +124,6 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		return err
 	}
 
-	log.Println("executor middlename:", dogovor.Executor.ExecutorMiddlename)
-
 	switch dogovorType {
 	case PP_3_FIZ:
 		r, err = docx.ReadDocxFile(dogovorPP_3_path)
@@ -131,10 +135,6 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		nameFile = "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + dogovor.ListenerData.SNILS + ".docx"
 
 		doc = r.Editable()
-
-		// documentNumber = docNumbers.Pp.GetDocumentNumber()
-		// number, _ := strconv.Atoi(docNumbers.Pp.Number)
-		// docNumbers.Pp.Number = strconv.Itoa(number + 1)
 
 		replacePP3FIZ(doc, dogovor)
 	case PP_2_FIZ:
@@ -148,10 +148,6 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 
 		doc = r.Editable()
 
-		// documentNumber = docNumbers.Pp.GetDocumentNumber()
-		// number, _ := strconv.Atoi(docNumbers.Pp.Number)
-		// docNumbers.Pp.Number = strconv.Itoa(number + 1)
-
 		replacePP2FIZ(doc, dogovor)
 	case PK_3_FIZ:
 		r, err = docx.ReadDocxFile(dogovorPK_3_path)
@@ -163,10 +159,6 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		nameFile = "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + dogovor.ListenerData.SNILS + ".docx"
 
 		doc = r.Editable()
-
-		// documentNumber = docNumbers.Pk.GetDocumentNumber()
-		// number, _ := strconv.Atoi(docNumbers.Pk.Number)
-		// docNumbers.Pk.Number = strconv.Itoa(number + 1)
 
 		replacePK3FIZ(doc, dogovor)
 	case PK_2_FIZ:
@@ -180,10 +172,6 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 
 		doc = r.Editable()
 
-		// documentNumber = docNumbers.Pk.GetDocumentNumber()
-		// number, _ := strconv.Atoi(docNumbers.Pk.Number)
-		// docNumbers.Pk.Number = strconv.Itoa(number + 1)
-
 		replacePK2FIZ(doc, dogovor)
 	case DO_3_FIZ:
 		r, err = docx.ReadDocxFile(dogovorDO_3_path)
@@ -195,10 +183,6 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 		nameFile = "Договор-" + dogovor.ProgramEducation.NameProfEducation + "_" + dogovor.ListenerData.SNILS + ".docx"
 
 		doc = r.Editable()
-
-		// documentNumber = docNumbers.Do.GetDocumentNumber()
-		// number, _ := strconv.Atoi(docNumbers.Do.Number)
-		// docNumbers.Do.Number = strconv.Itoa(number + 1)
 
 		replaceDO3FIZ(doc, dogovor)
 	case PP_3_YUR:
@@ -220,10 +204,6 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 
 		doc = r.Editable()
 
-		// documentNumber = docNumbers.Pp.GetDocumentNumber()
-		// number, _ := strconv.Atoi(docNumbers.Pp.Number)
-		// docNumbers.Pp.Number = strconv.Itoa(number + 1)
-
 		replacePP3YUR(doc, dogovor)
 	case PK_3_YUR:
 
@@ -244,32 +224,19 @@ func (s *DogovorService) CreateDogovor(dogovor *dto.DogovorDTO, dogovorType stri
 
 		doc = r.Editable()
 
-		// documentNumber = docNumbers.Pk.GetDocumentNumber()
-		// number, _ := strconv.Atoi(docNumbers.Pk.Number)
-		// docNumbers.Pk.Number = strconv.Itoa(number + 1)
-
 		replacePK3YUR(doc, dogovor)
 	default:
 		return errors.New("бро ты натворил ъуйни, ожидай последствия")
 	}
+
+	documentNumber := fmt.Sprintf("%s-%s-%d", s.centerMap[dogovor.ProgramEducation.DivisionEducation], s.currentYearFormat, countCenter(dogovor.ProgramEducation.DivisionEducation))
 
 	doc.Replace("OPTIOND", s.diplomMap[dogovor.OptionDocument], -1)
 	doc.Replace("OPTIONH", s.nagruzkaMap[dogovor.OptionNagruzka], -1)
 	doc.Replace("OPTIONPRICE", dogovor.OptionPrice, -1)
 	doc.Replace("PRICE", fmt.Sprintf("%.2f руб.", dogovor.Enrollment.CurrentPrice), -1)
 	doc.Replace("OPTION", s.doMap[dogovor.OptionNagruzka], -1)
-	// doc.Replace("DOCUMENTNUMBER", documentNumber, -1)
-
-	// docNumbers.Do.Year = s.currentYearFormat
-	// docNumbers.Pk.Year = s.currentYearFormat
-	// docNumbers.Pp.Year = s.currentYearFormat
-
-	// content, err = json.Marshal(docNumbers)
-	// if err != nil {
-	// 	log.Println("пиздец", err)
-	// }
-
-	// os.WriteFile("./internal/numbers.json", content, 0644)
+	doc.Replace("DOCUMENTNUMBER", documentNumber, -1)
 
 	var buffer bytes.Buffer
 	err = doc.Write(&buffer)
@@ -328,3 +295,48 @@ func (s *DogovorService) DownloadDogovor(param string) ([]byte, error) {
 
 	return document, nil
 }
+
+func countCenter(center string) int {
+	data, err := os.ReadFile("./internal/count.json")
+	if err != nil {
+		log.Println("Ошибка при чтении файла:", err)
+	}
+
+	var centers dto.Centers
+	err = json.Unmarshal(data, &centers)
+	if err != nil {
+		log.Println("Ошибка при анмаршаллинге:", err)
+	}
+
+	counter := 0
+
+	switch (center) {
+	case "Центр прикладных технологий":
+		counter = centers.CPK
+		centers.CPK += 1
+	case "Центр индивидуального обучения":
+		counter = centers.CIO
+		centers.CIO += 1
+	case "Лингвистический центр":
+		counter = centers.LC
+		centers.LC += 1
+	case "Цифровой кампус":
+		counter = centers.CK
+		centers.CK += 1
+	case "Центр разработки и цифровых решений":
+		counter = centers.CRCR
+		centers.CRCR += 1
+	case "Центр автоматизации и бизнес-анализа":
+		counter = centers.CABA
+		centers.CABA += 1
+	}
+
+	data, err = json.Marshal(centers)
+	if err != nil {
+		log.Println("Ошибка при маршаллинге:", err)
+	}
+
+	os.WriteFile("./internal/count.json", data, 0644)
+
+	return counter
+}	

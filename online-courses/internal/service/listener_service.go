@@ -6,6 +6,7 @@ import (
 	"online-courses/internal/domain/dto"
 	"online-courses/internal/domain/repository"
 	"online-courses/internal/mapping"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -133,7 +134,7 @@ func (l *listenerService) ReadListener(ctx context.Context, page int, filter str
 			FirstName:    l.FirstName,
 			SecondName:   l.SecondName,
 			MiddleName:   l.MiddleName,
-			DateOfBirth:  l.DateOfBirth.String(),
+			DateOfBirth:  l.DateOfBirth.Format(time.RFC3339),
 			SNILS:        l.SNILS,
 			ContactPhone: l.ContactPhone,
 			Email:        l.Email,
