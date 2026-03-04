@@ -11,6 +11,7 @@ import (
 	"online-courses/internal/server/http/request"
 	"strings"
 	"time"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,6 +42,10 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		c.Error(err)
 		return
 	}
+
+	log.Println("REQ id_program:", request.ID_Program, "id_listener:", request.ID_Listener)
+	log.Println("FORM division:", data.DogovorRequest.ProgramEducation.DivisionEducation)
+	log.Println("BRANCH company:", data.DogovorRequest.LegalEntity.CompanyName)
 
 	if data.DogovorRequest.LegalEntity.CompanyName != "" {
 

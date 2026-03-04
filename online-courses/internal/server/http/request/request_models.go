@@ -190,6 +190,7 @@ type FrontDataDeliverRequest struct {
 	StartDate         string      `json:"start_date"`
 	EndDate           string      `json:"end_date"`
 	NameProfEducation string      `json:"program_name"`
+	DivisionEducation string 	  `json:"division_education"`
 	CurrentPrice      float32     `json:"price_enrollment"`
 	TimeEducation     int         `json:"time_education"`
 }

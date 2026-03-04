@@ -540,6 +540,8 @@ const createDogovor = async () => {
 
     const documentsDataRequest = {
       id_executor: selectedExecutorId.value,
+      id_program: selectedProgramId.value,
+      id_listener: selectedListenerIds.value[0],
       front_data: {
         legal_entity: {
           listeners: listenersData,
@@ -566,22 +568,6 @@ const createDogovor = async () => {
         opt_price: optPriceValue || null
       }
     }
-
-    const res = await fetch(`${API_URL_CORE}/document/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(documentsDataRequest)
-    })
-
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}))
-      throw new Error(errorData.message || `Ошибка создания документов: ${res.status}`)
-    }
-
-    toast.success('Документы (договор) успешно созданы')
 
     const enrollmentsPromises = selectedListenerIds.value.map(async (listenerId) => {
       const enrollmentBody = {
@@ -627,6 +613,25 @@ const createDogovor = async () => {
       toast.warning(`Не удалось создать ${failedEnrollments.length} записей. Проверьте консоль для деталей.`)
     }
 
+
+    console.log('first doc: listener', selectedListenerIds.value[0], 'program', selectedProgramId.value)
+    const res = await fetch(`${API_URL_CORE}/document/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(documentsDataRequest)
+    })
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}))
+      throw new Error(errorData.message || `Ошибка создания документов: ${res.status}`)
+    }
+
+    toast.success('Документы (договор) успешно созданы')
+
+    
     const frontData2 = {
       dogovor_type: selectedContractId.value || null,
       dogovor_age: ageCategory.value || 'EIGHTEEN',
