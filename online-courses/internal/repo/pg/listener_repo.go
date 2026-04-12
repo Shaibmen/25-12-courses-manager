@@ -121,7 +121,6 @@ func (l *ListenerRepo) ReadFullData(ctx context.Context, id uuid.UUID) (*entity.
 
 	rows, err := l.repo.QueryContext(ctx, query, id)
 	if err != nil {
-
 		l.logger.Error("database error",
 			"operation", "read_full_listener",
 			"id_listener", id,
