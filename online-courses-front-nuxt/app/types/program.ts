@@ -5,6 +5,7 @@ export type ProgramListItem = {
   individual_price: number
   group_price: number
   campus_price: number
+  price: number
   id_education_type: string
   id_divisions_education: string
 }

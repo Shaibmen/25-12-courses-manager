@@ -136,9 +136,7 @@ type ProgramEducationDTO struct {
 	ID_ProgramEducation   uuid.UUID `json:"id_program_education"`
 	NameProfEducation     string    `json:"name_prof_education"`
 	TimeEducation         int       `json:"time_education"`
-	IndividualPrice       float32   `json:"individual_price"`
-	GroupPrice            float32   `json:"group_price"`
-	CampusPrice           float32   `json:"campus_price"`
+	Price                 float64   `json:"price"`
 	ID_EducationType      uuid.UUID `json:"id_education_type"`
 	ID_DivisionsEducation uuid.UUID `json:"id_divisions_education"`
 }
@@ -148,7 +146,6 @@ type EnrollmentListenerDTO struct {
 	ID_Program       uuid.UUID `json:"id_drogram"`
 	StartDate        string    `json:"start_date"`
 	EndDate          string    `json:"end_date"`
-	CurrentPrice     float32   `json:"current_price"`
 	Is_active        bool      `json:"is_active"`
 	Group            string    `json:"group"`
 	TypeOfRetraining string    `json:"type_of_retraining"`
@@ -158,9 +155,7 @@ type AccurateProgramDTO struct {
 	ID_Listener       uuid.UUID
 	NameProfEducation string
 	TimeEducation     int
-	IndividualPrice   float32
-	GroupPrice        float32
-	CampusPrice       float32
+	Price             float64
 	EducationType     string
 	Division          string
 }
@@ -173,7 +168,6 @@ type EnrollmentListenerDetailsDTO struct {
 	NameProfEducation string    `json:"name_prof_education"`
 	StartDate         string    `json:"start_date"`
 	EndDate           string    `json:"end_date"`
-	CurrentPrice      float32   `json:"current_price"`
 	Group             string    `json:"group"`
 	TypeOfRetraining  string    `json:"type_of_retraining"`
 }
@@ -183,9 +177,7 @@ type EnrollmentProgramDetailsDTO struct {
 	ID_ProgramEducation uuid.UUID `json:"id_program_education"`
 	NameProfEducation   string    `json:"name_prof_education"`
 	TimeEducation       int       `json:"time_education"`
-	IndividualPrice     float32   `json:"individual_price"`
-	GroupPrice          float32   `json:"group_price"`
-	CampusPrice         float32   `json:"campus_price"`
+	Price               float64   `json:"price"`
 	EducationType       string    `json:"education_type"`
 	DivisionEducation   string    `json:"division_education"`
 	StartDate           string    `json:"start_date"`

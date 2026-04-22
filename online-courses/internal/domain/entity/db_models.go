@@ -99,9 +99,7 @@ type ProgramEducation struct {
 	ID_ProgramEducation   uuid.UUID
 	NameProfEducation     string
 	TimeEducation         int
-	IndividualPrice       float32
-	GroupPrice            float32
-	CampusPrice           float32
+	Price                 float64
 	ID_EducationType      uuid.UUID
 	EducationType         EducationTypes
 	ID_DivisionsEducation uuid.UUID
@@ -116,9 +114,7 @@ type AccurateProgram struct {
 	ID_Listener       uuid.UUID `db:"id_listener"`
 	NameProfEducation string    `db:"name_prof_education"`
 	TimeEducation     int       `db:"time_education"`
-	IndividualPrice   float32   `db:"individual_price"`
-	GroupPrice        float32   `db:"group_price"`
-	CampusPrice       float32   `db:"campus_price"`
+	Price             float64   `db:"price"`
 	EducationType     string    `db:"educationtype"`
 	Division          string    `db:"divisionseducation"`
 }
@@ -126,9 +122,7 @@ type AccurateProgram struct {
 type ProgramToAccurate struct {
 	NameProfEducation string  `db:"name_prof_education"`
 	TimeEducation     int     `db:"time_education"`
-	IndividualPrice   float32 `db:"individual_price"`
-	GroupPrice        float32 `db:"group_price"`
-	CampusPrice       float32 `db:"campus_price"`
+	Price             float64 `db:"price"`
 	EducationType     string  `db:"type_name"`
 	Division          string  `db:"divisions"`
 }
@@ -230,7 +224,6 @@ type EnrollmentListener struct {
 	ID_ProgramEducation uuid.UUID
 	StartDate           time.Time
 	EndDate             time.Time
-	CurrentPrice        float32
 	Is_active           bool
 	Group               string
 	TypeOfRetraining    string
@@ -248,7 +241,6 @@ type EnrollmentListenerDetails struct {
 	NameProfEducation string
 	StartDate         time.Time
 	EndDate           time.Time
-	CurrentPrice      float32
 	Group             string
 	TypeOfRetraining  string
 }
@@ -258,9 +250,7 @@ type EnrollmentProgramDetails struct {
 	ID_ProgramEducation uuid.UUID
 	NameProfEducation   string
 	TimeEducation       int
-	IndividualPrice     float32
-	GroupPrice          float32
-	CampusPrice         float32
+	Price               float64
 	EducationType       string
 	DivisionEducation   string
 	StartDate           time.Time

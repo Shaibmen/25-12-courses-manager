@@ -169,6 +169,7 @@ onMounted(() => {
             <tr>
               <th>Название программы</th>
               <th>Длительность (часы)</th>
+              <th>Цена (₽)</th>
               <th>Индивидуально (₽)</th>
               <th>Группа (₽)</th>
               <th>Самообучение (₽)</th>
@@ -184,6 +185,7 @@ onMounted(() => {
             <tr v-for="program in sortedPrograms" :key="program.id_program_education">
               <td class="programs-table__name">{{ program.name_prof_education }}</td>
               <td>{{ program.time_education }}</td>
+              <td>{{ formatPrice(program.price) }}</td>
               <td>{{ formatPrice(program.individual_price) }}</td>
               <td>{{ formatPrice(program.group_price) }}</td>
               <td>{{ formatPrice(program.campus_price) }}</td>

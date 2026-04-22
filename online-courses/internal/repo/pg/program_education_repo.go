@@ -24,8 +24,8 @@ func (p *ProgramEducationRepo) Create(ctx context.Context, model entity.ProgramE
 
 	query :=
 		`
-	insert into programeducation (id_programeducation, name_prof_education, time_education, individual_price, group_price, campus_price, id_educationtype, id_divisionseducation)
-	values ($1, $2, $3, $4, $5, $6, $7, $8)
+	insert into programeducation (id_programeducation, name_prof_education, time_education, price, id_educationtype, id_divisionseducation)
+	values ($1, $2, $3, $4, $5, $6)
 	`
 	if _, err := p.repo.ExecContext(
 		ctx,
@@ -33,9 +33,7 @@ func (p *ProgramEducationRepo) Create(ctx context.Context, model entity.ProgramE
 		model.ID_ProgramEducation,
 		model.NameProfEducation,
 		model.TimeEducation,
-		model.IndividualPrice,
-		model.GroupPrice,
-		model.CampusPrice,
+		model.Price,
 		model.ID_EducationType,
 		model.ID_DivisionsEducation); err != nil {
 
@@ -84,9 +82,7 @@ func (p *ProgramEducationRepo) Read(ctx context.Context, page int, filter string
 			&program.ID_ProgramEducation,
 			&program.NameProfEducation,
 			&program.TimeEducation,
-			&program.IndividualPrice,
-			&program.GroupPrice,
-			&program.CampusPrice,
+			&program.Price,
 			&program.ID_EducationType,
 			&program.ID_DivisionsEducation,
 		); err != nil {
@@ -134,9 +130,7 @@ func (p *ProgramEducationRepo) ReadByID(ctx context.Context, id uuid.UUID) (*ent
 			&programs.ID_ProgramEducation,
 			&programs.NameProfEducation,
 			&programs.TimeEducation,
-			&programs.IndividualPrice,
-			&programs.GroupPrice,
-			&programs.CampusPrice,
+			&programs.Price,
 			&programs.ID_EducationType,
 			&programs.ID_DivisionsEducation,
 		); err != nil {
@@ -179,12 +173,10 @@ func (p *ProgramEducationRepo) Update(ctx context.Context, model entity.ProgramE
 	set 
 	name_prof_education = coalesce($1, name_prof_education),
 	time_education = coalesce($2, time_education),
-	individual_price = coalesce($3, individual_price),
-	group_price = coalesce($4, group_price),
-	campus_price = coalesce($5, campus_price),
-	id_educationtype = coalesce($6, id_educationtype),
-	id_divisionseducation = coalesce($7, id_divisionseducation)
-	where id_programeducation = $8;
+	price = coalesce($3, price),
+	id_educationtype = coalesce($4, id_educationtype),
+	id_divisionseducation = coalesce($5, id_divisionseducation)
+	where id_programeducation = $6;
 	`
 
 	if _, err := p.repo.ExecContext(
@@ -192,9 +184,7 @@ func (p *ProgramEducationRepo) Update(ctx context.Context, model entity.ProgramE
 		query,
 		model.NameProfEducation,
 		model.TimeEducation,
-		model.IndividualPrice,
-		model.GroupPrice,
-		model.CampusPrice,
+		model.Price,
 		model.ID_EducationType,
 		model.ID_DivisionsEducation,
 		model.ID_ProgramEducation,

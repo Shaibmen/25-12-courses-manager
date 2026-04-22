@@ -42,9 +42,7 @@ func (p *ProgramEducationHandler) CreateProgram(c *gin.Context) {
 	dto := dto.ProgramEducationDTO{
 		NameProfEducation:     request.NameProfEducation,
 		TimeEducation:         request.TimeEducation,
-		IndividualPrice:       request.IndividualPrice,
-		GroupPrice:            request.GroupPrice,
-		CampusPrice:           request.CampusPrice,
+		Price:                 request.Price,
 		ID_EducationType:      request.ID_EducationType,
 		ID_DivisionsEducation: request.ID_DivisionsEducation,
 	}
@@ -125,9 +123,7 @@ func (p *ProgramEducationHandler) UpdateProgram(c *gin.Context) {
 		ID_ProgramEducation:   id,
 		NameProfEducation:     request.NameProfEducation,
 		TimeEducation:         request.TimeEducation,
-		IndividualPrice:       request.IndividualPrice,
-		GroupPrice:            request.GroupPrice,
-		CampusPrice:           request.CampusPrice,
+		Price:                 request.Price,
 		ID_EducationType:      request.ID_EducationType,
 		ID_DivisionsEducation: request.ID_DivisionsEducation,
 	}

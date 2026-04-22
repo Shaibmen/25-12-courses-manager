@@ -1,21 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-ALTER SYSTEM SET listen_addresses = '*';
-
-SELECT pg_reload_conf();
-
-SELECT pg_sleep(2);
-
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT FROM pg_database WHERE datname = current_database()) THEN
-        PERFORM dblink_exec('dbname=postgres', 'CREATE DATABASE "25-12courses"');
-    END IF;
-END
-$$;
-
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-
 create table if not exists "session" (
 	id_session uuid primary key,
 	user_name varchar(50) not null unique,
@@ -101,9 +85,7 @@ CREATE TABLE IF NOT EXISTS programeducation (
     id_programeducation UUID PRIMARY KEY,
     name_prof_education varchar(100) not null unique,
     time_education INTEGER not null,
-    individual_price REAL not null,
-    group_price REAL not null,
-    campus_price REAL not null,
+	price real not null,
     id_educationtype UUID REFERENCES educationtypes(id_educationtype) not null,
     id_divisionseducation UUID REFERENCES divisionseducation(id_divisionseducation) not null
 );
@@ -113,9 +95,7 @@ create table if not exists accurateprogram (
 	id_listener uuid not null,
 	name_prof_education varchar(100) not null,
     time_education INTEGER not null,
-    individual_price REAL not null,
-    group_price REAL not null,
-    campus_price REAL not null,
+    price real not null,
     educationtype varchar(255) not null,
     divisionseducation varchar(255) not null
 );
@@ -131,6 +111,7 @@ CREATE TABLE IF NOT EXISTS legal_entity (
 	first_name varchar(100) not null,
     second_name varchar(100) not null,
     middle_name varchar(100),
+    status varchar(255),
 	id_regaddress UUID REFERENCES registrationaddress(id_regaddress) not null
 );
 
@@ -163,29 +144,45 @@ CREATE TABLE IF NOT EXISTS listener (
     looting_education boolean DEFAULT false
 );
 
+create table if not exists groups (
+	id_groups uuid primary key,
+	name_group varchar(255),
+	raspisanie text[]
+);
+
+
 CREATE TABLE IF NOT EXISTS enrollmentlistener (
     id_listener UUID REFERENCES listener(id_listener) not null,
     id_programeducation UUID REFERENCES programeducation(id_programeducation) not null,
     start_date DATE not null,
     end_date DATE not null,
-    current_price decimal(10,2) not null,
     is_active  boolean not null,
 	group_number varchar(50) not null,
 	type_of_retraining varchar(50) not null,
+	id_group uuid references groups(id_groups),
     PRIMARY KEY (id_listener, id_programeducation)
 );
 
-CREATE TABLE IF NOT EXISTS executor (
+create table if not exists executor (
 	id_executor uuid primary key,
 	status varchar(255) not null,
 	first_name varchar(100) not null,
     second_name varchar(100) not null,
     middle_name varchar(100),
-    doverenost varchar(100)
+    doverenost varchar(255)
 );
 
 
 
+--alter table legal_entity
+--add status varchar(255);
+--
+--ALTER TABLE executor  
+--ADD doverenost varchar(255);
+
+
+
+--дашборд
 
 CREATE OR REPLACE VIEW v_total_listeners AS
 SELECT COUNT(*) AS total_listeners FROM listener;
@@ -217,6 +214,7 @@ SELECT * FROM v_total_listeners;
 SELECT * FROM v_total_programs;
 SELECT * FROM v_active_enrollments;
 
+--аудит
 
 CREATE TABLE IF NOT EXISTS audit_log (
     id_audit serial PRIMARY KEY,
@@ -286,44 +284,46 @@ CREATE TRIGGER trg_check_enrollment_dates
 BEFORE INSERT OR UPDATE ON enrollmentlistener
 FOR EACH ROW EXECUTE FUNCTION check_enrollment_dates();
 
+
+
 --деактиваия записи
--- CREATE OR REPLACE PROCEDURE deactivate_finished_enrollments()
--- LANGUAGE plpgsql
--- AS $$
--- BEGIN
---     UPDATE enrollmentlistener
---     SET is_active = FALSE
---     WHERE end_date < CURRENT_DATE
---       AND is_active = TRUE;
--- END;
--- $$;
---
---
--- CREATE OR REPLACE PROCEDURE shuffle_program_order()
--- LANGUAGE plpgsql
--- AS $$
--- BEGIN
---     UPDATE programeducation
---     SET name_prof_education = name_prof_education
---     WHERE time_education > 0;
--- END;
--- $$;
---
--- CREATE OR REPLACE PROCEDURE shuffle_education_type()
--- LANGUAGE plpgsql
--- AS $$
--- BEGIN
---     WITH tmp AS (
---         SELECT id_educationtype
---         FROM educationtypes
---         ORDER BY random()
---     )
---     UPDATE educationtypes l
---     SET type_name = l.type_name
---     FROM tmp
---     WHERE l.id_educationtype = tmp.id_educationtype;
--- END;
--- $$;
+CREATE OR REPLACE PROCEDURE deactivate_finished_enrollments()
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE enrollmentlistener
+    SET is_active = FALSE
+    WHERE end_date < CURRENT_DATE
+      AND is_active = TRUE;
+END;
+$$;
+
+
+CREATE OR REPLACE PROCEDURE shuffle_program_order()
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE programeducation
+    SET name_prof_education = name_prof_education
+    WHERE time_education > 0;
+END;
+$$;
+
+CREATE OR REPLACE PROCEDURE shuffle_education_type()
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    WITH tmp AS (
+        SELECT id_educationtype
+        FROM educationtypes
+        ORDER BY random()
+    )
+    UPDATE educationtypes l
+    SET type_name = l.type_name
+    FROM tmp
+    WHERE l.id_educationtype = tmp.id_educationtype;
+END;
+$$;
 
 
 CREATE OR REPLACE VIEW admin_table_sizes AS
@@ -339,6 +339,7 @@ WHERE schemaname NOT IN ('pg_catalog', 'information_schema')
 ORDER BY pg_total_relation_size(schemaname || '.' || tablename) DESC;
 
 
+--дашборд админа
 CREATE VIEW admin_active_sessions AS
 SELECT
     pid,
@@ -389,6 +390,7 @@ VALUES (
 
 
 
+-- Passport
 INSERT INTO passport (id_passport, place_birth, citizenship, gender, seria, number, passport_given, date_given, code)
 VALUES
 (gen_random_uuid(), 'Москва', 'Россия', 'Мужской', 1234, 111111, 'ОВД Москвы', '2010-01-01', '770-101'),
@@ -397,6 +399,7 @@ VALUES
 (gen_random_uuid(), 'Новосибирск', 'Россия', 'Женский', 4567, 444444, 'ОВД Новосибирск', '2018-04-04', '540-004'),
 (gen_random_uuid(), 'Сочи', 'Россия', 'Мужской', 5678, 555555, 'ОВД Сочи', '2020-05-05', '230-005');
 
+-- Registration Address
 INSERT INTO registrationaddress (id_regaddress, mail_index, region, city, street, house, building, apartment)
 VALUES
 (gen_random_uuid(), 101000, 'Москва', 'Москва', 'Ленина', '1', 'А', '10'),
@@ -405,6 +408,7 @@ VALUES
 (gen_random_uuid(), 630000, 'Новосибирск', 'Новосибирск', 'Ленина', '4', 'Г', '40'),
 (gen_random_uuid(), 354000, 'Сочи', 'Сочи', 'Пушкина', '5', 'Д', '50');
 
+-- Level Education
 INSERT INTO leveleducation (id_leveleducation, education)
 VALUES
 (gen_random_uuid(), 'Бакалавр'),
@@ -414,6 +418,7 @@ VALUES
 (gen_random_uuid(), 'Среднее специальное'),
 (gen_random_uuid(), 'Среднее образование');
 
+-- Education Listener
 INSERT INTO educationlistener (id_educationlistener, diplom_seria, diplom_number, date_given, city, region, educational_institution, speciality, level_education)
 VALUES
 (gen_random_uuid(), 101120, 1111321, '2010-06-01', 'Москва', 'Москва', 'МГУ', 'Информатика', (SELECT id_leveleducation FROM leveleducation LIMIT 1 OFFSET 0)),
@@ -422,6 +427,7 @@ VALUES
 (gen_random_uuid(), 404320, 4442344, '2013-06-01', 'Новосибирск', 'Новосибирск', 'НГУ', 'Химия', (SELECT id_leveleducation FROM leveleducation LIMIT 1 OFFSET 3)),
 (gen_random_uuid(), 505310, 5554325, '2014-06-01', 'Сочи', 'Сочи', 'Сочинский университет', 'Биология', (SELECT id_leveleducation FROM leveleducation LIMIT 1 OFFSET 4));
 
+-- Place Work
 INSERT INTO placework (id_placework, name_company, job_title, all_experience, job_title_experience)
 VALUES
 (gen_random_uuid(), 'Компания1', 'Инженер', 10, 5),
@@ -430,11 +436,13 @@ VALUES
 (gen_random_uuid(), 'Компания4', 'Аналитик', 15, 7),
 (gen_random_uuid(), 'Компания5', 'Дизайнер', 9, 4);
 
+-- Divisions Education
 INSERT INTO divisionseducation (id_divisionseducation, divisions)
 VALUES
 (gen_random_uuid(), 'Лингвистический центр'),
 (gen_random_uuid(), 'Центр прикладных технологий');
 
+-- Education Types
 INSERT INTO educationtypes (id_educationtype, type_name)
 VALUES
 (gen_random_uuid(), 'Очная'),
@@ -443,14 +451,16 @@ VALUES
 (gen_random_uuid(), 'Вечерняя'),
 (gen_random_uuid(), 'Смешанная');
 
-INSERT INTO programeducation (id_programeducation, name_prof_education, time_education, individual_price, group_price, campus_price, id_educationtype, id_divisionseducation)
+-- Program Education
+INSERT INTO programeducation (id_programeducation, name_prof_education, time_education, price, id_educationtype, id_divisionseducation)
 VALUES
-(gen_random_uuid(), 'Разработка игровых продуктов на Unity', 256, 146000, 146000, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 0), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 0)),
-(gen_random_uuid(), 'Разработка кроссплатформенных мобильных приложений на Flutter', 256, 146000, 146000, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 1), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
-(gen_random_uuid(), 'Разработка корпоративных приложений на Java', 256, 146000, 146000, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 2), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
-(gen_random_uuid(), 'Python: первые шаги в программировании', 256, 146000, 146000, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 3), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
-(gen_random_uuid(), 'Математика для программистов Junior', 20, 20000, 20000, 20000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 4), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1));
+(gen_random_uuid(), 'Разработка игровых продуктов на Unity', 256, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 0), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 0)),
+(gen_random_uuid(), 'Разработка кроссплатформенных мобильных приложений на Flutter', 256, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 1), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
+(gen_random_uuid(), 'Разработка корпоративных приложений на Java', 256, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 2), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
+(gen_random_uuid(), 'Python: первые шаги в программировании', 256, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 3), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
+(gen_random_uuid(), 'Математика для программистов Junior', 20, 20000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 4), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1));
 
+-- Listener (частично без работы или образования)
 INSERT INTO listener (id_listener, first_name, second_name, middle_name, date_of_birth, snils, contact_phone, email, id_passport, id_regaddress, id_educationlistener, id_placework)
 VALUES
 (gen_random_uuid(), 'Иван', 'Иванов', 'Иванович', '1990-01-01', '123-456-789 00', '+79001234567', 'ivanov@mail.ru',
@@ -482,7 +492,4 @@ VALUES
  (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 4),
  (SELECT id_educationlistener FROM educationlistener LIMIT 1 OFFSET 4),
  (SELECT id_placework FROM placework LIMIT 1 OFFSET 4));
-
-alter table legal_entity
-add status varchar(255);
 

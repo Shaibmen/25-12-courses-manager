@@ -50,9 +50,7 @@ type PlaceWorkRequest struct {
 type ProgramEducationRequest struct {
 	NameProfEducation     string    `json:"name_prof_education" validate:"required,max=100"`
 	TimeEducation         int       `json:"time_education" validate:"required"`
-	IndividualPrice       float32   `json:"individual_price" validate:"required"`
-	GroupPrice            float32   `json:"group_price" validate:"required"`
-	CampusPrice           float32   `json:"campus_price" validate:"required"`
+	Price                 float64   `json:"price" validate:"required"`
 	ID_DivisionsEducation uuid.UUID `json:"id_divisionseducation" validate:"required,uuid"`
 	ID_EducationType      uuid.UUID `json:"id_educationtype" validate:"required,uuid"`
 }
@@ -130,7 +128,6 @@ type EnrollmentListenerRequest struct {
 	ID_ProgramEducation uuid.UUID `json:"id_program" validate:"required,uuid"`
 	StartDate           string    `json:"start_date" validate:"required"`
 	EndDate             string    `json:"end_date" validate:"required"`
-	CurrentPrice        float32   `json:"current_price" validate:"required"`
 	Is_active           bool      `json:"is_active" validate:"required"`
 	Group               string    `json:"group"`
 	TypeOfRetraining    string    `json:"type_of_retraining"`
@@ -140,7 +137,6 @@ type EnrollemenUpdateRequest struct {
 	ID_ProgramEducation uuid.UUID `json:"id_program" validate:"required,uuid"`
 	StartDate           string    `json:"start_date" validate:"required"`
 	EndDate             string    `json:"end_date" validate:"required"`
-	CurrentPrice        float32   `json:"current_price" validate:"required"`
 	Group               string    `json:"group" validate:"required"`
 	TypeOfRetraining    string    `json:"type_of_retraining" validate:"required"`
 }
@@ -190,7 +186,7 @@ type FrontDataDeliverRequest struct {
 	StartDate         string      `json:"start_date"`
 	EndDate           string      `json:"end_date"`
 	NameProfEducation string      `json:"program_name"`
-	DivisionEducation string 	  `json:"division_education"`
+	DivisionEducation string      `json:"division_education"`
 	CurrentPrice      float32     `json:"price_enrollment"`
 	TimeEducation     int         `json:"time_education"`
 }

@@ -63,8 +63,7 @@ const submit = async () => {
       </AppButton>
 
       <p class="login-form__hint">
-        Страница уже использует новый auth-слой: API вызов, хранение сессии и редиректы
-        вынесены из компонента страницы.
+       
       </p>
     </form>
   </AppCard>
