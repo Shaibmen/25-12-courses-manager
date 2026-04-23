@@ -190,3 +190,8 @@ type FrontDataDeliverRequest struct {
 	CurrentPrice      float32     `json:"price_enrollment"`
 	TimeEducation     int         `json:"time_education"`
 }
+
+type GroupRequest struct {
+	NameGroup  string   `json:"name_group"`
+	Raspisanie []string `json:"raspisanie"`
+}

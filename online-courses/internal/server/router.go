@@ -25,6 +25,7 @@ func SetupRoutes(server *gin.Engine,
 	legalEntityHandler *handlers.LegalEntityHandler,
 	executerHandler *handlers.ExecutorHandler,
 	documentHandler *handlers.DocumentHandler,
+	groupHandler *handlers.GroupHandler,
 	cfg *config.Config,
 	Logger *slog.Logger) {
 
@@ -145,6 +146,15 @@ func SetupRoutes(server *gin.Engine,
 		document := api.Group("/document")
 		{
 			document.POST("/", middleware.RoleProtecteMiddleware("worker"), documentHandler.DocumentDataDeliver)
+		}
+
+		group := api.Group("/group")
+		{
+			group.POST("/", middleware.RoleProtecteMiddleware("worker"), groupHandler.CreateGroup)
+			group.PUT("/:id", middleware.RoleProtecteMiddleware("worker"), groupHandler.UpdateGroup)
+			group.DELETE("/:id", middleware.RoleProtecteMiddleware("worker"), groupHandler.DeleteGroup)
+			group.GET("/", middleware.RoleProtecteMiddleware("worker"), groupHandler.ReadGroup)
+			group.GET("/details/:id", middleware.RoleProtecteMiddleware("worker"), groupHandler.ReadByIDGroup)
 		}
 	}
 }

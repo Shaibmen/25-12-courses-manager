@@ -48,6 +48,7 @@ func main() {
 	legalEntityRepo := pg.NewLegalEntity(db, Logger)
 	executerRepo := pg.NewExecutorRepo(db, Logger)
 	documentRepo := pg.NewDocumentsRepo(db, Logger)
+	groupRepo := pg.NewGroupDB(db, Logger)
 
 	// go func() {
 	// 	for {
@@ -81,6 +82,7 @@ func main() {
 	legalEntityService := service.NewLegalEntityService(db, legalEntityRepo, registrationAddressRepo, listenerRepo)
 	executerService := service.NewExecutorService(executerRepo)
 	documentService := service.NewDocumentService(documentRepo)
+	groupService := service.NewGroupService(groupRepo)
 
 	listenerHanlder := handlers.NewListenerHandler(listenerSevice)
 	divisionsHandler := handlers.NewDivisionsEducationHandler(divisionsService)
@@ -95,6 +97,7 @@ func main() {
 	legalEntityHandler := handlers.NewLegalEntityHandler(legalEntityService)
 	executerHandler := handlers.NewExecutorHandler(executerService)
 	documentHandler := handlers.NewDocumentHandler(documentService, cfg)
+	groupHandler := handlers.NewGroupHandler(groupService)
 
 	r := gin.Default()
 
@@ -113,6 +116,7 @@ func main() {
 		legalEntityHandler,
 		executerHandler,
 		documentHandler,
+		groupHandler,
 		cfg,
 		Logger)
 

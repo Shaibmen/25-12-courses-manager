@@ -400,6 +400,12 @@ type ContractorDoc struct {
 	Apartment sql.NullString `db:"apartment"`
 }
 
+type Group struct {
+	ID_Group   uuid.UUID `db:"id_groups"`
+	NameGroup  string    `db:"name_group"`
+	Raspisanie []string  `db:"raspisanie"`
+}
+
 type FullDocument struct {
 	PersonalInfo PersonalCardInfo
 	Executor     Executor

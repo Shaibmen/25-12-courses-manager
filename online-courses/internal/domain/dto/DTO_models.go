@@ -464,3 +464,9 @@ type RoleDTO struct {
 	ID   uuid.UUID `json:"id"`
 	Role string    `json:"role"`
 }
+
+type GroupDTO struct {
+	ID_Group   uuid.UUID `json:"group"`
+	NameGroup  string    `json:"name_group"`
+	Raspisanie []string  `json:"rapspisanie"`
+}

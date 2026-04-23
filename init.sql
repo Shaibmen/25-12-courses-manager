@@ -144,7 +144,7 @@ CREATE TABLE IF NOT EXISTS listener (
     looting_education boolean DEFAULT false
 );
 
-create table if not exists groups (
+create table if not exists group (
 	id_groups uuid primary key,
 	name_group varchar(255),
 	raspisanie text[]
