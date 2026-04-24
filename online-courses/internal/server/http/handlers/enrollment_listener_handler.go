@@ -46,7 +46,7 @@ func (e *EnrollmentListenerHandler) CreateEnrollment(c *gin.Context) {
 		StartDate:        request.StartDate,
 		EndDate:          request.EndDate,
 		Is_active:        request.Is_active,
-		Group:            request.Group,
+		ID_Group:         request.ID_Group,
 		TypeOfRetraining: request.TypeOfRetraining,
 	}
 
@@ -135,7 +135,7 @@ func (e *EnrollmentListenerHandler) UpdateEnrollment(c *gin.Context) {
 		ID_Program:       request.ID_ProgramEducation,
 		StartDate:        request.StartDate,
 		EndDate:          request.EndDate,
-		Group:            request.Group,
+		ID_Group:         request.ID_Group,
 		TypeOfRetraining: request.TypeOfRetraining,
 	}
 

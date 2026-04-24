@@ -225,8 +225,8 @@ type EnrollmentListener struct {
 	StartDate           time.Time
 	EndDate             time.Time
 	Is_active           bool
-	Group               string
 	TypeOfRetraining    string
+	ID_Group            uuid.UUID
 }
 
 func (EnrollmentListener) TableName() string {
@@ -241,7 +241,7 @@ type EnrollmentListenerDetails struct {
 	NameProfEducation string
 	StartDate         time.Time
 	EndDate           time.Time
-	Group             string
+	ID_Group          uuid.UUID
 	TypeOfRetraining  string
 }
 
@@ -256,7 +256,7 @@ type EnrollmentProgramDetails struct {
 	StartDate           time.Time
 	EndDate             time.Time
 	CurrentPrice        float32
-	Group               string
+	ID_Group            uuid.UUID
 	TypeOfRetraining    string
 }
 

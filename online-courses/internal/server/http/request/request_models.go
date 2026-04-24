@@ -129,7 +129,7 @@ type EnrollmentListenerRequest struct {
 	StartDate           string    `json:"start_date" validate:"required"`
 	EndDate             string    `json:"end_date" validate:"required"`
 	Is_active           bool      `json:"is_active" validate:"required"`
-	Group               string    `json:"group"`
+	ID_Group            uuid.UUID `json:"id_group"`
 	TypeOfRetraining    string    `json:"type_of_retraining"`
 }
 
@@ -137,7 +137,7 @@ type EnrollemenUpdateRequest struct {
 	ID_ProgramEducation uuid.UUID `json:"id_program" validate:"required,uuid"`
 	StartDate           string    `json:"start_date" validate:"required"`
 	EndDate             string    `json:"end_date" validate:"required"`
-	Group               string    `json:"group" validate:"required"`
+	ID_Group            uuid.UUID `json:"id_group" validate:"required"`
 	TypeOfRetraining    string    `json:"type_of_retraining" validate:"required"`
 }
 

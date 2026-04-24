@@ -147,7 +147,7 @@ type EnrollmentListenerDTO struct {
 	StartDate        string    `json:"start_date"`
 	EndDate          string    `json:"end_date"`
 	Is_active        bool      `json:"is_active"`
-	Group            string    `json:"group"`
+	ID_Group         uuid.UUID `json:"id_group"`
 	TypeOfRetraining string    `json:"type_of_retraining"`
 }
 
@@ -168,7 +168,7 @@ type EnrollmentListenerDetailsDTO struct {
 	NameProfEducation string    `json:"name_prof_education"`
 	StartDate         string    `json:"start_date"`
 	EndDate           string    `json:"end_date"`
-	Group             string    `json:"group"`
+	ID_Group          uuid.UUID `json:"id_group"`
 	TypeOfRetraining  string    `json:"type_of_retraining"`
 }
 
@@ -183,7 +183,7 @@ type EnrollmentProgramDetailsDTO struct {
 	StartDate           string    `json:"start_date"`
 	EndDate             string    `json:"end_date"`
 	CurrentPrice        float32   `json:"current_price"`
-	Group               string    `json:"group"`
+	ID_Group            uuid.UUID `json:"id_group"`
 	TypeOfRetraining    string    `json:"type_of_retraining"`
 }
 

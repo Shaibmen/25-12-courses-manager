@@ -25,10 +25,9 @@ func (e *enrollmentListenerRepo) Create(ctx context.Context, model entity.Enroll
 
 	query :=
 		`
-	insert into enrollmentlistener (id_listener, id_programeducation, start_date, end_date, is_active, group_number, type_of_retraining)
+	insert into enrollmentlistener (id_listener, id_programeducation, start_date, end_date, is_active, type_of_retraining, id_group)
 	values ($1, $2, $3, $4, $5, $6, $7)
 	`
-
 	if _, err := e.repo.ExecContext(ctx,
 		query,
 		model.ID_Listener,
@@ -36,8 +35,8 @@ func (e *enrollmentListenerRepo) Create(ctx context.Context, model entity.Enroll
 		model.StartDate,
 		model.EndDate,
 		model.Is_active,
-		model.Group,
 		model.TypeOfRetraining,
+		model.ID_Group,
 	); err != nil {
 
 		e.logger.Error("database error",
@@ -62,7 +61,7 @@ func (e *enrollmentListenerRepo) Read(ctx context.Context, page int, filter stri
 	e.id_listener,	 
 	l.first_name, l.second_name, l.middle_name,
 	p.name_prof_education,
-	e.start_date, e.end_date, e.current_price, e.group_number, e.type_of_retraining
+	e.start_date, e.end_date, e.current_price, e.type_of_retraining, e.id_group
 	from enrollmentlistener as e
 	inner join listener l on e.id_listener = l.id_listener
 	inner join programeducation p on e.id_programeducation = p.id_programeducation
@@ -97,8 +96,8 @@ func (e *enrollmentListenerRepo) Read(ctx context.Context, page int, filter stri
 			&enrollment.NameProfEducation,
 			&enrollment.StartDate,
 			&enrollment.EndDate,
-			&enrollment.Group,
 			&enrollment.TypeOfRetraining,
+			&enrollment.ID_Group,
 		); err != nil {
 
 			e.logger.Error("database error",
@@ -143,7 +142,7 @@ func (e *enrollmentListenerRepo) Update(ctx context.Context, idListener, idProgr
 	id_programeducation = coalesce($1, id_programeducation),
 	start_date = coalesce($2, start_date),
 	end_date = coalesce($3, end_date),
-	group_number = coalesce($4, group_number),
+	id_group = coalesce($4, group_number),
 	type_of_retraining = coalesce($5, type_of_retraining)
 	where id_listener = $6 and id_programeducation = $7
 	`
@@ -153,7 +152,7 @@ func (e *enrollmentListenerRepo) Update(ctx context.Context, idListener, idProgr
 		model.ID_ProgramEducation,
 		model.StartDate,
 		model.EndDate,
-		model.Group,
+		model.ID_Group,
 		model.TypeOfRetraining,
 		idListener,
 		idProgram,
@@ -227,7 +226,7 @@ func (e *enrollmentListenerRepo) ReadDetailListener(ctx context.Context, id uuid
 	query :=
 		`
 	select 
-	e.id_listener, e.id_programeducation, e.current_price, e.group_number, e.type_of_retraining,
+	e.id_listener, e.id_programeducation, e.current_price, e.type_of_retraining, e.id_group,
 	p.name_prof_education, p.time_education, p.price, educ.type_name , d.divisions,
 	e.start_date, e.end_date
 	from enrollmentlistener as e
@@ -259,7 +258,7 @@ func (e *enrollmentListenerRepo) ReadDetailListener(ctx context.Context, id uuid
 			&enrollment.ID_Listener,
 			&enrollment.ID_ProgramEducation,
 			&enrollment.CurrentPrice,
-			&enrollment.Group,
+			&enrollment.ID_Group,
 			&enrollment.TypeOfRetraining,
 			&enrollment.NameProfEducation,
 			&enrollment.TimeEducation,
@@ -317,7 +316,7 @@ func (e *enrollmentListenerRepo) ReadByProgram(ctx context.Context, id uuid.UUID
 	e.id_listener,	 
 	l.first_name, l.second_name, l.middle_name,
 	p.name_prof_education,
-	e.start_date, e.end_date, e.group_number, e.type_of_retraining
+	e.start_date, e.end_date, e.type_of_retraining, e.id_group,
 	from enrollmentlistener as e
 	inner join listener l on e.id_listener = l.id_listener
 	inner join programeducation p on e.id_programeducation = p.id_programeducation
@@ -345,7 +344,7 @@ func (e *enrollmentListenerRepo) ReadByProgram(ctx context.Context, id uuid.UUID
 			&enrollment.NameProfEducation,
 			&enrollment.StartDate,
 			&enrollment.EndDate,
-			&enrollment.Group,
+			&enrollment.ID_Group,
 			&enrollment.TypeOfRetraining,
 		); err != nil {
 
@@ -370,7 +369,7 @@ func (e *enrollmentListenerRepo) SaveInfo(ctx context.Context, m entity.Accurate
 
 		`
 	insert into accurateprogram (id_listener, name_prof_education, time_education, price, educationtype, divisionseducation)
-	values ($1, $2, $3, $4, $5, $6, $7, $8)
+	values ($1, $2, $3, $4, $5, $6)
 	`
 
 	_, err := e.repo.ExecContext(ctx, query, m.ID_Listener, m.NameProfEducation, m.TimeEducation, m.Price, m.EducationType, m.Division)
