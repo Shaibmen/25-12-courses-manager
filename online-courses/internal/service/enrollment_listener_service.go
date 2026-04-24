@@ -169,7 +169,6 @@ func (e *enrollmentListenerService) ReadDetailListener(ctx context.Context, id u
 			DivisionEducation:   i.DivisionEducation,
 			StartDate:           i.StartDate.String(),
 			EndDate:             i.EndDate.String(),
-			CurrentPrice:        i.CurrentPrice,
 			ID_Group:            i.ID_Group,
 			TypeOfRetraining:    i.TypeOfRetraining,
 		})

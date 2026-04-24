@@ -182,7 +182,6 @@ type EnrollmentProgramDetailsDTO struct {
 	DivisionEducation   string    `json:"division_education"`
 	StartDate           string    `json:"start_date"`
 	EndDate             string    `json:"end_date"`
-	CurrentPrice        float32   `json:"current_price"`
 	ID_Group            uuid.UUID `json:"id_group"`
 	TypeOfRetraining    string    `json:"type_of_retraining"`
 }

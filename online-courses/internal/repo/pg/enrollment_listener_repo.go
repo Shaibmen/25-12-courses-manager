@@ -61,7 +61,7 @@ func (e *enrollmentListenerRepo) Read(ctx context.Context, page int, filter stri
 	e.id_listener,	 
 	l.first_name, l.second_name, l.middle_name,
 	p.name_prof_education,
-	e.start_date, e.end_date, e.current_price, e.type_of_retraining, e.id_group
+	e.start_date, e.end_date, e.type_of_retraining, e.id_group
 	from enrollmentlistener as e
 	inner join listener l on e.id_listener = l.id_listener
 	inner join programeducation p on e.id_programeducation = p.id_programeducation
@@ -226,7 +226,7 @@ func (e *enrollmentListenerRepo) ReadDetailListener(ctx context.Context, id uuid
 	query :=
 		`
 	select 
-	e.id_listener, e.id_programeducation, e.current_price, e.type_of_retraining, e.id_group,
+	e.id_listener, e.id_programeducation, e.type_of_retraining, e.id_group,
 	p.name_prof_education, p.time_education, p.price, educ.type_name , d.divisions,
 	e.start_date, e.end_date
 	from enrollmentlistener as e
@@ -257,9 +257,8 @@ func (e *enrollmentListenerRepo) ReadDetailListener(ctx context.Context, id uuid
 		if err = rows.Scan(
 			&enrollment.ID_Listener,
 			&enrollment.ID_ProgramEducation,
-			&enrollment.CurrentPrice,
-			&enrollment.ID_Group,
 			&enrollment.TypeOfRetraining,
+			&enrollment.ID_Group,
 			&enrollment.NameProfEducation,
 			&enrollment.TimeEducation,
 			&enrollment.Price,
