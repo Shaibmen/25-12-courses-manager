@@ -311,11 +311,11 @@ func (e *enrollmentListenerRepo) ReadByProgram(ctx context.Context, id uuid.UUID
 
 	query :=
 		`
-		select
+	select
 	e.id_listener,	 
 	l.first_name, l.second_name, l.middle_name,
 	p.name_prof_education,
-	e.start_date, e.end_date, e.type_of_retraining, e.id_group,
+	e.start_date, e.end_date, e.type_of_retraining, e.id_group
 	from enrollmentlistener as e
 	inner join listener l on e.id_listener = l.id_listener
 	inner join programeducation p on e.id_programeducation = p.id_programeducation
@@ -343,8 +343,8 @@ func (e *enrollmentListenerRepo) ReadByProgram(ctx context.Context, id uuid.UUID
 			&enrollment.NameProfEducation,
 			&enrollment.StartDate,
 			&enrollment.EndDate,
-			&enrollment.ID_Group,
 			&enrollment.TypeOfRetraining,
+			&enrollment.ID_Group,
 		); err != nil {
 
 			e.logger.Error("database error",
@@ -400,7 +400,7 @@ func (e *enrollmentListenerRepo) GetProgram(ctx context.Context, id uuid.UUID) (
 	query :=
 		`
 	
-select 
+	select 
 	p.name_prof_education , p.time_education, p.price, e.type_name, d.divisions
 	from programeducation as p
 	inner join educationtypes e on p.id_educationtype = e.id_educationtype

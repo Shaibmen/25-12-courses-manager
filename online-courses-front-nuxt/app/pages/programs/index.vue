@@ -3,6 +3,7 @@ import type { DivisionItem, EducationTypeItem } from '../../types/catalogs'
 import type { ProgramListItem } from '../../types/program'
 import AppButton from '../../components/ui/AppButton.vue'
 import AppCard from '../../components/ui/AppCard.vue'
+import AppConfirmDialog from '../../components/ui/AppConfirmDialog.vue'
 import AppInput from '../../components/ui/AppInput.vue'
 
 const router = useRouter()
@@ -14,16 +15,10 @@ const page = ref(1)
 const filter = ref('')
 const hasMore = ref(false)
 const loading = ref(false)
+const deleteLoading = ref(false)
 const errorMessage = ref('')
-const sortField = ref<'individual' | 'group' | 'campus' | null>(null)
-const sortOrder = ref<'asc' | 'desc' | null>(null)
+const programToDelete = ref<ProgramListItem | null>(null)
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
-
-const priceFieldMap = {
-  individual: 'individual_price',
-  group: 'group_price',
-  campus: 'campus_price'
-} as const
 
 const formatPrice = (value?: number | null) => {
   if (value === undefined || value === null) {
@@ -38,23 +33,6 @@ const getTypeName = (id: string) =>
 
 const getDivisionName = (id: string) =>
   divisions.value.find((item) => item.id_divisionsEducation === id)?.divisions || '—'
-
-const sortedPrograms = computed(() => {
-  const list = [...programs.value]
-
-  if (!sortField.value || !sortOrder.value) {
-    return list
-  }
-
-  const targetField = priceFieldMap[sortField.value]
-
-  return list.sort((left, right) => {
-    const leftValue = Number(left[targetField] || 0)
-    const rightValue = Number(right[targetField] || 0)
-
-    return sortOrder.value === 'asc' ? leftValue - rightValue : rightValue - leftValue
-  })
-})
 
 const loadPrograms = async () => {
   loading.value = true
@@ -79,13 +57,16 @@ const loadPrograms = async () => {
   }
 }
 
-const removeProgram = async (id: string) => {
-  if (!window.confirm('Вы точно хотите удалить эту программу?')) {
+const confirmDelete = async () => {
+  if (!programToDelete.value) {
     return
   }
 
+  deleteLoading.value = true
+
   try {
-    await deleteProgramRequest(id)
+    await deleteProgramRequest(programToDelete.value.id_program_education)
+    programToDelete.value = null
     await loadPrograms()
     notifications.success('Программа удалена. Список обновлён.', 'Программы обучения')
   } catch (error) {
@@ -93,20 +74,8 @@ const removeProgram = async (id: string) => {
       error instanceof Error ? error.message : 'Не удалось удалить программу обучения',
       'Программы обучения'
     )
-  }
-}
-
-const toggleSort = (field: 'individual' | 'group' | 'campus') => {
-  if (sortField.value !== field) {
-    sortField.value = field
-    sortOrder.value = 'asc'
-    return
-  }
-
-  sortOrder.value = sortOrder.value === 'asc' ? 'desc' : sortOrder.value === 'desc' ? null : 'asc'
-
-  if (!sortOrder.value) {
-    sortField.value = null
+  } finally {
+    deleteLoading.value = false
   }
 }
 
@@ -121,13 +90,19 @@ watch(filter, () => {
   }, 350)
 })
 
+onBeforeUnmount(() => {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+  }
+})
+
 onMounted(() => {
   void loadPrograms()
 })
 </script>
 
 <template>
-  <section class="stack">
+  <section class="stack content-shell">
     <AppCard title="Программы обучения">
       <div class="toolbar">
         <div class="toolbar__search">
@@ -138,18 +113,6 @@ onMounted(() => {
           <AppButton to="/programs/create">Добавить программу</AppButton>
           <AppButton variant="secondary" to="/dashboard">Назад</AppButton>
         </div>
-      </div>
-
-      <div class="toolbar toolbar--sort">
-        <AppButton variant="ghost" @click="toggleSort('individual')">
-          Индивидуальная цена {{ sortField === 'individual' && sortOrder ? (sortOrder === 'asc' ? '↑' : '↓') : '' }}
-        </AppButton>
-        <AppButton variant="ghost" @click="toggleSort('group')">
-          Групповая цена {{ sortField === 'group' && sortOrder ? (sortOrder === 'asc' ? '↑' : '↓') : '' }}
-        </AppButton>
-        <AppButton variant="ghost" @click="toggleSort('campus')">
-          Кампусная цена {{ sortField === 'campus' && sortOrder ? (sortOrder === 'asc' ? '↑' : '↓') : '' }}
-        </AppButton>
       </div>
     </AppCard>
 
@@ -169,26 +132,20 @@ onMounted(() => {
             <tr>
               <th>Название программы</th>
               <th>Длительность (часы)</th>
-              <th>Цена (₽)</th>
-              <th>Индивидуально (₽)</th>
-              <th>Группа (₽)</th>
-              <th>Самообучение (₽)</th>
+              <th>Цена</th>
               <th>Тип обучения</th>
               <th>Подразделение</th>
               <th>Действия</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-if="!sortedPrograms.length">
-              <td colspan="8" class="programs-table__empty">Программы пока не найдены.</td>
+            <tr v-if="!programs.length">
+              <td colspan="6" class="programs-table__empty">Программы пока не найдены.</td>
             </tr>
-            <tr v-for="program in sortedPrograms" :key="program.id_program_education">
+            <tr v-for="program in programs" :key="program.id_program_education">
               <td class="programs-table__name">{{ program.name_prof_education }}</td>
               <td>{{ program.time_education }}</td>
               <td>{{ formatPrice(program.price) }}</td>
-              <td>{{ formatPrice(program.individual_price) }}</td>
-              <td>{{ formatPrice(program.group_price) }}</td>
-              <td>{{ formatPrice(program.campus_price) }}</td>
               <td>{{ getTypeName(program.id_education_type) }}</td>
               <td>{{ getDivisionName(program.id_divisions_education) }}</td>
               <td>
@@ -196,7 +153,7 @@ onMounted(() => {
                   <AppButton variant="secondary" @click="router.push(`/programs/edit/${program.id_program_education}`)">
                     Изменить
                   </AppButton>
-                  <AppButton variant="ghost" @click="removeProgram(program.id_program_education)">
+                  <AppButton variant="ghost" @click="programToDelete = program">
                     Удалить
                   </AppButton>
                 </div>
@@ -216,6 +173,16 @@ onMounted(() => {
         </AppButton>
       </div>
     </AppCard>
+
+    <AppConfirmDialog
+      :open="Boolean(programToDelete)"
+      title="Удаление программы"
+      :message="programToDelete ? `Удалить программу «${programToDelete.name_prof_education}»?` : ''"
+      :loading="deleteLoading"
+      confirm-label="Удалить"
+      @cancel="programToDelete = null"
+      @confirm="confirmDelete"
+    />
   </section>
 </template>
 
@@ -226,12 +193,6 @@ onMounted(() => {
   gap: 1rem;
   align-items: end;
   flex-wrap: wrap;
-}
-
-.toolbar--sort {
-  margin-top: 1rem;
-  justify-content: flex-start;
-  align-items: stretch;
 }
 
 .toolbar__search {
@@ -252,13 +213,13 @@ onMounted(() => {
 
 .programs-table {
   width: 100%;
-  min-width: 1100px;
+  min-width: 1040px;
   border-collapse: collapse;
 }
 
 .programs-table th,
 .programs-table td {
-  padding: 0.95rem 0.85rem;
+  padding: 1rem 0.95rem;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
   text-align: left;
   vertical-align: middle;
@@ -276,8 +237,8 @@ onMounted(() => {
 }
 
 .programs-table__name {
-  min-width: 18rem;
-  max-width: 24rem;
+  min-width: 22rem;
+  max-width: 30rem;
   overflow-wrap: anywhere;
   word-break: break-word;
 }

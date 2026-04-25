@@ -81,6 +81,7 @@ func (e *enrollmentListenerService) GetAccurateEnrollment(ctx context.Context) (
 			Price:             i.Price,
 			EducationType:     i.EducationType,
 			Division:          i.Division,
+			NameGroup:         i.NameGroup.String,
 		})
 	}
 

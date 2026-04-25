@@ -17,7 +17,7 @@ defineProps<{
 
 <style scoped>
 .app-card {
-  padding: 1.25rem;
+  padding: 1.5rem;
   border-radius: 1.25rem;
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: rgba(255, 255, 255, 0.85);

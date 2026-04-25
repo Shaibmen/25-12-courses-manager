@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ContractorPayload } from '../../../types/enrollment'
+import type { GroupItem } from '../../../types/group'
 import {
   ageCategories,
   loadVariantsDO,
@@ -10,6 +11,9 @@ import {
 import ContractorForm from '../../../components/features/enrollments/ContractorForm.vue'
 import AppButton from '../../../components/ui/AppButton.vue'
 import AppCard from '../../../components/ui/AppCard.vue'
+import AppConfirmDialog from '../../../components/ui/AppConfirmDialog.vue'
+import AppInput from '../../../components/ui/AppInput.vue'
+import AppSelect from '../../../components/ui/AppSelect.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -19,18 +23,19 @@ const listenerId = computed(() => String(route.params.listenerId || ''))
 const listenerContext = ref<Awaited<ReturnType<typeof getListenerEnrollmentContext>> | null>(null)
 const programs = ref<Awaited<ReturnType<typeof getPrograms>>>([])
 const executers = ref<Awaited<ReturnType<typeof getExecuters>>>([])
+const groups = ref<GroupItem[]>([])
 const loading = ref(true)
 const saving = ref(false)
 const contractorSaving = ref(false)
 const showContractorForm = ref(false)
+const confirmContractorDelete = ref(false)
 
 const selectedContractId = ref('')
 const selectedExecutorId = ref('')
 const selectedProgramId = ref('')
-const currentPrice = ref<number | ''>('')
+const selectedGroupId = ref('')
 const startDate = ref('')
 const endDate = ref('')
-const group = ref('')
 const typeOfRetraining = ref('')
 const paymentOption = ref('')
 const secondPaymentDate = ref('')
@@ -55,24 +60,14 @@ const isPKorPP = computed(() => {
 const isFormValid = computed(() =>
   Boolean(
     selectedProgramId.value &&
+    selectedGroupId.value &&
     startDate.value &&
     endDate.value &&
-    currentPrice.value &&
     selectedExecutorId.value &&
+    typeOfRetraining.value &&
     (!hasContractor.value || selectedContractId.value)
   )
 )
-
-const syncProgram = () => {
-  if (!selectedProgram.value) {
-    currentPrice.value = ''
-    return
-  }
-
-  currentPrice.value = selectedProgram.value.individual_price
-}
-
-watch(selectedProgramId, syncProgram)
 
 watch(selectedContractId, (value) => {
   const id = value.toUpperCase()
@@ -92,21 +87,23 @@ const load = async () => {
   loading.value = true
 
   try {
-    const [listenerData, programData, executerData] = await Promise.all([
+    const [listenerData, programData, executerData, groupData] = await Promise.all([
       getListenerEnrollmentContext(listenerId.value),
       getPrograms(1, ''),
-      getExecuters(1, '')
+      getExecuters(1, ''),
+      getGroups(1, '')
     ])
 
     listenerContext.value = listenerData
     programs.value = programData
     executers.value = executerData
+    groups.value = groupData
     selectedExecutorId.value = executerData[0]?.id_executor || ''
     selectedProgramId.value = programData[0]?.id_program_education || ''
-    syncProgram()
+    selectedGroupId.value = groupData[0]?.group || ''
   } catch (error) {
     notifications.error(
-      error instanceof Error ? error.message : 'Не удалось загрузить форму записи на курс',
+      error instanceof Error ? error.message : 'Не удалось открыть форму записи на курс',
       'Запись на курс'
     )
   } finally {
@@ -116,15 +113,15 @@ const load = async () => {
 
 const getPaymentText = () => {
   if (paymentOption.value === 'split') {
-    return `Оплата осуществляется в следующем порядке: аванс 50 % — предоплата до начала обучения, оставшиеся 50 % — в установленный срок${secondPaymentDate.value ? ` ${secondPaymentDate.value}` : ''}`
+    return `Оплата в два этапа, вторая часть${secondPaymentDate.value ? ` до ${secondPaymentDate.value}` : ''}`
   }
 
   if (paymentOption.value === 'full') {
-    return 'Оплата осуществляется в следующем порядке: 100% предоплата до начала обучения.'
+    return 'Полная предоплата до начала обучения'
   }
 
   if (paymentOption.value === 'halfsplit') {
-    return 'Оплата подлежит перечислению на расчётный счёт Исполнителя в срок до 5 рабочих дней после подписания акта.'
+    return 'Оплата после подписания акта'
   }
 
   return null
@@ -163,12 +160,15 @@ const saveContractor = async (payload: ContractorPayload) => {
 const removeContractor = async () => {
   const contractorId = listenerContext.value?.contractor?.contractor.id_contractor
 
-  if (!contractorId || !window.confirm('Удалить заказчика у слушателя?')) {
+  if (!contractorId) {
     return
   }
 
+  contractorSaving.value = true
+
   try {
     await deleteContractorRequest(contractorId)
+    confirmContractorDelete.value = false
     notifications.success('Заказчик удалён.', 'Запись на курс')
     await load()
   } catch (error) {
@@ -176,6 +176,8 @@ const removeContractor = async () => {
       error instanceof Error ? error.message : 'Не удалось удалить заказчика',
       'Запись на курс'
     )
+  } finally {
+    contractorSaving.value = false
   }
 }
 
@@ -195,11 +197,9 @@ const createEnrollment = async () => {
       id_program: selectedProgramId.value,
       start_date: startDate.value,
       end_date: endDate.value,
-      current_price: Number(currentPrice.value),
-      group: group.value || null,
-      type_of_retraining: typeOfRetraining.value || null,
-      is_active: true,
-      opt_nagruz: optNagruz
+      id_group: selectedGroupId.value,
+      type_of_retraining: typeOfRetraining.value,
+      is_active: true
     })
 
     await createEnrollmentDocumentRequest({
@@ -211,12 +211,15 @@ const createEnrollment = async () => {
         dogovor_age: ageCategory.value || null,
         opt_document: optDocumentSelected.value ? Number(optDocumentSelected.value) : null,
         opt_price: getPaymentText(),
-        opt_nagruz: optNagruz
+        opt_nagruz: optNagruz,
+        program_name: selectedProgram.value.name_prof_education,
+        time_education: selectedProgram.value.time_education,
+        price_enrollment: selectedProgram.value.price
       }
     })
 
     notifications.success('Запись и документы успешно созданы.', 'Запись на курс')
-    await router.push(`/listeners/${listenerId.value}`)
+    await router.push(`/enrollment/details/${listenerId.value}`)
   } catch (error) {
     notifications.error(
       error instanceof Error ? error.message : 'Не удалось создать запись на курс',
@@ -233,7 +236,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="stack">
+  <section class="stack content-shell">
     <AppCard v-if="loading" title="Загрузка">
       <p>Подтягиваю данные для записи на курс.</p>
     </AppCard>
@@ -255,7 +258,7 @@ onMounted(() => {
             <AppButton variant="secondary" @click="showContractorForm = !showContractorForm">
               {{ showContractorForm ? 'Скрыть форму' : 'Изменить заказчика' }}
             </AppButton>
-            <AppButton variant="ghost" @click="removeContractor">Удалить заказчика</AppButton>
+            <AppButton variant="ghost" @click="confirmContractorDelete = true">Удалить заказчика</AppButton>
           </div>
         </div>
 
@@ -277,77 +280,35 @@ onMounted(() => {
 
       <AppCard title="Параметры договора">
         <div class="enrollment-grid">
-          <label class="app-select">
-            <span class="app-select__label">Договор</span>
-            <div class="app-select__field" :class="{ 'app-select__field--placeholder': !selectedContractId }">
-              <select v-model="selectedContractId" class="app-select__control">
-                <option value="">Выберите договор</option>
-                <option v-for="item in filteredContracts" :key="item.id_contract" :value="item.id_contract">
-                  {{ item.name }}
-                </option>
-              </select>
-              <span class="app-select__icon" aria-hidden="true">⌄</span>
-            </div>
-          </label>
+          <AppSelect v-model="selectedContractId" label="Договор" placeholder="Выберите договор">
+            <option v-for="item in filteredContracts" :key="item.id_contract" :value="item.id_contract">
+              {{ item.name }}
+            </option>
+          </AppSelect>
 
-          <label class="app-select">
-            <span class="app-select__label">Порядок оплаты</span>
-            <div class="app-select__field" :class="{ 'app-select__field--placeholder': !paymentOption }">
-              <select v-model="paymentOption" class="app-select__control">
-                <option value="">Выберите порядок оплаты</option>
-                <option value="full">100% предоплата</option>
-                <option value="split">50/50</option>
-                <option value="halfsplit">Оплата после акта</option>
-              </select>
-              <span class="app-select__icon" aria-hidden="true">⌄</span>
-            </div>
-          </label>
+          <AppSelect v-model="paymentOption" label="Порядок оплаты" placeholder="Выберите порядок оплаты">
+            <option value="full">100% предоплата</option>
+            <option value="split">50/50</option>
+            <option value="halfsplit">Оплата после акта</option>
+          </AppSelect>
 
           <AppInput v-if="paymentOption === 'split'" v-model="secondPaymentDate" label="Срок второй оплаты" type="date" />
 
-          <label class="app-select">
-            <span class="app-select__label">Возрастная категория</span>
-            <div class="app-select__field" :class="{ 'app-select__field--placeholder': !ageCategory }">
-              <select v-model="ageCategory" class="app-select__control">
-                <option value="">Выберите категорию</option>
-                <option v-for="(label, key) in ageCategories" :key="key" :value="key">{{ label }}</option>
-              </select>
-              <span class="app-select__icon" aria-hidden="true">⌄</span>
-            </div>
-          </label>
+          <AppSelect v-model="ageCategory" label="Возрастная категория" placeholder="Выберите категорию">
+            <option v-for="(label, key) in ageCategories" :key="key" :value="key">{{ label }}</option>
+          </AppSelect>
 
-          <label class="app-select">
-            <span class="app-select__label">Итоговый документ</span>
-            <div class="app-select__field" :class="{ 'app-select__field--placeholder': !optDocumentSelected }">
-              <select v-model="optDocumentSelected" class="app-select__control">
-                <option value="">Выберите режим выдачи</option>
-                <option v-for="(label, key) in optDocumentOptions" :key="key" :value="String(key)">{{ label }}</option>
-              </select>
-              <span class="app-select__icon" aria-hidden="true">⌄</span>
-            </div>
-          </label>
+          <AppSelect v-model="optDocumentSelected" label="Итоговый документ" placeholder="Выберите режим выдачи">
+            <option v-for="(label, key) in optDocumentOptions" :key="key" :value="String(key)">{{ label }}</option>
+          </AppSelect>
 
-          <label class="app-select">
-            <span class="app-select__label">Нагрузка ДО</span>
-            <div class="app-select__field" :class="{ 'app-select__field--placeholder': !loadVariant }">
-              <select v-model="loadVariant" class="app-select__control" :disabled="!isDO">
-                <option value="">Выберите вариант</option>
-                <option v-for="(label, key) in loadVariantsDO" :key="key" :value="String(key)">{{ label }}</option>
-              </select>
-              <span class="app-select__icon" aria-hidden="true">⌄</span>
-            </div>
-          </label>
+          <AppSelect v-model="loadVariant" label="Нагрузка ДО" placeholder="Выберите вариант" :disabled="!isDO">
+            <option v-for="(label, key) in loadVariantsDO" :key="key" :value="String(key)">{{ label }}</option>
+          </AppSelect>
 
-          <label class="app-select">
-            <span class="app-select__label">Нагрузка ПК/ПП</span>
-            <div class="app-select__field" :class="{ 'app-select__field--placeholder': !studyLoadOption }">
-              <select v-model="studyLoadOption" class="app-select__control" :disabled="!isPKorPP">
-                <option value="">Выберите вариант</option>
-                <option v-for="(label, key) in loadVariantsNotDO" :key="key" :value="String(key)">{{ label }}</option>
-              </select>
-              <span class="app-select__icon" aria-hidden="true">⌄</span>
-            </div>
-          </label>
+          <AppSelect v-model="studyLoadOption" label="Нагрузка ПК/ПП" placeholder="Выберите вариант" :disabled="!isPKorPP">
+            <option v-for="(label, key) in loadVariantsNotDO" :key="key" :value="String(key)">{{ label }}</option>
+          </AppSelect>
         </div>
       </AppCard>
 
@@ -362,37 +323,22 @@ onMounted(() => {
 
       <AppCard title="Программа обучения">
         <div class="enrollment-grid">
-          <label class="app-select app-select--full">
-            <span class="app-select__label">Программа</span>
-            <div class="app-select__field" :class="{ 'app-select__field--placeholder': !selectedProgramId }">
-              <select v-model="selectedProgramId" class="app-select__control">
-                <option value="">Выберите программу</option>
-                <option v-for="program in programs" :key="program.id_program_education" :value="program.id_program_education">
-                  {{ program.name_prof_education }}
-                </option>
-              </select>
-              <span class="app-select__icon" aria-hidden="true">⌄</span>
-            </div>
-          </label>
+          <AppSelect v-model="selectedProgramId" label="Программа" placeholder="Выберите программу">
+            <option v-for="program in programs" :key="program.id_program_education" :value="program.id_program_education">
+              {{ program.name_prof_education }}
+            </option>
+          </AppSelect>
+
+          <AppSelect v-model="selectedGroupId" label="Группа" placeholder="Выберите группу">
+            <option v-for="group in groups" :key="group.group" :value="group.group">
+              {{ group.name_group }}
+            </option>
+          </AppSelect>
 
           <AppInput v-model="startDate" label="Дата начала" type="date" />
           <AppInput v-model="endDate" label="Дата окончания" type="date" />
-
-          <label class="app-select">
-            <span class="app-select__label">Цена</span>
-            <div class="app-select__field" :class="{ 'app-select__field--placeholder': !currentPrice }">
-              <select v-model="currentPrice" class="app-select__control">
-                <option :value="selectedProgram?.individual_price || ''">Индивидуальное: {{ selectedProgram?.individual_price ?? '—' }} ₽</option>
-                <option :value="selectedProgram?.group_price || ''">Групповое: {{ selectedProgram?.group_price ?? '—' }} ₽</option>
-                <option :value="selectedProgram?.campus_price || ''">Кампус: {{ selectedProgram?.campus_price ?? '—' }} ₽</option>
-              </select>
-              <span class="app-select__icon" aria-hidden="true">⌄</span>
-            </div>
-          </label>
-
-          <AppInput v-model="group" label="Группа" placeholder="Например: 0" />
-
-          <AppInput v-model="typeOfRetraining" label="Тип обучения" placeholder="Подставляется автоматически" disabled />
+          <AppInput :model-value="selectedProgram ? `${new Intl.NumberFormat('ru-RU').format(selectedProgram.price)} ₽` : ''" label="Цена программы" disabled />
+          <AppInput v-model="typeOfRetraining" label="Тип обучения" disabled />
         </div>
       </AppCard>
 
@@ -402,6 +348,16 @@ onMounted(() => {
           {{ saving ? 'Создаём...' : 'Создать запись' }}
         </AppButton>
       </div>
+
+      <AppConfirmDialog
+        :open="confirmContractorDelete"
+        title="Удаление заказчика"
+        message="Удалить заказчика у этого слушателя?"
+        :loading="contractorSaving"
+        confirm-label="Удалить"
+        @cancel="confirmContractorDelete = false"
+        @confirm="removeContractor"
+      />
     </template>
   </section>
 </template>
@@ -447,54 +403,6 @@ onMounted(() => {
   border-radius: 1rem;
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: rgba(255, 255, 255, 0.7);
-}
-
-.app-select {
-  display: grid;
-  gap: 0.45rem;
-}
-
-.app-select--full {
-  grid-column: 1 / -1;
-}
-
-.app-select__label {
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.app-select__field {
-  position: relative;
-  border-radius: 1rem;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(248, 250, 252, 0.94) 100%);
-}
-
-.app-select__field--placeholder .app-select__control {
-  color: #64748b;
-}
-
-.app-select__control {
-  appearance: none;
-  width: 100%;
-  min-height: 3rem;
-  padding: 0.8rem 2.75rem 0.8rem 1rem;
-  border: none;
-  border-radius: 1rem;
-  background: transparent;
-  color: #0f172a;
-  font: inherit;
-  outline: none;
-}
-
-.app-select__icon {
-  position: absolute;
-  top: 50%;
-  right: 0.95rem;
-  transform: translateY(-50%);
-  color: #475569;
-  pointer-events: none;
 }
 
 .page-actions {

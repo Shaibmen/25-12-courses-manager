@@ -2,6 +2,7 @@
 import type { ExecuterItem } from '../../types/executer'
 import AppButton from '../../components/ui/AppButton.vue'
 import AppCard from '../../components/ui/AppCard.vue'
+import AppConfirmDialog from '../../components/ui/AppConfirmDialog.vue'
 import AppInput from '../../components/ui/AppInput.vue'
 
 const router = useRouter()
@@ -12,7 +13,9 @@ const filter = ref('')
 const sortOrder = ref<'asc' | 'desc'>('asc')
 const hasMore = ref(false)
 const loading = ref(false)
+const deleteLoading = ref(false)
 const errorMessage = ref('')
+const executerToDelete = ref<ExecuterItem | null>(null)
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 const sortedExecuters = computed(() =>
@@ -35,20 +38,22 @@ const loadExecutersList = async () => {
     executers.value = data
     hasMore.value = data.length === 25
   } catch (error) {
-    errorMessage.value =
-      error instanceof Error ? error.message : 'Не удалось загрузить список исполнителей'
+    errorMessage.value = error instanceof Error ? error.message : 'Не удалось загрузить список исполнителей'
   } finally {
     loading.value = false
   }
 }
 
-const removeExecuter = async (id: string) => {
-  if (!window.confirm('Вы точно хотите удалить этого исполнителя?')) {
+const confirmDelete = async () => {
+  if (!executerToDelete.value) {
     return
   }
 
+  deleteLoading.value = true
+
   try {
-    await deleteExecuterRequest(id)
+    await deleteExecuterRequest(executerToDelete.value.id_executor)
+    executerToDelete.value = null
     await loadExecutersList()
     notifications.success('Исполнитель удалён. Список обновлён.', 'Исполнители')
   } catch (error) {
@@ -56,15 +61,13 @@ const removeExecuter = async (id: string) => {
       error instanceof Error ? error.message : 'Не удалось удалить исполнителя',
       'Исполнители'
     )
+  } finally {
+    deleteLoading.value = false
   }
 }
 
 const toggleSort = () => {
   sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
-  notifications.info(
-    `Сортировка: ${sortOrder.value === 'asc' ? 'по возрастанию' : 'по убыванию'}`,
-    'Исполнители'
-  )
 }
 
 watch(filter, () => {
@@ -78,13 +81,19 @@ watch(filter, () => {
   }, 350)
 })
 
+onBeforeUnmount(() => {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+  }
+})
+
 onMounted(() => {
   void loadExecutersList()
 })
 </script>
 
 <template>
-  <section class="stack">
+  <section class="stack content-shell">
     <AppCard title="Исполнители">
       <div class="toolbar">
         <div class="toolbar__search">
@@ -134,7 +143,7 @@ onMounted(() => {
               <td class="executers-table__text">{{ executer.status }}</td>
               <td class="executers-table__text">{{ executer.doverenost || '—' }}</td>
               <td>
-                <AppButton variant="ghost" @click="removeExecuter(executer.id_executor)">
+                <AppButton variant="ghost" @click="executerToDelete = executer">
                   Удалить
                 </AppButton>
               </td>
@@ -153,6 +162,16 @@ onMounted(() => {
         </AppButton>
       </div>
     </AppCard>
+
+    <AppConfirmDialog
+      :open="Boolean(executerToDelete)"
+      title="Удаление исполнителя"
+      :message="executerToDelete ? `Удалить исполнителя ${executerToDelete.second_name} ${executerToDelete.first_name}?` : ''"
+      :loading="deleteLoading"
+      confirm-label="Удалить"
+      @cancel="executerToDelete = null"
+      @confirm="confirmDelete"
+    />
   </section>
 </template>
 
@@ -182,13 +201,13 @@ onMounted(() => {
 
 .executers-table {
   width: 100%;
-  min-width: 900px;
+  min-width: 1040px;
   border-collapse: collapse;
 }
 
 .executers-table th,
 .executers-table td {
-  padding: 0.95rem 0.85rem;
+  padding: 1rem 0.95rem;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
   text-align: left;
   vertical-align: middle;
@@ -206,7 +225,7 @@ onMounted(() => {
 }
 
 .executers-table__text {
-  max-width: 12rem;
+  max-width: 14rem;
   overflow-wrap: anywhere;
   word-break: break-word;
 }

@@ -7,7 +7,7 @@ import { formatApiDate } from '../../../utils/date'
 import AppButton from '../../ui/AppButton.vue'
 import AppCard from '../../ui/AppCard.vue'
 
-const props = defineProps<{
+defineProps<{
   details: ListenerDetailsResponse
   enrollments: EnrollmentProgramDetails[]
   files: string[]
@@ -19,6 +19,7 @@ defineEmits<{
   back: []
   edit: []
   enroll: []
+  enrollments: []
   download: [fileName: string]
 }>()
 
@@ -105,7 +106,7 @@ const renderValue = (value?: string | number | null) =>
         <article v-for="course in enrollments" :key="`${course.id_program_education}-${course.start_date}`" class="course-card">
           <strong>{{ course.name_prof_education }}</strong>
           <span>{{ formatApiDate(course.start_date) }} - {{ formatApiDate(course.end_date) }}</span>
-          <span>{{ course.current_price }} ₽</span>
+          <span>{{ new Intl.NumberFormat('ru-RU').format(course.price) }} ₽</span>
         </article>
       </div>
     </AppCard>
@@ -131,6 +132,7 @@ const renderValue = (value?: string | number | null) =>
     <div class="details-actions">
       <AppButton variant="ghost" @click="$emit('back')">Назад</AppButton>
       <div class="details-actions__group">
+        <AppButton variant="ghost" @click="$emit('enrollments')">Записи</AppButton>
         <AppButton variant="secondary" @click="$emit('enroll')">Записать на курс</AppButton>
         <AppButton @click="$emit('edit')">Редактировать</AppButton>
       </div>

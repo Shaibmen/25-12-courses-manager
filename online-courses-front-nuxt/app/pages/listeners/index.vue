@@ -3,6 +3,7 @@ import type { ListenerListItem } from '../../types/listener'
 import { formatApiDate, getDateSortValue } from '../../utils/date'
 import AppButton from '../../components/ui/AppButton.vue'
 import AppCard from '../../components/ui/AppCard.vue'
+import AppConfirmDialog from '../../components/ui/AppConfirmDialog.vue'
 import AppInput from '../../components/ui/AppInput.vue'
 
 const router = useRouter()
@@ -12,9 +13,11 @@ const listeners = ref<ListenerListItem[]>([])
 const page = ref(1)
 const filter = ref('')
 const loading = ref(false)
+const deleteLoading = ref(false)
 const hasMore = ref(false)
 const sortOrder = ref<'asc' | 'desc'>('asc')
 const errorMessage = ref('')
+const listenerToDelete = ref<ListenerListItem | null>(null)
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 const sortedListeners = computed(() =>
@@ -35,20 +38,22 @@ const loadListeners = async () => {
     listeners.value = data
     hasMore.value = data.length === 25
   } catch (error) {
-    errorMessage.value =
-      error instanceof Error ? error.message : 'Не удалось загрузить список слушателей'
+    errorMessage.value = error instanceof Error ? error.message : 'Не удалось загрузить список слушателей'
   } finally {
     loading.value = false
   }
 }
 
-const deleteListener = async (id: string) => {
-  if (!window.confirm('Вы точно хотите удалить этого слушателя?')) {
+const confirmDelete = async () => {
+  if (!listenerToDelete.value) {
     return
   }
 
+  deleteLoading.value = true
+
   try {
-    await deleteListenerRequest(id)
+    await deleteListenerRequest(listenerToDelete.value.id_listener)
+    listenerToDelete.value = null
     await loadListeners()
     notifications.success('Слушатель удалён. Список обновлён.', 'Слушатели')
   } catch (error) {
@@ -56,6 +61,8 @@ const deleteListener = async (id: string) => {
       error instanceof Error ? error.message : 'Не удалось удалить слушателя',
       'Слушатели'
     )
+  } finally {
+    deleteLoading.value = false
   }
 }
 
@@ -74,13 +81,19 @@ watch(filter, () => {
   }, 350)
 })
 
+onBeforeUnmount(() => {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+  }
+})
+
 onMounted(() => {
   void loadListeners()
 })
 </script>
 
 <template>
-  <section class="stack">
+  <section class="stack content-shell">
     <AppCard title="Слушатели">
       <div class="toolbar">
         <div class="toolbar__search">
@@ -151,7 +164,7 @@ onMounted(() => {
                   <AppButton variant="secondary" @click="router.push(`/listeners/edit/${listener.id_listener}`)">
                     Изменить
                   </AppButton>
-                  <AppButton variant="ghost" @click="deleteListener(listener.id_listener)">
+                  <AppButton variant="ghost" @click="listenerToDelete = listener">
                     Удалить
                   </AppButton>
                 </div>
@@ -171,6 +184,16 @@ onMounted(() => {
         </AppButton>
       </div>
     </AppCard>
+
+    <AppConfirmDialog
+      :open="Boolean(listenerToDelete)"
+      title="Удаление слушателя"
+      :message="listenerToDelete ? `Удалить слушателя ${listenerToDelete.second_name} ${listenerToDelete.first_name}?` : ''"
+      :loading="deleteLoading"
+      confirm-label="Удалить"
+      @cancel="listenerToDelete = null"
+      @confirm="confirmDelete"
+    />
   </section>
 </template>
 
@@ -200,26 +223,26 @@ onMounted(() => {
 
 .listeners-table {
   width: 100%;
-  min-width: 980px;
+  min-width: 1180px;
   border-collapse: collapse;
 }
 
 .listeners-table th,
 .listeners-table td {
-  padding: 0.95rem 0.85rem;
+  padding: 1rem 0.95rem;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
   text-align: left;
   vertical-align: middle;
 }
 
 .listeners-table__text-cell {
-  max-width: 12rem;
+  max-width: 14rem;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
 .listeners-table__text-cell--name {
-  max-width: 9.5rem;
+  max-width: 11rem;
   font-size: clamp(0.82rem, 0.76rem + 0.2vw, 0.95rem);
   line-height: 1.35;
 }

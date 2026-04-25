@@ -1,7 +1,10 @@
 import type {
+  AccurateEnrollmentItem,
   ContractorPayload,
   DocumentPayload,
+  EnrollmentItem,
   EnrollmentPayload,
+  EnrollmentUpdatePayload,
   ListenerEnrollmentContext
 } from '../../types/enrollment'
 
@@ -14,24 +17,92 @@ type ApiMessageResponse = {
   message?: string
 }
 
-const getErrorMessage = (error: unknown, fallback: string) => {
-  if (
-    typeof error === 'object' &&
-    error !== null &&
-    'data' in error &&
-    typeof error.data === 'object' &&
-    error.data !== null &&
-    'message' in error.data &&
-    typeof error.data.message === 'string'
-  ) {
-    return error.data.message
-  }
+const getErrorMessage = (error: unknown, fallback: string) => toUserErrorMessage(error, fallback)
 
-  if (error instanceof Error && error.message) {
-    return error.message
-  }
+export const getEnrollments = async (page: number, filter: string) => {
+  const api = useApiClient()
 
-  return fallback
+  try {
+    const response = await api.core<ApiDataResponse<EnrollmentItem[]>>('enrollment/', {
+      query: {
+        page,
+        filter
+      }
+    })
+
+    return response.data || []
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Не удалось загрузить записи на курсы'))
+  }
+}
+
+export const getEnrollmentByProgram = async (programId: string, page: number) => {
+  const api = useApiClient()
+
+  try {
+    const response = await api.core<ApiDataResponse<EnrollmentItem[]>>(`enrollment/${programId}`, {
+      query: {
+        page
+      }
+    })
+
+    return response.data || []
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Не удалось загрузить записи по программе'))
+  }
+}
+
+export const getEnrollmentDetails = async (listenerId: string) => {
+  const api = useApiClient()
+
+  try {
+    const response = await api.core<ApiDataResponse<EnrollmentItem[]>>(`enrollment/details/${listenerId}`)
+
+    return response.data || []
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Не удалось загрузить записи слушателя'))
+  }
+}
+
+export const getAccurateEnrollments = async () => {
+  const api = useApiClient()
+
+  try {
+    const response = await api.core<ApiDataResponse<AccurateEnrollmentItem[]>>('enrollment/accurate')
+
+    return response.data || []
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Не удалось загрузить точные записи'))
+  }
+}
+
+export const deleteEnrollment = async (listenerId: string, programId: string) => {
+  const api = useApiClient()
+
+  try {
+    return await api.core<ApiMessageResponse>(`enrollment/${listenerId}/${programId}`, {
+      method: 'DELETE'
+    })
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Не удалось удалить запись'))
+  }
+}
+
+export const updateEnrollmentRequest = async (
+  listenerId: string,
+  programId: string,
+  payload: EnrollmentUpdatePayload
+) => {
+  const api = useApiClient()
+
+  try {
+    return await api.core<ApiMessageResponse>(`enrollment/${listenerId}/${programId}`, {
+      method: 'PUT',
+      body: payload
+    })
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Не удалось обновить запись'))
+  }
 }
 
 export const getListenerEnrollmentContext = async (listenerId: string) => {

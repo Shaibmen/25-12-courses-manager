@@ -1,3 +1,8 @@
+const env = (
+  (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ??
+  {}
+)
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-04-11',
   devtools: { enabled: true },
@@ -14,9 +19,9 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      apiUrlCore: process.env.NUXT_PUBLIC_API_URL_CORE || 'http://localhost:8080/api/v1',
-      apiUrlAuth: process.env.NUXT_PUBLIC_API_URL_AUTH || 'http://localhost:8081/auth/v1',
-      apiUrlDoc: process.env.NUXT_PUBLIC_API_URL_DOC || 'http://localhost:8082/v1/doc'
+      apiUrlCore: env.NUXT_PUBLIC_API_URL_CORE || 'http://localhost:8080/api/v1',
+      apiUrlAuth: env.NUXT_PUBLIC_API_URL_AUTH || 'http://localhost:8081/auth/v1',
+      apiUrlDoc: env.NUXT_PUBLIC_API_URL_DOC || 'http://localhost:8082/v1/doc'
     }
   },
   imports: {

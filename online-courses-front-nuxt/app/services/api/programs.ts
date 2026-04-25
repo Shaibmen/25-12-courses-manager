@@ -13,25 +13,7 @@ type ApiMessageResponse = {
   message?: string
 }
 
-const getErrorMessage = (error: unknown, fallback: string) => {
-  if (
-    typeof error === 'object' &&
-    error !== null &&
-    'data' in error &&
-    typeof error.data === 'object' &&
-    error.data !== null &&
-    'message' in error.data &&
-    typeof error.data.message === 'string'
-  ) {
-    return error.data.message
-  }
-
-  if (error instanceof Error && error.message) {
-    return error.message
-  }
-
-  return fallback
-}
+const getErrorMessage = (error: unknown, fallback: string) => toUserErrorMessage(error, fallback)
 
 export const getPrograms = async (page: number, filter: string) => {
   const api = useApiClient()

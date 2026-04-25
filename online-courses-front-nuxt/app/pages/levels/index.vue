@@ -40,7 +40,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="stack">
+  <section class="stack content-shell">
     <AppCard title="Уровни обучения">
       <div class="toolbar">
         <div class="toolbar__search">
@@ -110,12 +110,13 @@ onMounted(() => {
 
 .catalog-table {
   width: 100%;
+  min-width: 760px;
   border-collapse: collapse;
 }
 
 .catalog-table th,
 .catalog-table td {
-  padding: 0.95rem 0.85rem;
+  padding: 1rem 0.95rem;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
   text-align: left;
 }

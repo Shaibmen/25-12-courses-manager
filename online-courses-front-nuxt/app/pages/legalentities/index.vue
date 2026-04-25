@@ -2,6 +2,7 @@
 import type { LegalEntityListItem } from '../../types/legalentity'
 import AppButton from '../../components/ui/AppButton.vue'
 import AppCard from '../../components/ui/AppCard.vue'
+import AppConfirmDialog from '../../components/ui/AppConfirmDialog.vue'
 import AppInput from '../../components/ui/AppInput.vue'
 
 const router = useRouter()
@@ -11,7 +12,9 @@ const page = ref(1)
 const filter = ref('')
 const hasMore = ref(false)
 const loading = ref(false)
+const deleteLoading = ref(false)
 const errorMessage = ref('')
+const itemToDelete = ref<LegalEntityListItem | null>(null)
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 const loadLegalEntitiesList = async () => {
@@ -23,20 +26,22 @@ const loadLegalEntitiesList = async () => {
     items.value = data
     hasMore.value = data.length === 25
   } catch (error) {
-    errorMessage.value =
-      error instanceof Error ? error.message : 'Не удалось загрузить юридические лица'
+    errorMessage.value = error instanceof Error ? error.message : 'Не удалось загрузить юридические лица'
   } finally {
     loading.value = false
   }
 }
 
-const removeLegalEntity = async (id: string) => {
-  if (!window.confirm('Вы точно хотите удалить эту организацию?')) {
+const confirmDelete = async () => {
+  if (!itemToDelete.value) {
     return
   }
 
+  deleteLoading.value = true
+
   try {
-    await deleteLegalEntityRequest(id)
+    await deleteLegalEntityRequest(itemToDelete.value.id_legalentity)
+    itemToDelete.value = null
     await loadLegalEntitiesList()
     notifications.success('Юридическое лицо удалено. Список обновлён.', 'Юридические лица')
   } catch (error) {
@@ -44,6 +49,8 @@ const removeLegalEntity = async (id: string) => {
       error instanceof Error ? error.message : 'Не удалось удалить юридическое лицо',
       'Юридические лица'
     )
+  } finally {
+    deleteLoading.value = false
   }
 }
 
@@ -58,13 +65,19 @@ watch(filter, () => {
   }, 350)
 })
 
+onBeforeUnmount(() => {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+  }
+})
+
 onMounted(() => {
   void loadLegalEntitiesList()
 })
 </script>
 
 <template>
-  <section class="stack">
+  <section class="stack content-shell">
     <AppCard title="Юридические лица">
       <div class="toolbar">
         <div class="toolbar__search">
@@ -126,7 +139,7 @@ onMounted(() => {
                   <AppButton variant="secondary" @click="router.push(`/legalentities/edit/${item.id_legalentity}`)">
                     Изменить
                   </AppButton>
-                  <AppButton variant="ghost" @click="removeLegalEntity(item.id_legalentity)">
+                  <AppButton variant="ghost" @click="itemToDelete = item">
                     Удалить
                   </AppButton>
                 </div>
@@ -146,6 +159,16 @@ onMounted(() => {
         </AppButton>
       </div>
     </AppCard>
+
+    <AppConfirmDialog
+      :open="Boolean(itemToDelete)"
+      title="Удаление юридического лица"
+      :message="itemToDelete ? `Удалить организацию «${itemToDelete.name_company}»?` : ''"
+      :loading="deleteLoading"
+      confirm-label="Удалить"
+      @cancel="itemToDelete = null"
+      @confirm="confirmDelete"
+    />
   </section>
 </template>
 
@@ -176,13 +199,13 @@ onMounted(() => {
 
 .legalentities-table {
   width: 100%;
-  min-width: 1300px;
+  min-width: 1460px;
   border-collapse: collapse;
 }
 
 .legalentities-table th,
 .legalentities-table td {
-  padding: 0.95rem 0.85rem;
+  padding: 1rem 0.95rem;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
   text-align: left;
   vertical-align: middle;
@@ -200,7 +223,7 @@ onMounted(() => {
 }
 
 .legalentities-table__company {
-  max-width: 14rem;
+  max-width: 18rem;
   overflow-wrap: anywhere;
   word-break: break-word;
 }

@@ -54,6 +54,11 @@ textarea {
   gap: 1rem;
 }
 
+.content-shell {
+  width: min(1320px, 100%);
+  margin: 0 auto;
+}
+
 .hero-card {
   padding: 1.5rem;
   border-radius: 1.5rem;

@@ -8,7 +8,9 @@ import { createEmptyListenerFormState } from '../../../types/listener'
 import { normalizeApiDate } from '../../../utils/date'
 import AppButton from '../../ui/AppButton.vue'
 import AppCard from '../../ui/AppCard.vue'
+import AppCheckbox from '../../ui/AppCheckbox.vue'
 import AppInput from '../../ui/AppInput.vue'
+import AppSelect from '../../ui/AppSelect.vue'
 
 const props = withDefaults(defineProps<{
   title: string
@@ -55,10 +57,6 @@ const workExperienceError = ref('')
 const workRoleExperienceError = ref('')
 const submitError = ref('')
 const notifications = useNotifications()
-
-const selectFieldClass = (hasPlaceholder: boolean) => ({
-  'form-select-field--placeholder': hasPlaceholder
-})
 
 const normalizeDateValue = (value?: string | null) => normalizeApiDate(value)
 
@@ -724,16 +722,14 @@ onMounted(async () => {
           <AppInput v-model="state.passport.place_birth" label="Место рождения" placeholder="Укажите место рождения" />
           <AppInput v-model="state.passport.citizenship" label="Гражданство" placeholder="Укажите гражданство" />
 
-          <label class="form-select">
-            <span class="form-select__label">Пол</span>
-            <div class="form-select-field" :class="selectFieldClass(!state.passport.gender)">
-              <select v-model="state.passport.gender" class="form-select-field__control">
-                <option value="">Выберите пол</option>
-                <option value="Мужской">Мужской</option>
-                <option value="Женский">Женский</option>
-              </select>
-            </div>
-          </label>
+          <AppSelect
+            v-model="state.passport.gender"
+            label="Пол"
+            placeholder="Выберите пол"
+          >
+            <option value="Мужской">Мужской</option>
+            <option value="Женский">Женский</option>
+          </AppSelect>
 
           <AppInput
             v-model="state.passport.seria"
@@ -831,10 +827,12 @@ onMounted(async () => {
     <div class="listener-form__grid listener-form__grid--double">
       <AppCard title="Образование">
         <div class="form-stack">
-          <label class="toggle-field">
-            <input v-model="state.listener.looting_education" type="checkbox">
-            <span>Получает образование сейчас</span>
-          </label>
+          <div class="toggle-field">
+            <AppCheckbox
+              v-model="state.listener.looting_education"
+              label="Получает образование сейчас"
+            />
+          </div>
 
           <AppInput
             v-model="state.education.diplom_seria"
@@ -891,28 +889,20 @@ onMounted(async () => {
             :disabled="educationDisabled"
           />
 
-          <label class="form-select">
-            <span class="form-select__label">Уровень образования</span>
-            <div
-              class="form-select-field"
-              :class="selectFieldClass(!state.education.level_education)"
+          <AppSelect
+            v-model="state.education.level_education"
+            label="Уровень образования"
+            placeholder="Выберите уровень"
+            :disabled="educationDisabled || levelsLoading"
+          >
+            <option
+              v-for="level in levels"
+              :key="level.id_level_education"
+              :value="level.id_level_education"
             >
-              <select
-                v-model="state.education.level_education"
-                class="form-select-field__control"
-                :disabled="educationDisabled || levelsLoading"
-              >
-                <option value="">Выберите уровень</option>
-                <option
-                  v-for="level in levels"
-                  :key="level.id_level_education"
-                  :value="level.id_level_education"
-                >
-                  {{ level.education }}
-                </option>
-              </select>
-            </div>
-          </label>
+              {{ level.education }}
+            </option>
+          </AppSelect>
         </div>
       </AppCard>
 
@@ -993,62 +983,12 @@ onMounted(async () => {
 }
 
 .toggle-field {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
   min-height: 3rem;
   padding: 0.85rem 1rem;
   border-radius: 1rem;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(15, 23, 42, 0.08);
   color: #0f172a;
-}
-
-.toggle-field input {
-  width: 1rem;
-  height: 1rem;
-}
-
-.form-select {
-  display: grid;
-  gap: 0.45rem;
-}
-
-.form-select__label {
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.form-select-field {
-  border-radius: 1rem;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  background: rgba(255, 255, 255, 0.92);
-  transition:
-    border-color 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms ease;
-}
-
-.form-select-field:focus-within {
-  border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.12);
-  transform: translateY(-1px);
-}
-
-.form-select-field--placeholder .form-select-field__control {
-  color: #64748b;
-}
-
-.form-select-field__control {
-  width: 100%;
-  min-height: 3rem;
-  padding: 0.85rem 1rem;
-  border: none;
-  border-radius: 1rem;
-  background: transparent;
-  color: #0f172a;
-  appearance: none;
 }
 
 @media (max-width: 1100px) {

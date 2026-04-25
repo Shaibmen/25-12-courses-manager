@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppButton from '../../components/ui/AppButton.vue'
 import AppCard from '../../components/ui/AppCard.vue'
+import AppConfirmDialog from '../../components/ui/AppConfirmDialog.vue'
 import AppInput from '../../components/ui/AppInput.vue'
 import type { EducationTypeItem } from '../../types/catalogs'
 
@@ -9,7 +10,9 @@ const notifications = useNotifications()
 const filter = ref('')
 const items = ref<EducationTypeItem[]>([])
 const loading = ref(false)
+const deleteLoading = ref(false)
 const errorMessage = ref('')
+const typeToDelete = ref<EducationTypeItem | null>(null)
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 const loadTypes = async () => {
@@ -19,24 +22,28 @@ const loadTypes = async () => {
   try {
     items.value = await getEducationTypes(filter.value)
   } catch (error) {
-    errorMessage.value =
-      error instanceof Error ? error.message : 'Не удалось загрузить типы обучения'
+    errorMessage.value = error instanceof Error ? error.message : 'Не удалось загрузить типы обучения'
   } finally {
     loading.value = false
   }
 }
 
-const removeType = async (id: string) => {
-  if (!window.confirm('Вы точно хотите удалить этот тип обучения?')) {
+const confirmDelete = async () => {
+  if (!typeToDelete.value) {
     return
   }
 
+  deleteLoading.value = true
+
   try {
-    await deleteEducationTypeRequest(id)
+    await deleteEducationTypeRequest(typeToDelete.value.id_educationType)
+    typeToDelete.value = null
     await loadTypes()
     notifications.success('Тип обучения удалён. Справочник обновлён.', 'Типы обучения')
-  } catch (error) {
-    notifications.error('Не удалось удалить тип обучения, возможно он где то используется')
+  } catch {
+    notifications.error('Не удалось удалить тип обучения. Возможно, он используется в системе.', 'Типы обучения')
+  } finally {
+    deleteLoading.value = false
   }
 }
 
@@ -50,13 +57,19 @@ watch(filter, () => {
   }, 350)
 })
 
+onBeforeUnmount(() => {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+  }
+})
+
 onMounted(() => {
   void loadTypes()
 })
 </script>
 
 <template>
-  <section class="stack">
+  <section class="stack content-shell">
     <AppCard title="Типы обучения">
       <div class="toolbar">
         <div class="toolbar__search">
@@ -99,7 +112,7 @@ onMounted(() => {
                   <AppButton variant="secondary" @click="router.push(`/types/edit/${item.id_educationType}`)">
                     Изменить
                   </AppButton>
-                  <AppButton variant="ghost" @click="removeType(item.id_educationType)">
+                  <AppButton variant="ghost" @click="typeToDelete = item">
                     Удалить
                   </AppButton>
                 </div>
@@ -109,6 +122,16 @@ onMounted(() => {
         </table>
       </div>
     </AppCard>
+
+    <AppConfirmDialog
+      :open="Boolean(typeToDelete)"
+      title="Удаление типа обучения"
+      :message="typeToDelete ? `Удалить тип «${typeToDelete.typeName}»?` : ''"
+      :loading="deleteLoading"
+      confirm-label="Удалить"
+      @cancel="typeToDelete = null"
+      @confirm="confirmDelete"
+    />
   </section>
 </template>
 
@@ -139,12 +162,13 @@ onMounted(() => {
 
 .catalog-table {
   width: 100%;
+  min-width: 760px;
   border-collapse: collapse;
 }
 
 .catalog-table th,
 .catalog-table td {
-  padding: 0.95rem 0.85rem;
+  padding: 1rem 0.95rem;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
   text-align: left;
 }

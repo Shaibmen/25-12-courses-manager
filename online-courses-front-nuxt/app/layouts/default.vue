@@ -120,7 +120,7 @@ const roleLabel = computed(() => auth.roleLabel.value || 'Не авторизо�
 }
 
 .shell__main {
-  width: min(1200px, calc(100% - 2rem));
+  width: min(1440px, calc(100% - 2rem));
   margin: 0 auto;
   padding: 2rem 0 3rem;
 }

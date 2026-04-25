@@ -106,15 +106,12 @@ export type EnrollmentProgramDetails = {
   id_program_education: string
   name_prof_education: string
   time_education: number
-  individual_price: number
-  group_price: number
-  campus_price: number
+  price: number
   education_type: string
   division_education: string
   start_date: string
   end_date: string
-  current_price: number
-  group: string
+  id_group: string
   type_of_retraining: string
 }
 

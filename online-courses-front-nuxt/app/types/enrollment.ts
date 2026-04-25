@@ -97,16 +97,43 @@ export type ListenerEnrollmentContext = {
   contractor?: ContractorPayload | null
 }
 
+export type EnrollmentItem = {
+  id_listener: string
+  first_name: string
+  second_name: string
+  middle_name?: string
+  name_prof_education: string
+  start_date: string
+  end_date: string
+  id_group: string
+  type_of_retraining: string
+}
+
+export type AccurateEnrollmentItem = {
+  id_listener: string
+  name_prof_education: string
+  time_education: number
+  price: number
+  education_type: string
+  division: string
+}
+
 export type EnrollmentPayload = {
   id_listener: string
   id_program: string
   start_date: string
   end_date: string
-  current_price: number
-  group: string | null
-  type_of_retraining: string | null
+  id_group: string
+  type_of_retraining: string
   is_active: boolean
-  opt_nagruz?: number | null
+}
+
+export type EnrollmentUpdatePayload = {
+  id_program: string
+  start_date: string
+  end_date: string
+  id_group: string
+  type_of_retraining: string
 }
 
 export type DocumentPayload = {

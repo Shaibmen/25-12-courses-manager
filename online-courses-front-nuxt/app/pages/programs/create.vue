@@ -51,7 +51,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="stack">
+  <section class="stack content-shell">
     <AppCard v-if="loading" title="Загрузка">
       <p>Подтягиваю типы обучения и подразделения.</p>
     </AppCard>

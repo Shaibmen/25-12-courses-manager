@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppButton from '../../components/ui/AppButton.vue'
 import AppCard from '../../components/ui/AppCard.vue'
+import AppConfirmDialog from '../../components/ui/AppConfirmDialog.vue'
 import AppInput from '../../components/ui/AppInput.vue'
 import type { DivisionItem } from '../../types/catalogs'
 
@@ -9,7 +10,9 @@ const notifications = useNotifications()
 const filter = ref('')
 const divisions = ref<DivisionItem[]>([])
 const loading = ref(false)
+const deleteLoading = ref(false)
 const errorMessage = ref('')
+const divisionToDelete = ref<DivisionItem | null>(null)
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 const loadDivisions = async () => {
@@ -19,24 +22,28 @@ const loadDivisions = async () => {
   try {
     divisions.value = await getDivisions(filter.value)
   } catch (error) {
-    errorMessage.value =
-      error instanceof Error ? error.message : 'Не удалось загрузить подразделения'
+    errorMessage.value = error instanceof Error ? error.message : 'Не удалось загрузить подразделения'
   } finally {
     loading.value = false
   }
 }
 
-const removeDivision = async (id: string) => {
-  if (!window.confirm('Вы точно хотите удалить это подразделение?')) {
+const confirmDelete = async () => {
+  if (!divisionToDelete.value) {
     return
   }
 
+  deleteLoading.value = true
+
   try {
-    await deleteDivisionRequest(id)
+    await deleteDivisionRequest(divisionToDelete.value.id_divisionsEducation)
+    divisionToDelete.value = null
     await loadDivisions()
     notifications.success('Подразделение удалено. Список обновлён.', 'Подразделения')
-  } catch (error) {
-    notifications.error('Не удалось удалить подразделение, возможно оно где то используется')
+  } catch {
+    notifications.error('Не удалось удалить подразделение. Возможно, оно используется в системе.', 'Подразделения')
+  } finally {
+    deleteLoading.value = false
   }
 }
 
@@ -50,13 +57,19 @@ watch(filter, () => {
   }, 350)
 })
 
+onBeforeUnmount(() => {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+  }
+})
+
 onMounted(() => {
   void loadDivisions()
 })
 </script>
 
 <template>
-  <section class="stack">
+  <section class="stack content-shell">
     <AppCard title="Подразделения обучения">
       <div class="toolbar">
         <div class="toolbar__search">
@@ -99,7 +112,7 @@ onMounted(() => {
                   <AppButton variant="secondary" @click="router.push(`/divisions/edit/${division.id_divisionsEducation}`)">
                     Изменить
                   </AppButton>
-                  <AppButton variant="ghost" @click="removeDivision(division.id_divisionsEducation)">
+                  <AppButton variant="ghost" @click="divisionToDelete = division">
                     Удалить
                   </AppButton>
                 </div>
@@ -109,6 +122,16 @@ onMounted(() => {
         </table>
       </div>
     </AppCard>
+
+    <AppConfirmDialog
+      :open="Boolean(divisionToDelete)"
+      title="Удаление подразделения"
+      :message="divisionToDelete ? `Удалить подразделение «${divisionToDelete.divisions}»?` : ''"
+      :loading="deleteLoading"
+      confirm-label="Удалить"
+      @cancel="divisionToDelete = null"
+      @confirm="confirmDelete"
+    />
   </section>
 </template>
 
@@ -139,12 +162,13 @@ onMounted(() => {
 
 .catalog-table {
   width: 100%;
+  min-width: 760px;
   border-collapse: collapse;
 }
 
 .catalog-table th,
 .catalog-table td {
-  padding: 0.95rem 0.85rem;
+  padding: 1rem 0.95rem;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
   text-align: left;
 }

@@ -33,9 +33,7 @@ const load = async () => {
       ...createEmptyProgramFormState(),
       name_prof_education: program.name_prof_education || '',
       time_education: String(program.time_education ?? ''),
-      individual_price: String(program.individual_price ?? ''),
-      group_price: String(program.group_price ?? ''),
-      campus_price: String(program.campus_price ?? ''),
+      price: String(program.price ?? ''),
       id_education_type: program.id_education_type || '',
       id_divisions_education: program.id_divisions_education || ''
     }
@@ -70,7 +68,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="stack">
+  <section class="stack content-shell">
     <AppCard v-if="loading" title="Загрузка">
       <p>Подтягиваю программу обучения и связанные справочники.</p>
     </AppCard>

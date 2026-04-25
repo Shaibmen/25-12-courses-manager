@@ -107,6 +107,7 @@ onMounted(() => {
         @back="router.push('/listeners')"
         @edit="router.push(`/listeners/edit/${id}`)"
         @enroll="router.push(`/enrollment/create/${id}`)"
+        @enrollments="router.push(`/enrollment/details/${id}`)"
         @download="download"
       />
     </template>

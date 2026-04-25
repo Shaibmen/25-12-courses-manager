@@ -48,7 +48,7 @@ export const useApiClient = () => {
     return await $fetch<T>(buildUrl(baseUrl, path, options.query), {
       method: options.method || 'GET',
       headers,
-      body: options.body
+      body: options.body as BodyInit | Record<string, any> | null | undefined
     })
   }
 
