@@ -77,7 +77,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="stack content-shell">
+  <section class="stack content-shell content-shell--wide">
     <AppCard title="Юридические лица">
       <div class="toolbar">
         <div class="toolbar__search">
@@ -194,13 +194,13 @@ onMounted(() => {
 }
 
 .table-wrap {
-  overflow-x: auto;
+  overflow: visible;
 }
 
 .legalentities-table {
   width: 100%;
-  min-width: 1460px;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .legalentities-table th,
@@ -239,5 +239,9 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   gap: 1rem;
+}
+
+.content-shell--wide {
+  width: min(1560px, 100%);
 }
 </style>

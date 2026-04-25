@@ -72,8 +72,8 @@ func (l *LegalEntityRepo) Read(ctx context.Context, page int, filter string) ([]
 			&data.FirstName,
 			&data.SecondName,
 			&data.MiddleName,
-			&data.ID_RegAddress,
 			&data.Status,
+			&data.ID_RegAddress,
 		); err != nil {
 			return nil, repoutils.HandleRepoErr(err)
 		}
@@ -222,8 +222,8 @@ func (c *LegalEntityRepo) ReadFullData(ctx context.Context, id uuid.UUID) (*enti
 			&data.FirstName,
 			&data.SecondName,
 			&data.MiddleName,
-			&data.ID_RegAddress,
 			&data.Status,
+			&data.ID_RegAddress,
 			&data.RegistrationAddress.MailIndex,
 			&data.RegistrationAddress.Region,
 			&data.RegistrationAddress.City,

@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 	"online-courses/internal/config"
 	"online-courses/internal/domain/dto"
@@ -11,7 +13,6 @@ import (
 	"online-courses/internal/server/http/request"
 	"strings"
 	"time"
-	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,9 +31,12 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 	var request request.DocumentsDataRequest
 
 	if err := c.ShouldBindJSON(&request); err != nil {
+		fmt.Println("ошибка в маппинге структуры снова")
 		c.Error(err)
 		return
 	}
+
+	fmt.Println(request)
 
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 20*time.Second)
 	defer cancel()

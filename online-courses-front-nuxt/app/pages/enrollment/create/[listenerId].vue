@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { DivisionItem, EducationTypeItem } from '../../../types/catalogs'
 import type { ContractorPayload } from '../../../types/enrollment'
 import type { GroupItem } from '../../../types/group'
 import {
@@ -9,8 +10,10 @@ import {
   singleEnrollmentContracts
 } from '../../../types/enrollment'
 import ContractorForm from '../../../components/features/enrollments/ContractorForm.vue'
+import GroupSearchField from '../../../components/features/enrollments/GroupSearchField.vue'
 import AppButton from '../../../components/ui/AppButton.vue'
 import AppCard from '../../../components/ui/AppCard.vue'
+import AppCheckbox from '../../../components/ui/AppCheckbox.vue'
 import AppConfirmDialog from '../../../components/ui/AppConfirmDialog.vue'
 import AppInput from '../../../components/ui/AppInput.vue'
 import AppSelect from '../../../components/ui/AppSelect.vue'
@@ -23,17 +26,24 @@ const listenerId = computed(() => String(route.params.listenerId || ''))
 const listenerContext = ref<Awaited<ReturnType<typeof getListenerEnrollmentContext>> | null>(null)
 const programs = ref<Awaited<ReturnType<typeof getPrograms>>>([])
 const executers = ref<Awaited<ReturnType<typeof getExecuters>>>([])
-const groups = ref<GroupItem[]>([])
+const divisions = ref<DivisionItem[]>([])
+const educationTypes = ref<EducationTypeItem[]>([])
+const groupOptions = ref<GroupItem[]>([])
 const loading = ref(true)
 const saving = ref(false)
 const contractorSaving = ref(false)
+const groupsLoading = ref(false)
 const showContractorForm = ref(false)
 const confirmContractorDelete = ref(false)
+const contractorEnabled = ref(false)
 
+const selectedDivisionId = ref('')
+const selectedEducationTypeId = ref('')
 const selectedContractId = ref('')
 const selectedExecutorId = ref('')
 const selectedProgramId = ref('')
 const selectedGroupId = ref('')
+const groupSearch = ref('')
 const startDate = ref('')
 const endDate = ref('')
 const typeOfRetraining = ref('')
@@ -44,13 +54,27 @@ const loadVariant = ref('')
 const studyLoadOption = ref('')
 const optDocumentSelected = ref('')
 
-const hasContractor = computed(() => Boolean(listenerContext.value?.contractor))
+let groupSearchTimer: ReturnType<typeof setTimeout> | null = null
+
 const filteredContracts = computed(() =>
-  singleEnrollmentContracts.filter((item) => item.type === (hasContractor.value ? 'trilateral' : 'bilateral'))
+  singleEnrollmentContracts.filter((item) => item.type === (contractorEnabled.value ? 'trilateral' : 'bilateral'))
 )
+
+const filteredPrograms = computed(() =>
+  programs.value.filter((item) =>
+    item.id_divisions_education === selectedDivisionId.value &&
+    item.id_education_type === selectedEducationTypeId.value
+  )
+)
+
 const selectedProgram = computed(() =>
-  programs.value.find((item) => item.id_program_education === selectedProgramId.value) || null
+  filteredPrograms.value.find((item) => item.id_program_education === selectedProgramId.value) || null
 )
+
+const selectedGroup = computed(() =>
+  groupOptions.value.find((item) => item.group === selectedGroupId.value) || null
+)
+
 const isDO = computed(() => selectedContractId.value.toUpperCase().startsWith('DO'))
 const isPKorPP = computed(() => {
   const id = selectedContractId.value.toUpperCase()
@@ -59,55 +83,51 @@ const isPKorPP = computed(() => {
 
 const isFormValid = computed(() =>
   Boolean(
+    selectedDivisionId.value &&
+    selectedEducationTypeId.value &&
     selectedProgramId.value &&
     selectedGroupId.value &&
     startDate.value &&
     endDate.value &&
     selectedExecutorId.value &&
     typeOfRetraining.value &&
-    (!hasContractor.value || selectedContractId.value)
+    (!contractorEnabled.value || selectedContractId.value)
   )
 )
 
-watch(selectedContractId, (value) => {
-  const id = value.toUpperCase()
-
-  if (id.startsWith('DO')) {
-    typeOfRetraining.value = 'Дополнительное образование'
-  } else if (id.startsWith('PK')) {
-    typeOfRetraining.value = 'Повышение квалификации'
-  } else if (id.startsWith('PP')) {
-    typeOfRetraining.value = 'Профессиональная переподготовка'
-  } else {
-    typeOfRetraining.value = ''
+const syncSelectedGroup = (groups: GroupItem[]) => {
+  if (!selectedGroupId.value || groups.some((item) => item.group === selectedGroupId.value)) {
+    return groups
   }
-})
 
-const load = async () => {
-  loading.value = true
+  if (!groupSearch.value.trim()) {
+    selectedGroupId.value = ''
+    return groups
+  }
+
+  return [
+    {
+      group: selectedGroupId.value,
+      name_group: groupSearch.value,
+      rapspisanie: []
+    },
+    ...groups
+  ]
+}
+
+const loadGroups = async (filter: string) => {
+  groupsLoading.value = true
 
   try {
-    const [listenerData, programData, executerData, groupData] = await Promise.all([
-      getListenerEnrollmentContext(listenerId.value),
-      getPrograms(1, ''),
-      getExecuters(1, ''),
-      getGroups(1, '')
-    ])
-
-    listenerContext.value = listenerData
-    programs.value = programData
-    executers.value = executerData
-    groups.value = groupData
-    selectedExecutorId.value = executerData[0]?.id_executor || ''
-    selectedProgramId.value = programData[0]?.id_program_education || ''
-    selectedGroupId.value = groupData[0]?.group || ''
+    const groups = await getGroups(1, filter.trim())
+    groupOptions.value = syncSelectedGroup(groups)
   } catch (error) {
     notifications.error(
-      error instanceof Error ? error.message : 'Не удалось открыть форму записи на курс',
+      error instanceof Error ? error.message : 'Не удалось загрузить список групп',
       'Запись на курс'
     )
   } finally {
-    loading.value = false
+    groupsLoading.value = false
   }
 }
 
@@ -139,6 +159,35 @@ const getNagruzValue = () => {
   return null
 }
 
+const load = async () => {
+  loading.value = true
+
+  try {
+    const [listenerData, programData, executerData, divisionData, educationTypeData] = await Promise.all([
+      getListenerEnrollmentContext(listenerId.value),
+      getPrograms(1, ''),
+      getExecuters(1, ''),
+      getDivisions(''),
+      getEducationTypes('')
+    ])
+
+    listenerContext.value = listenerData
+    programs.value = programData
+    executers.value = executerData
+    divisions.value = divisionData
+    educationTypes.value = educationTypeData
+    selectedExecutorId.value = executerData[0]?.id_executor || ''
+    await loadGroups('')
+  } catch (error) {
+    notifications.error(
+      error instanceof Error ? error.message : 'Не удалось открыть форму записи на курс',
+      'Запись на курс'
+    )
+  } finally {
+    loading.value = false
+  }
+}
+
 const saveContractor = async (payload: ContractorPayload) => {
   contractorSaving.value = true
 
@@ -146,6 +195,7 @@ const saveContractor = async (payload: ContractorPayload) => {
     await upsertContractorRequest(listenerId.value, payload)
     notifications.success('Заказчик сохранён.', 'Запись на курс')
     showContractorForm.value = false
+    contractorEnabled.value = true
     await load()
   } catch (error) {
     notifications.error(
@@ -169,6 +219,8 @@ const removeContractor = async () => {
   try {
     await deleteContractorRequest(contractorId)
     confirmContractorDelete.value = false
+    contractorEnabled.value = false
+    showContractorForm.value = false
     notifications.success('Заказчик удалён.', 'Запись на курс')
     await load()
   } catch (error) {
@@ -179,6 +231,11 @@ const removeContractor = async () => {
   } finally {
     contractorSaving.value = false
   }
+}
+
+const selectGroup = (group: GroupItem) => {
+  selectedGroupId.value = group.group
+  groupSearch.value = group.name_group
 }
 
 const createEnrollment = async () => {
@@ -211,10 +268,7 @@ const createEnrollment = async () => {
         dogovor_age: ageCategory.value || null,
         opt_document: optDocumentSelected.value ? Number(optDocumentSelected.value) : null,
         opt_price: getPaymentText(),
-        opt_nagruz: optNagruz,
-        program_name: selectedProgram.value.name_prof_education,
-        time_education: selectedProgram.value.time_education,
-        price_enrollment: selectedProgram.value.price
+        opt_nagruz: optNagruz
       }
     })
 
@@ -229,6 +283,61 @@ const createEnrollment = async () => {
     saving.value = false
   }
 }
+
+watch(selectedContractId, (value) => {
+  const id = value.toUpperCase()
+
+  if (id.startsWith('DO')) {
+    typeOfRetraining.value = 'Дополнительное образование'
+  } else if (id.startsWith('PK')) {
+    typeOfRetraining.value = 'Повышение квалификации'
+  } else if (id.startsWith('PP')) {
+    typeOfRetraining.value = 'Профессиональная переподготовка'
+  } else {
+    typeOfRetraining.value = ''
+  }
+})
+
+watch(filteredContracts, (items) => {
+  if (selectedContractId.value && !items.some((item) => item.id_contract === selectedContractId.value)) {
+    selectedContractId.value = ''
+  }
+}, { immediate: true })
+
+watch(filteredPrograms, (items) => {
+  if (selectedProgramId.value && !items.some((item) => item.id_program_education === selectedProgramId.value)) {
+    selectedProgramId.value = ''
+  }
+}, { immediate: true })
+
+watch(selectedProgramId, () => {
+  selectedGroupId.value = ''
+  groupSearch.value = ''
+})
+
+watch(groupSearch, (value) => {
+  if (groupSearchTimer) {
+    clearTimeout(groupSearchTimer)
+  }
+
+  if (selectedGroupId.value && value.trim() !== (selectedGroup.value?.name_group || '')) {
+    selectedGroupId.value = ''
+  }
+
+  groupSearchTimer = setTimeout(() => {
+    void loadGroups(value)
+  }, 300)
+})
+
+watch(contractorEnabled, (enabled) => {
+  showContractorForm.value = enabled ? showContractorForm.value : false
+})
+
+onBeforeUnmount(() => {
+  if (groupSearchTimer) {
+    clearTimeout(groupSearchTimer)
+  }
+})
 
 onMounted(() => {
   void load()
@@ -249,29 +358,41 @@ onMounted(() => {
       </AppCard>
 
       <AppCard title="Заказчик">
-        <div v-if="listenerContext.contractor" class="summary-stack">
-          <p class="summary-line">
-            {{ listenerContext.contractor.contractor.second_name }} {{ listenerContext.contractor.contractor.first_name }} {{ listenerContext.contractor.contractor.middle_name }}
-          </p>
-          <p class="summary-subline">{{ listenerContext.contractor.contractor.contact_phone }} · {{ listenerContext.contractor.contractor.email }}</p>
-          <div class="summary-actions">
-            <AppButton variant="secondary" @click="showContractorForm = !showContractorForm">
-              {{ showContractorForm ? 'Скрыть форму' : 'Изменить заказчика' }}
-            </AppButton>
-            <AppButton variant="ghost" @click="confirmContractorDelete = true">Удалить заказчика</AppButton>
-          </div>
-        </div>
+        <div class="summary-stack">
+          <AppCheckbox v-model="contractorEnabled" label="Есть заказчик" />
 
-        <div v-else class="summary-actions">
-          <p class="summary-subline">Заказчик пока не добавлен.</p>
-          <AppButton @click="showContractorForm = !showContractorForm">
-            {{ showContractorForm ? 'Скрыть форму' : 'Добавить заказчика' }}
-          </AppButton>
+          <template v-if="contractorEnabled">
+            <div v-if="listenerContext.contractor" class="summary-stack">
+              <p class="summary-line">
+                {{ listenerContext.contractor.contractor.second_name }} {{ listenerContext.contractor.contractor.first_name }} {{ listenerContext.contractor.contractor.middle_name }}
+              </p>
+              <p class="summary-subline">
+                {{ listenerContext.contractor.contractor.contact_phone }} · {{ listenerContext.contractor.contractor.email }}
+              </p>
+              <div class="summary-actions">
+                <AppButton variant="secondary" @click="showContractorForm = !showContractorForm">
+                  {{ showContractorForm ? 'Скрыть форму' : 'Изменить заказчика' }}
+                </AppButton>
+                <AppButton variant="ghost" @click="confirmContractorDelete = true">Удалить заказчика</AppButton>
+              </div>
+            </div>
+
+            <div v-else class="summary-actions">
+              <p class="summary-subline">Заказчик пока не добавлен.</p>
+              <AppButton @click="showContractorForm = !showContractorForm">
+                {{ showContractorForm ? 'Скрыть форму' : 'Добавить заказчика' }}
+              </AppButton>
+            </div>
+          </template>
+
+          <p v-else class="summary-subline">
+            Без галочки данные заказчика в запись не отправляем.
+          </p>
         </div>
       </AppCard>
 
       <ContractorForm
-        v-if="showContractorForm"
+        v-if="contractorEnabled && showContractorForm"
         :initial-state="listenerContext.contractor || undefined"
         :loading="contractorSaving"
         @submit="saveContractor"
@@ -323,17 +444,45 @@ onMounted(() => {
 
       <AppCard title="Программа обучения">
         <div class="enrollment-grid">
-          <AppSelect v-model="selectedProgramId" label="Программа" placeholder="Выберите программу">
-            <option v-for="program in programs" :key="program.id_program_education" :value="program.id_program_education">
+          <AppSelect v-model="selectedDivisionId" label="Подразделение" placeholder="Сначала выберите подразделение">
+            <option v-for="division in divisions" :key="division.id_divisionsEducation" :value="division.id_divisionsEducation">
+              {{ division.divisions }}
+            </option>
+          </AppSelect>
+
+          <AppSelect
+            v-model="selectedEducationTypeId"
+            label="Тип обучения"
+            placeholder="Выберите тип обучения"
+            :disabled="!selectedDivisionId"
+          >
+            <option v-for="type in educationTypes" :key="type.id_educationType" :value="type.id_educationType">
+              {{ type.typeName }}
+            </option>
+          </AppSelect>
+
+          <AppSelect
+            v-model="selectedProgramId"
+            label="Программа"
+            placeholder="Выберите программу"
+            :disabled="!selectedDivisionId || !selectedEducationTypeId || !filteredPrograms.length"
+            :help="selectedDivisionId && selectedEducationTypeId && !filteredPrograms.length ? 'По выбранным фильтрам программ не найдено.' : ''"
+          >
+            <option v-for="program in filteredPrograms" :key="program.id_program_education" :value="program.id_program_education">
               {{ program.name_prof_education }}
             </option>
           </AppSelect>
 
-          <AppSelect v-model="selectedGroupId" label="Группа" placeholder="Выберите группу">
-            <option v-for="group in groups" :key="group.group" :value="group.group">
-              {{ group.name_group }}
-            </option>
-          </AppSelect>
+          <GroupSearchField
+            v-model="groupSearch"
+            label="Группа"
+            placeholder="Введите часть названия группы"
+            :options="groupOptions"
+            :loading="groupsLoading"
+            :disabled="!selectedProgramId"
+            :help="selectedGroupId ? `Выбрана группа: ${selectedGroup?.group || ''}` : 'Поиск показывает похожие группы по введённому тексту.'"
+            @select="selectGroup"
+          />
 
           <AppInput v-model="startDate" label="Дата начала" type="date" />
           <AppInput v-model="endDate" label="Дата окончания" type="date" />
@@ -382,9 +531,11 @@ onMounted(() => {
   gap: 1rem;
 }
 
-.summary-actions {
+.summary-actions,
+.page-actions {
   display: flex;
   flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .enrollment-grid {
@@ -406,9 +557,7 @@ onMounted(() => {
 }
 
 .page-actions {
-  display: flex;
   justify-content: space-between;
-  gap: 1rem;
 }
 
 @media (max-width: 900px) {
