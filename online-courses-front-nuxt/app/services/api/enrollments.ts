@@ -4,7 +4,6 @@ import type {
   DocumentPayload,
   EnrollmentItem,
   EnrollmentPayload,
-  EnrollmentUpdatePayload,
   ListenerEnrollmentContext
 } from '../../types/enrollment'
 
@@ -85,23 +84,6 @@ export const deleteEnrollment = async (listenerId: string, programId: string) =>
     })
   } catch (error) {
     throw new Error(getErrorMessage(error, 'Не удалось удалить запись'))
-  }
-}
-
-export const updateEnrollmentRequest = async (
-  listenerId: string,
-  programId: string,
-  payload: EnrollmentUpdatePayload
-) => {
-  const api = useApiClient()
-
-  try {
-    return await api.core<ApiMessageResponse>(`enrollment/${listenerId}/${programId}`, {
-      method: 'PUT',
-      body: payload
-    })
-  } catch (error) {
-    throw new Error(getErrorMessage(error, 'Не удалось обновить запись'))
   }
 }
 

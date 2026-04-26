@@ -200,8 +200,7 @@ func (e *enrollmentListenerRepo) Delete(ctx context.Context, ListenerID, Program
 
 	query :=
 		`
-	UPDATE enrollmentlistener 
-	SET is_active = FALSE 
+	delete from enrollmentlistener
 	WHERE id_listener = $1 AND id_programeducation = $2;
 	`
 

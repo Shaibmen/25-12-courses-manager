@@ -35,9 +35,9 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(request)
+	fmt.Println(request.FrontData.Variant)
 
-	ctx, cancel := context.WithTimeout(c.Request.Context(), 20*time.Second)
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 60*time.Second)
 	defer cancel()
 
 	data, err := d.handler.FormingDataDocument(ctx, request.ID_Listener, request.ID_Program, request.ID_Executor, request.FrontData)

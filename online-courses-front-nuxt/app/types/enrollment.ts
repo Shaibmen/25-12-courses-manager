@@ -128,14 +128,6 @@ export type EnrollmentPayload = {
   is_active: boolean
 }
 
-export type EnrollmentUpdatePayload = {
-  id_program: string
-  start_date: string
-  end_date: string
-  id_group: string
-  type_of_retraining: string
-}
-
 export type DocumentPayload = {
   id_listener: string
   id_program: string

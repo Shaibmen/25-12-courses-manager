@@ -122,12 +122,6 @@ onMounted(() => {
           </div>
 
           <div class="course-card__actions">
-            <AppButton
-              variant="secondary"
-              @click="router.push(`/enrollment/edit/${listenerId}/${course.id_program_education}`)"
-            >
-              Изменить
-            </AppButton>
             <AppButton variant="ghost" @click="enrollmentToDelete = course">
               Удалить
             </AppButton>

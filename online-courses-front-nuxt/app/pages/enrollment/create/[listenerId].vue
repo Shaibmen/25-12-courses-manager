@@ -279,7 +279,8 @@ const createEnrollment = async () => {
         dogovor_age: ageCategory.value || null,
         opt_document: optDocumentSelected.value ? Number(optDocumentSelected.value) : null,
         opt_price: getPaymentText(),
-        opt_nagruz: optNagruz
+        opt_nagruz: optNagruz,
+        variant: optNagruz
       }
     })
 
@@ -404,7 +405,7 @@ onMounted(() => {
           </template>
 
           <p v-else class="summary-subline">
-            Без галочки данные заказчика в запись не отправляем.
+            При выборе возрастной категории меньше 18 требуется заказчик
           </p>
         </div>
       </AppCard>
@@ -480,6 +481,7 @@ onMounted(() => {
           </AppSelect>
 
           <AppSelect
+            class="enrollment-grid__wide"
             v-model="selectedProgramId"
             label="Программа"
             placeholder="Выберите программу"
@@ -492,6 +494,7 @@ onMounted(() => {
           </AppSelect>
 
           <GroupSearchField
+            class="enrollment-grid__wide"
             v-model="groupSearch"
             label="Группа"
             placeholder="Введите часть названия группы"
@@ -558,6 +561,10 @@ onMounted(() => {
 
 .enrollment-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.enrollment-grid__wide {
+  grid-column: 1 / -1;
 }
 
 .radio-grid {
