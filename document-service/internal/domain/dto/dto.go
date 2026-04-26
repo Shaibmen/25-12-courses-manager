@@ -94,6 +94,7 @@ type ExecutorDTO struct {
 	ExecutorName       string
 	ExecutorSurname    string
 	ExecutorMiddlename string
+	Doverennost        string
 }
 
 type ZayavlenieDTO struct {
@@ -135,10 +136,11 @@ type ZakazchikDTO struct {
 }
 
 type Centers struct {
-	CPK 	int `json:"Center prikladnih technologiy"`
-	CIO 	int `json:"Center individualnogo obuchenia"`
-	LC 		int `json:"Lingvisticheskiy center"`
-	CK 		int `json:"Cifrovoy kampus"`
-	CRCR 	int `json:"Center razrabotki i cifrovih resheniy"`
-	CABA 	int `json:"Center avtomatizacii i biznes-analiza"`
+	CPK  int `json:"Center prikladnih technologiy"`
+	CIO  int `json:"Center individualnogo obuchenia"`
+	LC   int `json:"Lingvisticheskiy center"`
+	CK   int `json:"Cifrovoy kampus"`
+	CRCR int `json:"Center razrabotki i cifrovih resheniy"`
+	CABA int `json:"Center avtomatizacii i biznes-analiza"`
+	Year int `json:"Year"`
 }

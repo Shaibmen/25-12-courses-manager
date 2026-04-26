@@ -300,7 +300,9 @@ func (s *DogovorService) DownloadDogovor(param string) ([]byte, error) {
 }
 
 func countCenter(center string) int {
-	data, err := os.ReadFile("/app/internal/count.json")
+
+	YearChecker()
+	data, err := os.ReadFile("./internal/count.json")
 	if err != nil {
 		log.Println("Ошибка при чтении файла:", err)
 	}
@@ -339,7 +341,50 @@ func countCenter(center string) int {
 		log.Println("Ошибка при маршаллинге:", err)
 	}
 
-	os.WriteFile("/app/internal/count.json", data, 0644)
+	os.WriteFile("./internal/count.json", data, 0644)
 
 	return counter
+}
+
+func YearChecker() {
+	data, err := os.ReadFile("./internal/count.json")
+	if err != nil {
+		log.Println("Ошибка при чтении файла:", err)
+	}
+
+	var centers dto.Centers
+	err = json.Unmarshal(data, &centers)
+	if err != nil {
+		log.Println("Ошибка при анмаршаллинге:", err)
+	}
+
+	currentYear := time.Now().Year()
+
+	log.Println(currentYear)
+
+	if centers.Year != currentYear {
+		centers.Year = currentYear
+
+		centers.CPK = 0
+
+		centers.CIO = 0
+
+		centers.LC = 0
+
+		centers.CK = 0
+
+		centers.CRCR = 0
+
+		centers.CABA = 0
+
+		data, err = json.Marshal(centers)
+		if err != nil {
+			log.Println("Ошибка при маршаллинге:", err)
+		}
+
+		os.WriteFile("./internal/count.json", data, 0644)
+
+		log.Println("Счетчик обнулился, год изменился")
+	}
+
 }

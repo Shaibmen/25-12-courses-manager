@@ -282,6 +282,7 @@ func DogovorMapping(request models.DogovorRequest) (*dto.DogovorDTO, error) {
 			ExecutorName:       request.Executor.ExecutorName,
 			ExecutorSurname:    request.Executor.ExecutorSurname,
 			ExecutorMiddlename: request.Executor.ExecutorMiddlename,
+			Doverennost:        request.Executor.Doverennost,
 		},
 		Passport: dto.PassportDTO{
 			PlaceBirth:    request.Passport.PlaceBirth,
