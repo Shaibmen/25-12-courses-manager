@@ -466,7 +466,7 @@ type RoleDTO struct {
 }
 
 type GroupDTO struct {
-	ID_Group   uuid.UUID `json:"group"`
-	NameGroup  string    `json:"name_group"`
-	Raspisanie []string  `json:"rapspisanie"`
+	ID_Group   uuid.UUID                `json:"group"`
+	NameGroup  string                   `json:"name_group"`
+	Raspisanie []map[string]interface{} `json:"rapspisanie"`
 }

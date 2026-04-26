@@ -9,7 +9,6 @@ import (
 	repoutils "online-courses/internal/repo/pg/repo_utils"
 
 	"github.com/google/uuid"
-	"github.com/lib/pq"
 )
 
 type GroupDB struct {
@@ -25,7 +24,7 @@ func (g *GroupDB) Create(ctx context.Context, m entity.Group) error {
 
 	query := `insert into groups (id_groups, name_group, raspisanie) values ($1, $2, $3)`
 
-	_, err := g.repo.ExecContext(ctx, query, m.ID_Group, m.NameGroup, pq.Array(m.Raspisanie))
+	_, err := g.repo.ExecContext(ctx, query, m.ID_Group, m.NameGroup, m.Raspisanie)
 	if err != nil {
 		g.logger.Error("database error",
 			"operation", "insert_group",
@@ -72,7 +71,7 @@ func (g *GroupDB) Update(ctx context.Context, m entity.Group) error {
 		ctx,
 		query,
 		m.NameGroup,
-		pq.Array(m.Raspisanie),
+		m.Raspisanie,
 		m.ID_Group); err != nil {
 
 		g.logger.Error("database error",
@@ -136,7 +135,7 @@ func (g *GroupDB) ReadByID(ctx context.Context, id uuid.UUID) (*entity.Group, er
 	err := g.repo.QueryRowContext(ctx, query, id).Scan(
 		&group.ID_Group,
 		&group.NameGroup,
-		pq.Array(&group.Raspisanie),
+		&group.Raspisanie,
 	)
 	if err != nil {
 
@@ -185,7 +184,7 @@ func (g *GroupDB) Read(ctx context.Context, page int, filter string) ([]entity.G
 		if err := rows.Scan(
 			&group.ID_Group,
 			&group.NameGroup,
-			pq.Array(&group.Raspisanie),
+			&group.Raspisanie,
 		); err != nil {
 
 			g.logger.Error("database error",

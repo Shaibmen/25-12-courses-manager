@@ -97,7 +97,8 @@ create table if not exists accurateprogram (
     time_education INTEGER not null,
     price real not null,
     educationtype varchar(255) not null,
-    divisionseducation varchar(255) not null
+    divisionseducation varchar(255) not null,
+    name_group varchar(255)
 );
 
 CREATE TABLE IF NOT EXISTS legal_entity (
@@ -144,11 +145,13 @@ CREATE TABLE IF NOT EXISTS listener (
     looting_education boolean DEFAULT false
 );
 
-create table if not exists group (
+create table if not exists groups (
 	id_groups uuid primary key,
-	name_group varchar(255),
-	raspisanie text[]
+	name_group varchar(255) unique not null,
+	raspisanie jsonb not null
+	
 );
+
 
 
 CREATE TABLE IF NOT EXISTS enrollmentlistener (
@@ -157,7 +160,6 @@ CREATE TABLE IF NOT EXISTS enrollmentlistener (
     start_date DATE not null,
     end_date DATE not null,
     is_active  boolean not null,
-	group_number varchar(50) not null,
 	type_of_retraining varchar(50) not null,
 	id_group uuid references groups(id_groups),
     PRIMARY KEY (id_listener, id_programeducation)
@@ -492,4 +494,9 @@ VALUES
  (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 4),
  (SELECT id_educationlistener FROM educationlistener LIMIT 1 OFFSET 4),
  (SELECT id_placework FROM placework LIMIT 1 OFFSET 4));
+
+
+
+
+
 

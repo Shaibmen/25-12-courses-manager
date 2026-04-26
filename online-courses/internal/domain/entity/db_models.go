@@ -2,6 +2,7 @@ package entity
 
 import (
 	"database/sql"
+	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
@@ -402,9 +403,9 @@ type ContractorDoc struct {
 }
 
 type Group struct {
-	ID_Group   uuid.UUID `db:"id_groups"`
-	NameGroup  string    `db:"name_group"`
-	Raspisanie []string  `db:"raspisanie"`
+	ID_Group   uuid.UUID       `db:"id_groups"`
+	NameGroup  string          `db:"name_group"`
+	Raspisanie json.RawMessage `db:"raspisanie"`
 }
 
 type FullDocument struct {

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"online-courses/internal/domain/dto"
 	"online-courses/internal/domain/entity"
 	"online-courses/internal/domain/repository"
@@ -19,11 +20,15 @@ func NewGroupService(service repository.GroupRepository) *GroupService {
 
 func (g *GroupService) Create(ctx context.Context, m dto.GroupDTO) error {
 
+	raspisanie, err := json.Marshal(m.Raspisanie)
+	if err != nil {
+		return err
+	}
 	id := uuid.New()
 	entity := entity.Group{
 		ID_Group:   id,
 		NameGroup:  m.NameGroup,
-		Raspisanie: m.Raspisanie,
+		Raspisanie: raspisanie,
 	}
 
 	if err := g.service.Create(ctx, entity); err != nil {
@@ -35,10 +40,15 @@ func (g *GroupService) Create(ctx context.Context, m dto.GroupDTO) error {
 
 func (g *GroupService) Update(ctx context.Context, m dto.GroupDTO) error {
 
+	raspisanie, err := json.Marshal(m.Raspisanie)
+	if err != nil {
+		return err
+	}
+
 	entity := entity.Group{
 		ID_Group:   m.ID_Group,
 		NameGroup:  m.NameGroup,
-		Raspisanie: m.Raspisanie,
+		Raspisanie: raspisanie,
 	}
 
 	if err := g.service.Update(ctx, entity); err != nil {
@@ -66,10 +76,15 @@ func (g *GroupService) Read(ctx context.Context, page int, filter string) ([]dto
 
 	var groups []dto.GroupDTO
 	for _, group := range data {
+
+		var raspisanie []map[string]interface{}
+		if err := json.Unmarshal(group.Raspisanie, &raspisanie); err != nil {
+			return nil, err
+		}
 		groups = append(groups, dto.GroupDTO{
 			ID_Group:   group.ID_Group,
 			NameGroup:  group.NameGroup,
-			Raspisanie: group.Raspisanie,
+			Raspisanie: raspisanie,
 		})
 	}
 
@@ -83,10 +98,15 @@ func (g *GroupService) ReadByID(ctx context.Context, id uuid.UUID) (*dto.GroupDT
 		return nil, err
 	}
 
+	var raspisanie []map[string]interface{}
+	if err := json.Unmarshal(data.Raspisanie, &raspisanie); err != nil {
+		return nil, err
+	}
+
 	dto := dto.GroupDTO{
 		ID_Group:   data.ID_Group,
 		NameGroup:  data.NameGroup,
-		Raspisanie: data.Raspisanie,
+		Raspisanie: raspisanie,
 	}
 
 	return &dto, nil

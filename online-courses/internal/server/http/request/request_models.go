@@ -192,6 +192,6 @@ type FrontDataDeliverRequest struct {
 }
 
 type GroupRequest struct {
-	NameGroup  string   `json:"name_group"`
-	Raspisanie []string `json:"raspisanie"`
+	NameGroup  string                   `json:"name_group"`
+	Raspisanie []map[string]interface{} `json:"raspisanie"`
 }
