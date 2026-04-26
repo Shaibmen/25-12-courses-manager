@@ -468,13 +468,13 @@ onMounted(() => {
             :options="groupOptions"
             :loading="groupsLoading"
             :disabled="!selectedProgramId"
-            :help="selectedGroupId ? `Выбрана группа: ${selectedGroup?.group || ''}` : 'Поиск показывает похожие группы по введённому тексту.'"
+            :help="selectedGroupId ? `Выбрана группа: ${selectedGroup?.name_group || ''}. Даты подставлены автоматически.` : 'Поиск показывает похожие группы по введённому тексту.'"
             @select="selectGroup"
           />
 
           <AppInput :model-value="selectedProgram ? `${selectedProgram.price} ₽` : ''" label="Цена" disabled />
-          <AppInput v-model="startDate" label="Дата начала" type="date" />
-          <AppInput v-model="endDate" label="Дата окончания" type="date" />
+          <AppInput :model-value="startDate" label="Дата начала" type="date" disabled />
+          <AppInput :model-value="endDate" label="Дата окончания" type="date" disabled />
           <AppInput v-model="typeOfRetraining" label="Тип обучения" disabled />
         </div>
       </AppCard>

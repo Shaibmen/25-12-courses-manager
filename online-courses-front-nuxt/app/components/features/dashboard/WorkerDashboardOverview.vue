@@ -14,6 +14,7 @@ const navigationItems = [
   { title: 'Типы обучения', description: 'Классификация образовательных программ.', to: '/types' },
   { title: 'Уровни обучения', description: 'Уровни и формат образовательной подготовки.', to: '/levels' },
   { title: 'Программы обучения', description: 'Каталог программ и их наполнение.', to: '/programs' },
+  { title: 'Группы', description: 'Учебные группы и их расписание занятий.', to: '/groups' },
   { title: 'Запись на курс', description: 'Управление зачислениями и текущими наборами.', to: '/enrollments' },
   { title: 'Юридические лица', description: 'Организации, договоры и привязка слушателей.', to: '/legalentities' },
   { title: 'Исполнители', description: 'Преподаватели и подрядчики по программам.', to: '/executers' }

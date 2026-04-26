@@ -89,7 +89,6 @@ onBeforeUnmount(() => {
             @click="handleSelect(group)"
           >
             <span class="group-search__option-name">{{ group.name_group }}</span>
-            <span class="group-search__option-id">{{ group.group }}</span>
           </button>
         </template>
 
@@ -188,11 +187,6 @@ onBeforeUnmount(() => {
 .group-search__option-name {
   font-weight: 600;
   color: #0f172a;
-}
-
-.group-search__option-id {
-  font-size: 0.82rem;
-  color: #64748b;
 }
 
 .group-search__state,

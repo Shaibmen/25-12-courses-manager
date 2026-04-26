@@ -268,23 +268,7 @@ BEGIN
 END $$;
 
 
---дата на записях
-CREATE OR REPLACE FUNCTION check_enrollment_dates()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF NEW.start_date < CURRENT_DATE THEN
-        RAISE EXCEPTION 'Start date cannot be in the past';
-    END IF;
-    IF NEW.end_date <= NEW.start_date THEN
-        RAISE EXCEPTION 'End date must be after start date';
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_check_enrollment_dates
-BEFORE INSERT OR UPDATE ON enrollmentlistener
-FOR EACH ROW EXECUTE FUNCTION check_enrollment_dates();
 
 
 
@@ -494,9 +478,3 @@ VALUES
  (SELECT id_regaddress FROM registrationaddress LIMIT 1 OFFSET 4),
  (SELECT id_educationlistener FROM educationlistener LIMIT 1 OFFSET 4),
  (SELECT id_placework FROM placework LIMIT 1 OFFSET 4));
-
-
-
-
-
-

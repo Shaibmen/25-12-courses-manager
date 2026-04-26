@@ -63,6 +63,14 @@ func replacePP3YUR(doc *docx.Docx, model *dto.DogovorDTO) {
 }
 
 func replacePK3YUR(doc *docx.Docx, model *dto.DogovorDTO) {
+
+	if model.Executor.Doverennost == "Устав" {
+		doc.Replace("YST", "Устав", -1)
+	} else {
+		textDoverennost := "Доверенности " + model.Executor.Doverennost
+		doc.Replace("YST", textDoverennost, -1)
+	}
+
 	doc.Replace("ZAKAZCHIKSTATUS", model.Zakazchik.Status, -1)
 	doc.Replace("ZAKAZCHIKFIO", model.Zakazchik.FIO, -1)
 	doc.Replace("ZFIO", model.Zakazchik.FIO, -1)

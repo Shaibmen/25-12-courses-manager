@@ -59,6 +59,14 @@ func replacePP3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 }
 
 func replacePP2FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
+
+	if model.Executor.Doverennost == "Устав" {
+		doc.Replace("YST", "Устав", -1)
+	} else {
+		textDoverennost := "Доверенности " + model.Executor.Doverennost
+		doc.Replace("YST", textDoverennost, -1)
+	}
+
 	doc.Replace("STATUS", model.Executor.Status, -1)
 
 	executorFio := model.Executor.ExecutorSurname + " " + model.Executor.ExecutorName + " " + model.Executor.ExecutorMiddlename
@@ -95,6 +103,14 @@ func replacePP2FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 }
 
 func replacePK3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
+
+	if model.Executor.Doverennost == "Устав" {
+		doc.Replace("YST", "Устав", -1)
+	} else {
+		textDoverennost := "Доверенности " + model.Executor.Doverennost
+		doc.Replace("YST", textDoverennost, -1)
+	}
+
 	doc.Replace("STATUS", model.Executor.Status, -1)
 
 	executorFio := model.Executor.ExecutorSurname + " " + model.Executor.ExecutorName + " " + model.Executor.ExecutorMiddlename
@@ -138,6 +154,14 @@ func replacePK3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 }
 
 func replacePK2FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
+
+	if model.Executor.Doverennost == "Устав" {
+		doc.Replace("YST", "Устав", -1)
+	} else {
+		textDoverennost := "Доверенности " + model.Executor.Doverennost
+		doc.Replace("YST", textDoverennost, -1)
+	}
+
 	doc.Replace("STATUS", model.Executor.Status, -1)
 
 	executorFio := model.Executor.ExecutorSurname + " " + model.Executor.ExecutorName + " " + model.Executor.ExecutorMiddlename
@@ -174,6 +198,14 @@ func replacePK2FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
 }
 
 func replaceDO3FIZ(doc *docx.Docx, model *dto.DogovorDTO) {
+
+	if model.Executor.Doverennost == "Устав" {
+		doc.Replace("YST", "Устав", -1)
+	} else {
+		textDoverennost := "Доверенности " + model.Executor.Doverennost
+		doc.Replace("YST", textDoverennost, -1)
+	}
+
 	doc.Replace("STATUS", model.Executor.Status, -1)
 
 	executorFio := model.Executor.ExecutorSurname + " " + model.Executor.ExecutorName + " " + model.Executor.ExecutorMiddlename
