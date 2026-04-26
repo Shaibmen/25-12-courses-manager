@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"online-courses/internal/config"
 	"online-courses/internal/domain/dto"
@@ -47,9 +46,11 @@ func (d *DocumentHandler) DocumentDataDeliver(c *gin.Context) {
 		return
 	}
 
-	log.Println("REQ id_program:", request.ID_Program, "id_listener:", request.ID_Listener)
-	log.Println("FORM division:", data.DogovorRequest.ProgramEducation.DivisionEducation)
-	log.Println("BRANCH company:", data.DogovorRequest.LegalEntity.CompanyName)
+	// log.Println("REQ id_program:", request.ID_Program, "id_listener:", request.ID_Listener)
+	// log.Println("FORM division:", data.DogovorRequest.ProgramEducation.DivisionEducation)
+	// log.Println("BRANCH company:", data.DogovorRequest.LegalEntity.CompanyName)
+
+	// log.Println(data)
 
 	if data.DogovorRequest.LegalEntity.CompanyName != "" {
 

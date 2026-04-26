@@ -363,17 +363,17 @@ type PersonalCardInfo struct {
 	AllExperience      sql.NullInt32  `db:"all_experience"`
 	JobTitleExpirience sql.NullInt32  `db:"job_title_experience"`
 
-	NameProfEducation string `db:"name_prof_education"`
-	TimeEducation     int    `db:"time_education"`
-	DivisionEducation string `db:"divisions"`
-	EducationType     string `db:"type_name"`
+	NameProfEducation string  `db:"name_prof_education"`
+	TimeEducation     int     `db:"time_education"`
+	CurrentPrice      float32 `db:"price"`
+	DivisionEducation string  `db:"divisions"`
+	EducationType     string  `db:"type_name"`
 
-	StartDate        string  `db:"start_date"`
-	EndDate          string  `db:"end_date"`
-	CurrentPrice     float32 `db:"current_price"`
-	Is_active        bool    `db:"is_active"`
-	Group            string  `db:"group_number"`
-	TypeOfRetraining string  `db:"type_of_retraining"`
+	StartDate        string `db:"start_date"`
+	EndDate          string `db:"end_date"`
+	Is_active        bool   `db:"is_active"`
+	Group            string `db:"group_number"`
+	TypeOfRetraining string `db:"type_of_retraining"`
 }
 
 type ContractorDoc struct {

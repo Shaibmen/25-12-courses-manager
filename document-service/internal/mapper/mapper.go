@@ -21,8 +21,10 @@ func FullListenerMapping(request models.FullListenerRequest) (*dto.FullListenerD
 	// 	return nil, err
 	// }
 
-	var startDate time.Time 
-	var endDate time.Time 
+	var startDate time.Time
+	var endDate time.Time
+
+	log.Println("ВРЕМЯЯЯЯЯЯЯЯЯЯЯЯЯЯ "+request.EnrollmentListener.StartDate, request.EnrollmentListener.EndDate)
 
 	startDate, err := time.Parse(time.RFC3339, request.EnrollmentListener.StartDate)
 	if err != nil {

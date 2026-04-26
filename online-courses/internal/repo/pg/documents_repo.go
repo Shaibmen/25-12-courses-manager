@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"log/slog"
 	"online-courses/internal/database"
 	"online-courses/internal/domain/entity"
@@ -25,6 +26,10 @@ func (d *DocumentsRepo) PrepareDataDocument(ctx context.Context, idListener, idP
 	query :=
 		`
 		
+	
+
+	
+	
 	select 
 	
 	l.first_name, l.second_name, l.middle_name, l.date_of_birth, l.snils, l.contact_phone, l.email,
@@ -32,8 +37,8 @@ func (d *DocumentsRepo) PrepareDataDocument(ctx context.Context, idListener, idP
 	r.mail_index, r.region, r.city, r.street, r.house, r.building, r.apartment,
 	educ.diplom_seria, educ.diplom_number, educ.city as educ_city, educ.region as educ_region, educ.educational_institution , educ.speciality, lvl.education,
 	pw.name_company, pw.job_title, pw.all_experience, pw.job_title_experience,
-	p.name_prof_education, p.time_education, d.divisions,  et.type_name,
-	e.start_date, e.end_date, e.current_price, e.is_active, e.group_number, e.type_of_retraining
+	p.name_prof_education, p.time_education, p.price, d.divisions,  et.type_name,
+	e.start_date, e.end_date, e.is_active, e.type_of_retraining
 	
 	from enrollmentlistener as e
 	inner join listener l on e.id_listener = l.id_listener
@@ -56,6 +61,8 @@ func (d *DocumentsRepo) PrepareDataDocument(ctx context.Context, idListener, idP
 	info := entity.PersonalCardInfo{}
 	err := d.repo.GetContext(ctx, &info, query, idListener, idProgram)
 	repoutils.HandleRepoErr(errors.New("формируется юрик или ошибка поиска слушателя"))
+
+	log.Println(info)
 
 	queryExecutor :=
 		`
