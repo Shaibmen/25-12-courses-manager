@@ -433,7 +433,7 @@ INSERT INTO educationtypes (id_educationtype, type_name)
 VALUES
 (gen_random_uuid(), 'Индивидуально с преподавателем'),
 (gen_random_uuid(), 'В группе'),
-(gen_random_uuid(), 'Детские курсы'),
+(gen_random_uuid(), 'Детские курсы');
 
 -- Program Education
 INSERT INTO programeducation (id_programeducation, name_prof_education, time_education, price, id_educationtype, id_divisionseducation)
@@ -441,8 +441,8 @@ VALUES
 (gen_random_uuid(), 'Разработка игровых продуктов на Unity', 256, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 0), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 0)),
 (gen_random_uuid(), 'Разработка кроссплатформенных мобильных приложений на Flutter', 256, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 1), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
 (gen_random_uuid(), 'Разработка корпоративных приложений на Java', 256, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 2), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
-(gen_random_uuid(), 'Python: первые шаги в программировании', 256, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 3), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
-(gen_random_uuid(), 'Математика для программистов Junior', 20, 20000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 4), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1));
+(gen_random_uuid(), 'Python: первые шаги в программировании', 256, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 1), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
+(gen_random_uuid(), 'Математика для программистов Junior', 20, 20000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 0), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1));
 
 -- Listener (частично без работы или образования)
 INSERT INTO listener (id_listener, first_name, second_name, middle_name, date_of_birth, snils, contact_phone, email, id_passport, id_regaddress, id_educationlistener, id_placework)
