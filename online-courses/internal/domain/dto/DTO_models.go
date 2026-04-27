@@ -470,3 +470,35 @@ type GroupDTO struct {
 	NameGroup  string                   `json:"name_group"`
 	Raspisanie []map[string]interface{} `json:"rapspisanie"`
 }
+
+type CountListenersOnProgramDTO struct {
+	NameProfEducation string `json:"name_prof_education"`
+	Listeners         int    `json:"listeners"`
+}
+
+type WorthProgramDTO struct {
+	NameProfEducation string `json:"name_prof_education"`
+	Totalrevenue      int    `json:"total_revenue"`
+}
+
+type AgeDiffDTO struct {
+	NameProfEducation string `json:"name_prof_education"`
+	AgeRange          string `json:"age_range"`
+	Listeners         int    `json:"listeners"`
+}
+
+type WhoEnrolledDTO struct {
+	Month  time.Time `json:"month"`
+	Source string    `json:"source"`
+	Cnt    int       `json:"cnt"`
+}
+
+type GroupMembersDTO struct {
+	NameGroup      string `json:"name_group"`
+	ActiveEnrolled int    `json:"active_enrolled"`
+}
+
+type DivisionMemberDTO struct {
+	Divisioneducation string `json:"divisioneducation"`
+	Listeners         int    `json:"listeners"`
+}

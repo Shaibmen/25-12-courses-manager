@@ -413,3 +413,40 @@ type FullDocument struct {
 	Executor     Executor
 	Contractor   ContractorDoc
 }
+
+type CountListenersOnProgramStruct struct {
+	NameProfEducation string `db:"name_prof_education"`
+	Listeners         int    `db:"listeners"`
+}
+
+type WorthProgramStruct struct {
+	NameProfEducation string `db:"name_prof_education"`
+	Totalrevenue      int    `db:"total_revenue"`
+}
+
+type WorthProgramAccurateStruct struct {
+	NameProfEducation string `db:"name_prof_education"`
+	Totalrevenue      int    `db:"total_expected_revenue"`
+}
+
+type AgeDiffStruct struct {
+	NameProfEducation string `db:"name_prof_education"`
+	AgeRange          string `db:"age_range"`
+	Listeners         int    `db:"listeners"`
+}
+
+type WhoEnrolledStruct struct {
+	Month  time.Time `db:"month"`
+	Source string    `db:"source"`
+	Cnt    int       `db:"cnt"`
+}
+
+type GroupMembersStruct struct {
+	NameGroup      string `db:"name_group"`
+	ActiveEnrolled int    `db:"active_enrolled"`
+}
+
+type DivisionMemberStruct struct {
+	Divisioneducation string `db:"divisionseducation"`
+	Listeners         int    `db:"listeners"`
+}

@@ -7,7 +7,6 @@ import AppConfirmDialog from '../../components/ui/AppConfirmDialog.vue'
 import AppInput from '../../components/ui/AppInput.vue'
 
 const router = useRouter()
-const notifications = useNotifications()
 const groups = ref<GroupItem[]>([])
 const page = ref(1)
 const filter = ref('')
@@ -52,6 +51,8 @@ const loadGroupsList = async () => {
   }
 }
 
+const notifications = useNotifications()
+
 const confirmDelete = async () => {
   if (!groupToDelete.value) {
     return
@@ -72,10 +73,6 @@ const confirmDelete = async () => {
   } finally {
     deleteLoading.value = false
   }
-}
-
-const exportStub = () => {
-  notifications.info('Кнопка экспорта уже добавлена. Логику подключим следующим этапом.', 'Группы')
 }
 
 watch(filter, () => {
@@ -110,7 +107,6 @@ onMounted(() => {
 
         <div class="toolbar__actions">
           <AppButton to="/groups/create">Создать группу</AppButton>
-          <AppButton variant="ghost" @click="exportStub">Экспорт</AppButton>
           <AppButton variant="secondary" to="/dashboard">Назад</AppButton>
         </div>
       </div>

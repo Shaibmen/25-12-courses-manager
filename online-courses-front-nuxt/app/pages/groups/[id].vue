@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { GroupItem } from '../../types/group'
+import { exportGroupSchedule, getGroupDetails } from '../../services/api/groups'
 import GroupDetailsView from '../../components/features/groups/GroupDetailsView.vue'
 import AppCard from '../../components/ui/AppCard.vue'
 
@@ -10,7 +11,14 @@ const id = computed(() => String(route.params.id || ''))
 
 const group = ref<GroupItem | null>(null)
 const loading = ref(true)
+const exportLoading = ref(false)
 const loadError = ref('')
+
+const getScheduleExportFileName = (groupName: string) =>
+  `Расписание - ${groupName.trim() || 'Группа'}`
+    .replace(/[\\/:*?"<>|]/g, '-')
+    .replace(/\s{2,}/g, ' ')
+    .concat('.xlsx')
 
 const load = async () => {
   loading.value = true
@@ -25,8 +33,31 @@ const load = async () => {
   }
 }
 
-const exportStub = () => {
-  notifications.info('Экспорт пока работает как заглушка. Следующим шагом подключим действие.', 'Группы')
+const exportSchedule = async () => {
+  if (!group.value || exportLoading.value) {
+    return
+  }
+
+  exportLoading.value = true
+
+  try {
+    const blob = await exportGroupSchedule(group.value.group)
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = getScheduleExportFileName(group.value.name_group)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.setTimeout(() => URL.revokeObjectURL(url), 0)
+  } catch (error) {
+    notifications.error(
+      error instanceof Error ? error.message : 'Не удалось скачать расписание группы',
+      'Группы'
+    )
+  } finally {
+    exportLoading.value = false
+  }
 }
 
 onMounted(() => {
@@ -47,9 +78,10 @@ onMounted(() => {
     <GroupDetailsView
       v-else-if="group"
       :group="group"
+      :export-loading="exportLoading"
       @back="router.push('/groups')"
       @edit="router.push(`/groups/edit/${id}`)"
-      @export="exportStub"
+      @export="exportSchedule"
     />
   </section>
 </template>

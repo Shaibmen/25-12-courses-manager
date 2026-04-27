@@ -49,6 +49,7 @@ func main() {
 	executerRepo := pg.NewExecutorRepo(db, Logger)
 	documentRepo := pg.NewDocumentsRepo(db, Logger)
 	groupRepo := pg.NewGroupDB(db, Logger)
+	graphicRepo := pg.NewGraphicsRepo(db, Logger)
 
 	// go func() {
 	// 	for {
@@ -83,6 +84,7 @@ func main() {
 	executerService := service.NewExecutorService(executerRepo)
 	documentService := service.NewDocumentService(documentRepo)
 	groupService := service.NewGroupService(groupRepo)
+	graphicService := service.NewGraphicsService(graphicRepo)
 
 	listenerHanlder := handlers.NewListenerHandler(listenerSevice)
 	divisionsHandler := handlers.NewDivisionsEducationHandler(divisionsService)
@@ -98,6 +100,7 @@ func main() {
 	executerHandler := handlers.NewExecutorHandler(executerService)
 	documentHandler := handlers.NewDocumentHandler(documentService, cfg)
 	groupHandler := handlers.NewGroupHandler(groupService)
+	graphicHandler := handlers.NewGraphicsHandler(graphicService)
 
 	r := gin.Default()
 
@@ -117,6 +120,7 @@ func main() {
 		executerHandler,
 		documentHandler,
 		groupHandler,
+		graphicHandler,
 		cfg,
 		Logger)
 

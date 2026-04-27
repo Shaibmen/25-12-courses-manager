@@ -32,6 +32,9 @@ const roleLabel = computed(() => auth.roleLabel.value || 'Не авторизо�
           <AppButton to="/dashboard" variant="ghost">
             Панель
           </AppButton>
+          <AppButton v-if="isAuthenticated" to="/graphics" variant="ghost">
+            Аналитика
+          </AppButton>
           <AppButton v-if="isAuthenticated" variant="secondary" @click="auth.logout">
             Выйти
           </AppButton>

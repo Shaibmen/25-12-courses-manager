@@ -26,6 +26,7 @@ func SetupRoutes(server *gin.Engine,
 	executerHandler *handlers.ExecutorHandler,
 	documentHandler *handlers.DocumentHandler,
 	groupHandler *handlers.GroupHandler,
+	graphicHandler *handlers.GraphicsHandler,
 	cfg *config.Config,
 	Logger *slog.Logger) {
 
@@ -155,6 +156,18 @@ func SetupRoutes(server *gin.Engine,
 			group.DELETE("/:id", middleware.RoleProtecteMiddleware("worker"), groupHandler.DeleteGroup)
 			group.GET("/", middleware.RoleProtecteMiddleware("worker"), groupHandler.ReadGroup)
 			group.GET("/details/:id", middleware.RoleProtecteMiddleware("worker"), groupHandler.ReadByIDGroup)
+			group.GET("/export/:id", middleware.RoleProtecteMiddleware("worker"), groupHandler.ExportExcel)
+		}
+		graphic := api.Group("/graphic")
+		{
+			graphic.GET("/count", middleware.RoleProtecteMiddleware("worker"), graphicHandler.CountListenersOnProgram)
+			graphic.GET("/count/accurate", middleware.RoleProtecteMiddleware("worker"), graphicHandler.CountListenersOnProgramAccurate)
+			graphic.GET("/worth", middleware.RoleProtecteMiddleware("worker"), graphicHandler.WorthProgram)
+			graphic.GET("/worth/accurate", middleware.RoleProtecteMiddleware("worker"), graphicHandler.WorthProgramAccurate)
+			graphic.GET("/agediff", middleware.RoleProtecteMiddleware("worker"), graphicHandler.AgeDiff)
+			graphic.GET("/whoenrolled", middleware.RoleProtecteMiddleware("worker"), graphicHandler.WhoEnrolled)
+			graphic.GET("/group", middleware.RoleProtecteMiddleware("worker"), graphicHandler.GroupMembers)
+			graphic.GET("/division", middleware.RoleProtecteMiddleware("worker"), graphicHandler.DivisionMember)
 		}
 	}
 }

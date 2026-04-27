@@ -6,6 +6,7 @@ import AppCard from '../../ui/AppCard.vue'
 
 const props = defineProps<{
   group: GroupItem
+  exportLoading?: boolean
 }>()
 
 defineEmits<{
@@ -33,7 +34,9 @@ const schedule = computed(() =>
 
         <div class="group-hero__actions">
           <AppButton variant="ghost" @click="$emit('back')">Назад</AppButton>
-          <AppButton variant="secondary" @click="$emit('export')">Экспорт</AppButton>
+          <AppButton variant="secondary" :disabled="props.exportLoading" @click="$emit('export')">
+            {{ props.exportLoading ? 'Скачиваем...' : 'Экспорт' }}
+          </AppButton>
           <AppButton @click="$emit('edit')">Редактировать</AppButton>
         </div>
       </div>
@@ -100,10 +103,18 @@ const schedule = computed(() =>
 .schedule-card {
   display: grid;
   gap: 0.4rem;
+  min-width: 0;
   padding: 1rem;
   border-radius: 1.15rem;
   background: rgba(239, 246, 255, 0.82);
   border: 1px solid rgba(59, 130, 246, 0.12);
+}
+
+.schedule-card strong,
+.schedule-card span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .schedule-card__index,

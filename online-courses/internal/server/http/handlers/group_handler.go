@@ -137,3 +137,23 @@ func (g *GroupHandler) ReadByIDGroup(c *gin.Context) {
 
 	c.JSON(http.StatusOK, models.HttpResponseWithData{Data: data})
 }
+
+func (g *GroupHandler) ExportExcel(c *gin.Context) {
+
+	id, err := utils.ParseUUID(c, "id")
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 20*time.Second)
+	defer cancel()
+
+	file, err := g.handler.ExportExcel(ctx, id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", file)
+}
