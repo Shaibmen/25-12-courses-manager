@@ -33,6 +33,9 @@ const buildUrl = (
 export const useApiClient = () => {
   const config = useRuntimeConfig()
   const auth = useAuthState()
+  const coreBaseUrl = import.meta.server ? config.apiUrlCoreInternal : config.public.apiUrlCore
+  const authBaseUrl = import.meta.server ? config.apiUrlAuthInternal : config.public.apiUrlAuth
+  const docBaseUrl = import.meta.server ? config.apiUrlDocInternal : config.public.apiUrlDoc
 
   const request = async <T>(baseUrl: string, path: string, options: ApiRequestOptions = {}) => {
     const headers = new Headers(options.headers)
@@ -54,10 +57,10 @@ export const useApiClient = () => {
 
   return {
     core: <T>(path: string, options?: ApiRequestOptions) =>
-      request<T>(config.public.apiUrlCore, path, options),
+      request<T>(coreBaseUrl, path, options),
     auth: <T>(path: string, options?: ApiRequestOptions) =>
-      request<T>(config.public.apiUrlAuth, path, options),
+      request<T>(authBaseUrl, path, options),
     doc: <T>(path: string, options?: ApiRequestOptions) =>
-      request<T>(config.public.apiUrlDoc, path, options)
+      request<T>(docBaseUrl, path, options)
   }
 }

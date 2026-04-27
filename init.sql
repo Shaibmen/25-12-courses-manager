@@ -431,11 +431,9 @@ VALUES
 -- Education Types
 INSERT INTO educationtypes (id_educationtype, type_name)
 VALUES
-(gen_random_uuid(), 'Очная'),
-(gen_random_uuid(), 'Заочная'),
-(gen_random_uuid(), 'Дистанционная'),
-(gen_random_uuid(), 'Вечерняя'),
-(gen_random_uuid(), 'Смешанная');
+(gen_random_uuid(), 'Индивидуально с преподавателем'),
+(gen_random_uuid(), 'В группе'),
+(gen_random_uuid(), 'Детские курсы'),
 
 -- Program Education
 INSERT INTO programeducation (id_programeducation, name_prof_education, time_education, price, id_educationtype, id_divisionseducation)
@@ -480,78 +478,78 @@ VALUES
  (SELECT id_placework FROM placework LIMIT 1 OFFSET 4));
 
 
-SELECT
-    p.name_prof_education,
-    COUNT(e.id_listener) AS listeners
-FROM enrollmentlistener e
-JOIN programeducation p ON e.id_programeducation = p.id_programeducation
-GROUP BY p.name_prof_education
-ORDER BY listeners DESC;
+-- SELECT
+--     p.name_prof_education,
+--     COUNT(e.id_listener) AS listeners
+-- FROM enrollmentlistener e
+-- JOIN programeducation p ON e.id_programeducation = p.id_programeducation
+-- GROUP BY p.name_prof_education
+-- ORDER BY listeners DESC;
 
 
-SELECT
-    p.name_prof_education,
-    SUM(p.price) AS total_revenue
-FROM enrollmentlistener e
-JOIN programeducation p ON e.id_programeducation = p.id_programeducation
-GROUP BY p.name_prof_education
-ORDER BY total_revenue DESC;
+-- SELECT
+--     p.name_prof_education,
+--     SUM(p.price) AS total_revenue
+-- FROM enrollmentlistener e
+-- JOIN programeducation p ON e.id_programeducation = p.id_programeducation
+-- GROUP BY p.name_prof_education
+-- ORDER BY total_revenue DESC;
 
 
-SELECT
-    name_prof_education,
-    COUNT(*) AS listeners
-FROM accurateprogram
-GROUP BY name_prof_education
-ORDER BY listeners DESC;
+-- SELECT
+--     name_prof_education,
+--     COUNT(*) AS listeners
+-- FROM accurateprogram
+-- GROUP BY name_prof_education
+-- ORDER BY listeners DESC;
 
 
-SELECT
-    name_prof_education,
-    SUM(price) AS total_expected_revenue
-FROM accurateprogram
-GROUP BY name_prof_education
-ORDER BY total_expected_revenue DESC;
-
-
-
-SELECT
-    ap.name_prof_education,
-    CONCAT(FLOOR(EXTRACT(YEAR FROM AGE(CURRENT_DATE, l.date_of_birth))/10)*10, '-',
-           FLOOR(EXTRACT(YEAR FROM AGE(CURRENT_DATE, l.date_of_birth))/10)*10+9) AS age_range,
-    COUNT(*) AS listeners
-FROM listener l
-JOIN accurateprogram ap ON l.id_listener = ap.id_listener
-GROUP BY ap.name_prof_education, age_range
-ORDER BY ap.name_prof_education, MIN(EXTRACT(YEAR FROM AGE(CURRENT_DATE, l.date_of_birth)));
-
-
-SELECT
-    DATE_TRUNC('month', e.start_date) AS month,
-    CASE
-        WHEN l.id_legalentity IS NOT NULL THEN 'Юрлицо'
-        WHEN l.id_contractor IS NOT NULL THEN 'Физ. лицо(3 стороны)'
-        ELSE 'Физ. лицо'
-    END AS source,
-    COUNT(*) AS cnt
-FROM listener l
-JOIN enrollmentlistener e ON l.id_listener = e.id_listener
-GROUP BY month, source
-ORDER BY month, source;
-
-
-SELECT
-    g.name_group,
-    COUNT(e.id_listener) FILTER (WHERE e.is_active) AS active_enrolled
-FROM groups g
-LEFT JOIN enrollmentlistener e ON g.id_groups = e.id_group
-GROUP BY g.name_group
-ORDER BY active_enrolled DESC;
+-- SELECT
+--     name_prof_education,
+--     SUM(price) AS total_expected_revenue
+-- FROM accurateprogram
+-- GROUP BY name_prof_education
+-- ORDER BY total_expected_revenue DESC;
 
 
 
-SELECT
-    divisionseducation,
-    COUNT(*) AS listeners
-FROM accurateprogram
-GROUP BY divisionseducation;
+-- SELECT
+--     ap.name_prof_education,
+--     CONCAT(FLOOR(EXTRACT(YEAR FROM AGE(CURRENT_DATE, l.date_of_birth))/10)*10, '-',
+--            FLOOR(EXTRACT(YEAR FROM AGE(CURRENT_DATE, l.date_of_birth))/10)*10+9) AS age_range,
+--     COUNT(*) AS listeners
+-- FROM listener l
+-- JOIN accurateprogram ap ON l.id_listener = ap.id_listener
+-- GROUP BY ap.name_prof_education, age_range
+-- ORDER BY ap.name_prof_education, MIN(EXTRACT(YEAR FROM AGE(CURRENT_DATE, l.date_of_birth)));
+
+
+-- SELECT
+--     DATE_TRUNC('month', e.start_date) AS month,
+--     CASE
+--         WHEN l.id_legalentity IS NOT NULL THEN 'Юрлицо'
+--         WHEN l.id_contractor IS NOT NULL THEN 'Физ. лицо(3 стороны)'
+--         ELSE 'Физ. лицо'
+--     END AS source,
+--     COUNT(*) AS cnt
+-- FROM listener l
+-- JOIN enrollmentlistener e ON l.id_listener = e.id_listener
+-- GROUP BY month, source
+-- ORDER BY month, source;
+
+
+-- SELECT
+--     g.name_group,
+--     COUNT(e.id_listener) FILTER (WHERE e.is_active) AS active_enrolled
+-- FROM groups g
+-- LEFT JOIN enrollmentlistener e ON g.id_groups = e.id_group
+-- GROUP BY g.name_group
+-- ORDER BY active_enrolled DESC;
+
+
+
+-- SELECT
+--     divisionseducation,
+--     COUNT(*) AS listeners
+-- FROM accurateprogram
+-- GROUP BY divisionseducation;

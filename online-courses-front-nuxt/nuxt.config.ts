@@ -18,6 +18,9 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
+    apiUrlCoreInternal: env.NUXT_API_URL_CORE_INTERNAL || env.NUXT_PUBLIC_API_URL_CORE || 'http://localhost:8080/api/v1',
+    apiUrlAuthInternal: env.NUXT_API_URL_AUTH_INTERNAL || env.NUXT_PUBLIC_API_URL_AUTH || 'http://localhost:8081/auth/v1',
+    apiUrlDocInternal: env.NUXT_API_URL_DOC_INTERNAL || env.NUXT_PUBLIC_API_URL_DOC || 'http://localhost:8082/v1/doc',
     public: {
       apiUrlCore: env.NUXT_PUBLIC_API_URL_CORE || 'http://localhost:8080/api/v1',
       apiUrlAuth: env.NUXT_PUBLIC_API_URL_AUTH || 'http://localhost:8081/auth/v1',
