@@ -7,9 +7,16 @@ export type ProgramListenersMetric = {
   listeners: number
 }
 
+export type ProgramPopularMetric = {
+  name_prof_education: string
+  educationtype: string
+  listeners: number
+}
+
 export type ProgramRevenueMetric = {
   name_prof_education: string
-  total_revenue: number
+  educationtype: string
+  total_expected_revenue: number
 }
 
 export type ProgramAgeMetric = {
@@ -37,7 +44,7 @@ export type DivisionListenersMetric = {
 export type GraphicsDashboardResponse = {
   count: ProgramListenersMetric[]
   countAccurate: ProgramListenersMetric[]
-  worth: ProgramRevenueMetric[]
+  popular: ProgramPopularMetric[]
   worthAccurate: ProgramRevenueMetric[]
   ageDiff: ProgramAgeMetric[]
   whoEnrolled: EnrollmentSourceMetric[]

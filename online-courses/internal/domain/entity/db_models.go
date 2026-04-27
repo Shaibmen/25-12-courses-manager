@@ -419,14 +419,16 @@ type CountListenersOnProgramStruct struct {
 	Listeners         int    `db:"listeners"`
 }
 
-type WorthProgramStruct struct {
+type PopularProgramTypeStruct struct {
 	NameProfEducation string `db:"name_prof_education"`
-	Totalrevenue      int    `db:"total_revenue"`
+	EducationType     string `db:"educationtype"`
+	Listeners         int    `db:"listeners"`
 }
 
 type WorthProgramAccurateStruct struct {
-	NameProfEducation string `db:"name_prof_education"`
-	Totalrevenue      int    `db:"total_expected_revenue"`
+	NameProfEducation string  `db:"name_prof_education"`
+	EducationType     string  `db:"educationtype"`
+	Totalrevenue      float64 `db:"total_expected_revenue"`
 }
 
 type AgeDiffStruct struct {

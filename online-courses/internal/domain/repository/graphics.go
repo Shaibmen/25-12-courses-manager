@@ -7,7 +7,7 @@ import (
 
 type GraphicsRepository interface {
 	CountListenersOnProgram(ctx context.Context) ([]entity.CountListenersOnProgramStruct, error)
-	WorthProgram(ctx context.Context) ([]entity.WorthProgramStruct, error)
+	PopularProgramType(ctx context.Context) ([]entity.PopularProgramTypeStruct, error)
 	CountListenersOnProgramAccurate(ctx context.Context) ([]entity.CountListenersOnProgramStruct, error)
 	WorthProgramAccurate(ctx context.Context) ([]entity.WorthProgramAccurateStruct, error)
 	AgeDiff(ctx context.Context) ([]entity.AgeDiffStruct, error)

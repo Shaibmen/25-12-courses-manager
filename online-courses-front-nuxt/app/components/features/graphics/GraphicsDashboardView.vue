@@ -1,123 +1,117 @@
 <script setup lang="ts">
 import type {
+  DivisionListenersMetric,
   EnrollmentSourceMetric,
   GraphicsDashboardResponse,
+  GroupEnrollmentMetric,
   ProgramAgeMetric,
   ProgramListenersMetric,
+  ProgramPopularMetric,
   ProgramRevenueMetric
 } from '../../../types/graphics'
 import AppCard from '../../ui/AppCard.vue'
 import AppStatCard from '../../ui/AppStatCard.vue'
-import AnalyticsAgeMatrix from './AnalyticsAgeMatrix.vue'
-import AnalyticsHorizontalBars from './AnalyticsHorizontalBars.vue'
-import AnalyticsSourceTimeline from './AnalyticsSourceTimeline.vue'
+import AnalyticsChart from './AnalyticsChart.vue'
+
+type AnalyticsView = 'overview' | 'programs' | 'audience' | 'operations'
 
 const props = defineProps<{
   data: GraphicsDashboardResponse
 }>()
 
+const activeView = ref<AnalyticsView>('overview')
+
+const viewButtons: Array<{
+  id: AnalyticsView
+  label: string
+  description: string
+}> = [
+  { id: 'overview', label: 'Сводка', description: 'Главные выводы и быстрый обзор' },
+  { id: 'programs', label: 'Программы', description: 'Спрос, популярность и выручка' },
+  { id: 'audience', label: 'Аудитория', description: 'Возрасты и каналы зачисления' },
+  { id: 'operations', label: 'Нагрузка', description: 'Группы и подразделения' }
+]
+
+const numberFormatter = new Intl.NumberFormat('ru-RU')
 const compactNumber = new Intl.NumberFormat('ru-RU', {
   notation: 'compact',
   maximumFractionDigits: 1
 })
-
 const moneyFormatter = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
   currency: 'RUB',
   maximumFractionDigits: 0
 })
 
-const formatCompact = (value: number) => compactNumber.format(value)
+const formatNumber = (value: number) => numberFormatter.format(value)
 const formatMoney = (value: number) => moneyFormatter.format(value)
+const formatCompact = (value: number) => compactNumber.format(value)
 
-const sumBy = <T>(items: T[], getValue: (item: T) => number) =>
-  items.reduce((total, item) => total + getValue(item), 0)
+const sumBy = <T>(items: T[], getter: (item: T) => number) =>
+  items.reduce((total, item) => total + getter(item), 0)
 
-const buildDeltaMap = (
-  baseline: ProgramListenersMetric[] | ProgramRevenueMetric[],
-  accurate: ProgramListenersMetric[] | ProgramRevenueMetric[],
-  getLabel: (item: ProgramListenersMetric | ProgramRevenueMetric) => string,
-  getValue: (item: ProgramListenersMetric | ProgramRevenueMetric) => number
-) => {
-  const baselineMap = new Map(baseline.map(item => [getLabel(item), getValue(item)]))
-
-  return new Map(
-    accurate.map(item => {
-      const label = getLabel(item)
-      const delta = getValue(item) - (baselineMap.get(label) || 0)
-      return [label, delta]
-    })
-  )
-}
-
-const countDeltaMap = computed(() =>
-  buildDeltaMap(
-    props.data.count,
-    props.data.countAccurate,
-    item => item.name_prof_education,
-    item => item.listeners
-  )
-)
-
-const worthDeltaMap = computed(() =>
-  buildDeltaMap(
-    props.data.worth,
-    props.data.worthAccurate,
-    item => item.name_prof_education,
-    item => item.total_revenue
-  )
-)
+const sortDesc = <T>(items: T[], getter: (item: T) => number) =>
+  [...items].sort((left, right) => getter(right) - getter(left))
 
 const totalListeners = computed(() => sumBy(props.data.count, item => item.listeners))
 const totalAccurateListeners = computed(() => sumBy(props.data.countAccurate, item => item.listeners))
-const totalRevenue = computed(() => sumBy(props.data.worth, item => item.total_revenue))
-const totalAccurateRevenue = computed(() => sumBy(props.data.worthAccurate, item => item.total_revenue))
-const totalActiveGroups = computed(() => sumBy(props.data.groupLoad, item => item.active_enrolled))
-const totalDivisionsLoad = computed(() => sumBy(props.data.divisionLoad, item => item.listeners))
+const totalExpectedRevenue = computed(() =>
+  sumBy(props.data.worthAccurate, item => item.total_expected_revenue)
+)
+const totalGroupLoad = computed(() => sumBy(props.data.groupLoad, item => item.active_enrolled))
+const totalDivisionLoad = computed(() => sumBy(props.data.divisionLoad, item => item.listeners))
 
-const bestProgramByListeners = computed(() =>
-  [...props.data.countAccurate].sort((a, b) => b.listeners - a.listeners)[0] || null
+const listenersSorted = computed(() =>
+  sortDesc(props.data.countAccurate, item => item.listeners)
 )
 
-const bestProgramByRevenue = computed(() =>
-  [...props.data.worthAccurate].sort((a, b) => b.total_revenue - a.total_revenue)[0] || null
+const popularSorted = computed(() =>
+  sortDesc(props.data.popular, item => item.listeners)
 )
 
-const topPrograms = computed(() =>
-  props.data.countAccurate.map(item => ({
-    label: item.name_prof_education,
-    value: item.listeners,
-    hint: `+${countDeltaMap.value.get(item.name_prof_education) || 0} к базовому расчету`
-  }))
+const revenueSorted = computed(() =>
+  sortDesc(props.data.worthAccurate, item => item.total_expected_revenue)
 )
 
-const topRevenue = computed(() =>
-  props.data.worthAccurate.map(item => ({
-    label: item.name_prof_education,
-    value: item.total_revenue,
-    hint: `Разница ${formatMoney(worthDeltaMap.value.get(item.name_prof_education) || 0)}`
-  }))
+const groupsSorted = computed(() =>
+  sortDesc(props.data.groupLoad, item => item.active_enrolled)
 )
 
-const groupOccupancy = computed(() =>
-  props.data.groupLoad.map(item => ({
-    label: item.name_group,
-    value: item.active_enrolled,
-    hint: item.active_enrolled ? 'Есть активные слушатели' : 'Пока без активных слушателей'
-  }))
+const divisionsSorted = computed(() =>
+  sortDesc(props.data.divisionLoad, item => item.listeners)
 )
 
-const divisionOccupancy = computed(() =>
-  props.data.divisionLoad.map(item => ({
-    label: item.divisioneducation,
-    value: item.listeners,
-    hint: 'Суммарная активность по подразделению'
-  }))
-)
+const bestProgramByListeners = computed(() => listenersSorted.value[0] || null)
+const bestPopularProgram = computed(() => popularSorted.value[0] || null)
+const bestRevenueProgram = computed(() => revenueSorted.value[0] || null)
+const weakestRevenueProgram = computed(() => revenueSorted.value.at(-1) || null)
+const busiestGroup = computed(() => groupsSorted.value[0] || null)
+
+const countDeltaMap = computed(() => {
+  const baseline = new Map(props.data.count.map(item => [item.name_prof_education, item.listeners]))
+
+  return new Map(
+    props.data.countAccurate.map(item => [
+      item.name_prof_education,
+      item.listeners - (baseline.get(item.name_prof_education) || 0)
+    ])
+  )
+})
+
+const educationTypeBreakdown = computed(() => {
+  const totals = new Map<string, number>()
+
+  props.data.popular.forEach(item => {
+    totals.set(item.educationtype, (totals.get(item.educationtype) || 0) + item.listeners)
+  })
+
+  return Array.from(totals.entries())
+    .map(([name, value]) => ({ name, value }))
+    .sort((left, right) => right.value - left.value)
+})
 
 const ageRanges = computed(() => {
   const unique = Array.from(new Set(props.data.ageDiff.map(item => item.age_range)))
-
   return unique.sort((left, right) => {
     const leftStart = Number(left.split('-')[0]) || 0
     const rightStart = Number(right.split('-')[0]) || 0
@@ -125,81 +119,470 @@ const ageRanges = computed(() => {
   })
 })
 
-const ageDiffMatrix = computed(() => {
-  const byProgram = new Map<string, ProgramAgeMetric[]>()
+const programNamesForAge = computed(() =>
+  Array.from(new Set(props.data.ageDiff.map(item => item.name_prof_education)))
+)
 
-  props.data.ageDiff.forEach(item => {
-    const bucket = byProgram.get(item.name_prof_education) || []
-    bucket.push(item)
-    byProgram.set(item.name_prof_education, bucket)
-  })
+const ageHeatmapOption = computed(() => {
+  const maxValue = Math.max(...props.data.ageDiff.map(item => item.listeners), 0)
 
-  return Array.from(byProgram.entries()).map(([label, items]) => ({
-    label,
-    values: ageRanges.value.map(ageRange => ({
-      ageRange,
-      listeners: items.find(item => item.age_range === ageRange)?.listeners || 0
-    }))
-  }))
-})
-
-const sourcePalette = [
-  'linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%)',
-  'linear-gradient(135deg, #0f766e 0%, #14b8a6 100%)',
-  'linear-gradient(135deg, #9a3412 0%, #f97316 100%)',
-  'linear-gradient(135deg, #7c2d12 0%, #fb7185 100%)',
-  'linear-gradient(135deg, #4338ca 0%, #818cf8 100%)'
-]
-
-const sourceTimeline = computed(() => {
-  const sources = Array.from(new Set(props.data.whoEnrolled.map(item => item.source)))
-  const sourceColors = new Map(sources.map((source, index) => [source, sourcePalette[index % sourcePalette.length]]))
-  const byMonth = new Map<string, EnrollmentSourceMetric[]>()
-
-  props.data.whoEnrolled.forEach(item => {
-    const bucket = byMonth.get(item.month) || []
-    bucket.push(item)
-    byMonth.set(item.month, bucket)
-  })
-
-  return Array.from(byMonth.entries())
-    .sort(([left], [right]) => new Date(left).getTime() - new Date(right).getTime())
-    .map(([month, items]) => {
-      const total = sumBy(items, item => item.cnt)
-
-      return {
-        monthLabel: new Date(month).toLocaleDateString('ru-RU', {
-          month: 'long',
-          year: 'numeric'
-        }),
-        total,
-        segments: items.map(item => ({
-          label: item.source,
-          value: item.cnt,
-          color: sourceColors.get(item.source) || sourcePalette[0]
-        }))
+  return {
+    tooltip: {
+      trigger: 'item',
+      formatter: (params: { data: [number, number, number] }) => {
+        const [x, y, value] = params.data
+        return `${programNamesForAge.value[y]}<br/>${ageRanges.value[x]}: ${formatNumber(value)}`
       }
-    })
+    },
+    grid: {
+      top: 30,
+      left: 190,
+      right: 30,
+      bottom: 60
+    },
+    xAxis: {
+      type: 'category',
+      data: ageRanges.value,
+      axisLabel: {
+        color: '#475569'
+      }
+    },
+    yAxis: {
+      type: 'category',
+      data: programNamesForAge.value,
+      axisLabel: {
+        color: '#475569',
+        width: 170,
+        overflow: 'truncate'
+      }
+    },
+    visualMap: {
+      min: 0,
+      max: maxValue || 1,
+      calculable: true,
+      orient: 'horizontal',
+      left: 'center',
+      bottom: 0,
+      inRange: {
+        color: ['#e0f2fe', '#7dd3fc', '#0f766e']
+      }
+    },
+    series: [
+      {
+        type: 'heatmap',
+        data: props.data.ageDiff.map(item => [
+          ageRanges.value.indexOf(item.age_range),
+          programNamesForAge.value.indexOf(item.name_prof_education),
+          item.listeners
+        ]),
+        label: {
+          show: true,
+          color: '#0f172a'
+        },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: 'rgba(15, 23, 42, 0.22)'
+          }
+        }
+      }
+    ]
+  }
 })
+
+const listenersComparisonOption = computed(() => {
+  const ordered = sortDesc(props.data.countAccurate, item => item.listeners)
+  const labels = ordered.map(item => item.name_prof_education)
+  const baseMap = new Map(props.data.count.map(item => [item.name_prof_education, item.listeners]))
+
+  return {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    legend: {
+      bottom: 0
+    },
+    grid: {
+      top: 20,
+      left: 220,
+      right: 40,
+      bottom: 50
+    },
+    xAxis: {
+      type: 'value',
+      axisLabel: {
+        color: '#64748b'
+      }
+    },
+    yAxis: {
+      type: 'category',
+      data: labels,
+      axisLabel: {
+        color: '#334155',
+        width: 190,
+        overflow: 'truncate'
+      }
+    },
+    series: [
+      {
+        name: 'Базовый расчет',
+        type: 'bar',
+        data: labels.map(label => baseMap.get(label) || 0),
+        itemStyle: {
+          color: '#94a3b8',
+          borderRadius: [0, 10, 10, 0]
+        }
+      },
+      {
+        name: 'Точный расчет',
+        type: 'bar',
+        data: labels.map(label => ordered.find(item => item.name_prof_education === label)?.listeners || 0),
+        itemStyle: {
+          color: '#0f766e',
+          borderRadius: [0, 10, 10, 0]
+        }
+      }
+    ]
+  }
+})
+
+const popularProgramsOption = computed(() => ({
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'shadow'
+    },
+    formatter: (params: Array<{ axisValue: string, seriesName: string, value: number }>) => {
+      const lines = params.map(item => `${item.seriesName}: ${formatNumber(item.value)}`)
+      return `${params[0]?.axisValue || ''}<br/>${lines.join('<br/>')}`
+    }
+  },
+  grid: {
+    top: 30,
+    left: 220,
+    right: 40,
+    bottom: 20
+  },
+  xAxis: {
+    type: 'value',
+    axisLabel: {
+      color: '#64748b'
+    }
+  },
+  yAxis: {
+    type: 'category',
+    data: popularSorted.value.map(item => item.name_prof_education),
+    axisLabel: {
+      color: '#334155',
+      width: 190,
+      overflow: 'truncate'
+    }
+  },
+  series: [
+    {
+      name: 'Слушатели',
+      type: 'bar',
+      data: popularSorted.value.map(item => ({
+        value: item.listeners,
+        itemStyle: {
+          color: '#1d4ed8',
+          borderRadius: [0, 10, 10, 0]
+        }
+      })),
+      label: {
+        show: true,
+        position: 'right',
+        formatter: (params: { dataIndex: number, value: number }) =>
+          `${popularSorted.value[params.dataIndex]?.educationtype || ''} · ${formatNumber(params.value)}`
+      }
+    }
+  ]
+}))
+
+const revenueProgramsOption = computed(() => ({
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'shadow'
+    },
+    formatter: (params: Array<{ dataIndex: number, value: number }>) => {
+      const item = revenueSorted.value[params[0]?.dataIndex || 0]
+      if (!item) {
+        return ''
+      }
+
+      return `${item.name_prof_education}<br/>${item.educationtype}<br/>${formatMoney(item.total_expected_revenue)}`
+    }
+  },
+  grid: {
+    top: 20,
+    left: 220,
+    right: 40,
+    bottom: 20
+  },
+  xAxis: {
+    type: 'value',
+    axisLabel: {
+      color: '#64748b',
+      formatter: (value: number) => formatCompact(value)
+    }
+  },
+  yAxis: {
+    type: 'category',
+    data: revenueSorted.value.map(item => item.name_prof_education),
+    axisLabel: {
+      color: '#334155',
+      width: 190,
+      overflow: 'truncate'
+    }
+  },
+  series: [
+    {
+      type: 'bar',
+      data: revenueSorted.value.map(item => ({
+        value: item.total_expected_revenue,
+        itemStyle: {
+          color: '#0f766e',
+          borderRadius: [0, 10, 10, 0]
+        }
+      })),
+      label: {
+        show: true,
+        position: 'right',
+        formatter: (params: { value: number }) => formatCompact(params.value)
+      }
+    }
+  ]
+}))
+
+const educationTypeOption = computed(() => ({
+  tooltip: {
+    trigger: 'item',
+    formatter: (params: { name: string, value: number, percent: number }) =>
+      `${params.name}<br/>${formatNumber(params.value)} слушателей<br/>${params.percent}%`
+  },
+  legend: {
+    orient: 'vertical',
+    right: 0,
+    top: 'center'
+  },
+  series: [
+    {
+      type: 'pie',
+      radius: ['45%', '72%'],
+      center: ['38%', '50%'],
+      itemStyle: {
+        borderColor: '#ffffff',
+        borderWidth: 2
+      },
+      label: {
+        formatter: '{b}\n{d}%'
+      },
+      data: educationTypeBreakdown.value.map((item, index) => ({
+        ...item,
+        itemStyle: {
+          color: ['#1d4ed8', '#0f766e', '#f97316', '#7c3aed', '#e11d48'][index % 5]
+        }
+      }))
+    }
+  ]
+}))
+
+const enrollmentSourcesOption = computed(() => {
+  const months = Array.from(new Set(props.data.whoEnrolled.map(item => item.month)))
+    .sort((left, right) => new Date(left).getTime() - new Date(right).getTime())
+  const monthLabels = months.map(month =>
+    new Date(month).toLocaleDateString('ru-RU', { month: 'short', year: 'numeric' })
+  )
+  const sources = Array.from(new Set(props.data.whoEnrolled.map(item => item.source)))
+  const colors = ['#0f172a', '#0f766e', '#f97316', '#7c3aed', '#e11d48']
+
+  return {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    legend: {
+      bottom: 0
+    },
+    grid: {
+      top: 30,
+      left: 50,
+      right: 30,
+      bottom: 60
+    },
+    xAxis: {
+      type: 'category',
+      data: monthLabels,
+      axisLabel: {
+        color: '#475569'
+      }
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: {
+        color: '#64748b'
+      }
+    },
+    series: sources.map((source, index) => ({
+      name: source,
+      type: 'bar',
+      stack: 'total',
+      emphasis: {
+        focus: 'series'
+      },
+      itemStyle: {
+        color: colors[index % colors.length],
+        borderRadius: [6, 6, 0, 0]
+      },
+      data: months.map(month =>
+        props.data.whoEnrolled.find(item => item.month === month && item.source === source)?.cnt || 0
+      )
+    }))
+  }
+})
+
+const groupLoadOption = computed(() => buildSingleSeriesOption(
+  groupsSorted.value,
+  item => item.name_group,
+  item => item.active_enrolled,
+  '#f97316'
+))
+
+const divisionLoadOption = computed(() => ({
+  tooltip: {
+    trigger: 'item',
+    formatter: (params: { name: string, value: number, percent: number }) =>
+      `${params.name}<br/>${formatNumber(params.value)} слушателей<br/>${params.percent}%`
+  },
+  legend: {
+    bottom: 0
+  },
+  series: [
+    {
+      type: 'pie',
+      radius: ['40%', '74%'],
+      data: divisionsSorted.value.map((item, index) => ({
+        name: item.divisioneducation,
+        value: item.listeners,
+        itemStyle: {
+          color: ['#1d4ed8', '#0f766e', '#f97316', '#7c3aed', '#e11d48'][index % 5]
+        }
+      })),
+      label: {
+        formatter: '{b}\n{d}%'
+      }
+    }
+  ]
+}))
+
+function buildSingleSeriesOption<T>(
+  items: T[],
+  labelGetter: (item: T) => string,
+  valueGetter: (item: T) => number,
+  color: string
+) {
+  return {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    grid: {
+      top: 20,
+      left: 180,
+      right: 30,
+      bottom: 20
+    },
+    xAxis: {
+      type: 'value',
+      axisLabel: {
+        color: '#64748b'
+      }
+    },
+    yAxis: {
+      type: 'category',
+      data: items.map(labelGetter),
+      axisLabel: {
+        color: '#334155',
+        width: 150,
+        overflow: 'truncate'
+      }
+    },
+    series: [
+      {
+        type: 'bar',
+        data: items.map(item => ({
+          value: valueGetter(item),
+          itemStyle: {
+            color,
+            borderRadius: [0, 10, 10, 0]
+          }
+        })),
+        label: {
+          show: true,
+          position: 'right',
+          formatter: (params: { value: number }) => formatNumber(params.value)
+        }
+      }
+    ]
+  }
+}
+
+const insightCards = computed(() => [
+  {
+    title: 'Лидер по спросу',
+    value: bestProgramByListeners.value?.name_prof_education || 'Нет данных',
+    note: bestProgramByListeners.value
+      ? `${formatNumber(bestProgramByListeners.value.listeners)} слушателей`
+      : 'Пока нет данных'
+  },
+  {
+    title: 'Лидер по популярности',
+    value: bestPopularProgram.value?.educationtype || 'Нет данных',
+    note: bestPopularProgram.value
+      ? `${bestPopularProgram.value.name_prof_education} · ${formatNumber(bestPopularProgram.value.listeners)}`
+      : 'Пока нет данных'
+  },
+  {
+    title: 'Максимальная выручка',
+    value: bestRevenueProgram.value?.name_prof_education || 'Нет данных',
+    note: bestRevenueProgram.value
+      ? formatMoney(bestRevenueProgram.value.total_expected_revenue)
+      : 'Пока нет данных'
+  },
+  {
+    title: 'Самая загруженная группа',
+    value: busiestGroup.value?.name_group || 'Нет данных',
+    note: busiestGroup.value
+      ? `${formatNumber(busiestGroup.value.active_enrolled)} активных зачислений`
+      : 'Пока нет данных'
+  }
+])
 </script>
 
 <template>
   <section class="graphics-stack">
     <section class="graphics-hero">
       <div class="graphics-hero__copy">
-        <p class="graphics-hero__eyebrow">Аналитика и графики</p>
-        <h2>Сводка по курсам, выручке, возрастам и каналам зачисления</h2>
+        <p class="graphics-hero__eyebrow">Аналитический модуль</p>
+        <h2>Современные графики по программам, подразделениям, выручке и нагрузке</h2>
         <p>
-          Раздел собирает все ключевые графики из API и показывает, где растет набор,
-          какие программы приносят больше выручки и как распределяется аудитория.
+          Все ключевые срезы собраны в одном месте. Удобная аналитика для быстрого понимания ситуации и принятия решений по развитию программ и оптимизации ресурсов. (базовый посчет это активнные данные, а общий суммируется по всем записям за все время)
         </p>
       </div>
 
       <div class="graphics-hero__focus">
-        <span>Лидер по слушателям</span>
+        <span>Программа-лидер</span>
         <strong>{{ bestProgramByListeners?.name_prof_education || 'Нет данных' }}</strong>
         <span v-if="bestProgramByListeners">
-          {{ bestProgramByListeners.listeners }} слушателей в точном расчете
+          +{{ countDeltaMap.get(bestProgramByListeners.name_prof_education) || 0 }} к базовому расчету
         </span>
       </div>
     </section>
@@ -208,90 +591,132 @@ const sourceTimeline = computed(() => {
       <AppStatCard
         title="Слушатели"
         :value="totalAccurateListeners"
-        :description="`Базовый расчет: ${totalListeners}`"
+        :description="`Базовый подсчет: ${totalListeners}`"
       />
       <AppStatCard
-        title="Выручка"
-        :value="formatMoney(totalAccurateRevenue)"
-        :description="`Без уточнения: ${formatMoney(totalRevenue)}`"
+        title="Ожидаемая выручка"
+        :value="formatMoney(totalExpectedRevenue)"
+        :description="bestRevenueProgram?.educationtype || 'Нет типа обучения'"
       />
       <AppStatCard
-        title="Активные группы"
-        :value="totalActiveGroups"
-        :description="`Суммарная нагрузка подразделений: ${totalDivisionsLoad}`"
+        title="Нагрузка групп"
+        :value="totalGroupLoad"
+        :description="`Суммарная нагрузка подразделений: ${totalDivisionLoad}`"
       />
       <AppStatCard
-        title="Топ по доходу"
-        :value="bestProgramByRevenue ? formatCompact(bestProgramByRevenue.total_revenue) : '0'"
-        :description="bestProgramByRevenue?.name_prof_education || 'Нет данных'"
+        title="Топ доход"
+        :value="bestRevenueProgram ? formatCompact(bestRevenueProgram.total_expected_revenue) : '0'"
+        :description="bestRevenueProgram?.name_prof_education || 'Нет данных'"
       />
     </div>
 
-    <div class="graphics-grid">
-      <AppCard title="Популярность программ">
+    <AppCard title="Разделы аналитики">
+      <div class="view-switcher">
+        <button
+          v-for="view in viewButtons"
+          :key="view.id"
+          type="button"
+          class="view-switcher__button"
+          :class="{ 'view-switcher__button--active': activeView === view.id }"
+          @click="activeView = view.id"
+        >
+          <strong>{{ view.label }}</strong>
+          <span>{{ view.description }}</span>
+        </button>
+      </div>
+    </AppCard>
+
+    <div v-if="activeView === 'overview'" class="graphics-stack">
+      <div class="insight-grid">
+        <article
+          v-for="card in insightCards"
+          :key="card.title"
+          class="insight-card"
+        >
+          <span class="insight-card__title">{{ card.title }}</span>
+          <strong>{{ card.value }}</strong>
+          <span>{{ card.note }}</span>
+        </article>
+      </div>
+
+      <div class="chart-grid">
+        <AppCard title="Сравнение count и count/accurate">
+          <p class="chart-caption">
+            Двойной горизонтальный график помогает быстро понять, где точный расчет заметно выше базового.
+          </p>
+          <AnalyticsChart :option="listenersComparisonOption" height="430px" />
+        </AppCard>
+
+        <AppCard title="Распределение по форматам обучения">
+          <p class="chart-caption">
+            Кольцевая диаграмма показывает, какой формат обучения сейчас дает больше всего слушателей.
+          </p>
+          <AnalyticsChart :option="educationTypeOption" height="430px" />
+        </AppCard>
+      </div>
+    </div>
+
+    <div v-else-if="activeView === 'programs'" class="chart-grid">
+      <AppCard title="Популярные программы">
         <p class="chart-caption">
-          Точный расчет по числу слушателей. Подпись справа показывает разницу с базовым подсчетом.
+          Здесь видно, какие программы сильнее по числу слушателей и в каком формате они обучаются.
         </p>
-        <AnalyticsHorizontalBars
-          :items="topPrograms"
-          color-from="#0f172a"
-          color-to="#38bdf8"
-        />
+        <AnalyticsChart :option="popularProgramsOption" height="520px" />
       </AppCard>
 
-      <AppCard title="Выручка по программам">
+      <AppCard title="Ожидаемая выручка по программам">
         <p class="chart-caption">
-          Приоритетно показываем точную выручку, чтобы было проще сравнивать финансовую отдачу программ.
+          Горизонтальный график помогает сразу увидеть лидеров по ожидаемой выручке.
         </p>
-        <AnalyticsHorizontalBars
-          :items="topRevenue"
-          color-from="#0f766e"
-          color-to="#2dd4bf"
-          value-suffix=" ₽"
-        />
+        <AnalyticsChart :option="revenueProgramsOption" height="520px" />
       </AppCard>
     </div>
 
-    <div class="graphics-grid graphics-grid--secondary">
-      <AppCard title="Возрастные группы по программам">
+    <div v-else-if="activeView === 'audience'" class="chart-grid">
+      <AppCard title="Возрастная матрица">
         <p class="chart-caption">
-          Чем насыщеннее ячейка, тем больше слушателей в возрастной группе.
+          Тепловая карта показывает, в каких возрастных сегментах каждая программа выражена сильнее.
         </p>
-        <AnalyticsAgeMatrix
-          :rows="ageDiffMatrix"
-          :age-ranges="ageRanges"
-        />
+        <AnalyticsChart :option="ageHeatmapOption" height="520px" />
       </AppCard>
 
       <AppCard title="Источники зачисления по месяцам">
         <p class="chart-caption">
-          Каждый месяц разбит на сегменты по источникам. Так проще увидеть структуру набора.
+          Стековая диаграмма позволяет быстро оценить структуру набора по каналам поступления.
         </p>
-        <AnalyticsSourceTimeline :items="sourceTimeline" />
+        <AnalyticsChart :option="enrollmentSourcesOption" height="520px" />
       </AppCard>
     </div>
 
-    <div class="graphics-grid">
+    <div v-else class="chart-grid">
       <AppCard title="Нагрузка по группам">
         <p class="chart-caption">
-          Быстрый срез по текущим учебным группам и числу активных зачислений.
+          Чем длиннее полоса, тем выше текущая нагрузка группы по активным зачислениям.
         </p>
-        <AnalyticsHorizontalBars
-          :items="groupOccupancy"
-          color-from="#7c2d12"
-          color-to="#fb7185"
-        />
+        <AnalyticsChart :option="groupLoadOption" height="480px" />
       </AppCard>
 
       <AppCard title="Нагрузка по подразделениям">
         <p class="chart-caption">
-          Показывает, какие подразделения сейчас ведут больше всего слушателей.
+          Кольцевая диаграмма показывает долю каждого подразделения в общей текущей нагрузке.
         </p>
-        <AnalyticsHorizontalBars
-          :items="divisionOccupancy"
-          color-from="#312e81"
-          color-to="#818cf8"
-        />
+        <AnalyticsChart :option="divisionLoadOption" height="480px" />
+      </AppCard>
+    </div>
+
+    <div class="summary-grid">
+      <AppCard title="Лучше по выручке">
+        <div class="summary-box summary-box--good">
+          <strong>{{ bestRevenueProgram?.name_prof_education || 'Нет данных' }}</strong>
+          <span v-if="bestRevenueProgram">{{ formatMoney(bestRevenueProgram.total_expected_revenue) }}</span>
+        </div>
+      </AppCard>
+
+      <AppCard title="Слабее по выручке">
+        <div class="summary-box summary-box--warn">
+          <strong>{{ weakestRevenueProgram?.name_prof_education || 'Нет данных' }}</strong>
+          <span v-if="weakestRevenueProgram">{{ formatMoney(weakestRevenueProgram.total_expected_revenue) }}</span>
+        </div>
       </AppCard>
     </div>
   </section>
@@ -310,11 +735,19 @@ const sourceTimeline = computed(() => {
   padding: 1.5rem;
   border-radius: 1.6rem;
   background:
-    radial-gradient(circle at top right, rgba(56, 189, 248, 0.22), transparent 30%),
-    radial-gradient(circle at bottom left, rgba(20, 184, 166, 0.2), transparent 26%),
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.2), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(20, 184, 166, 0.18), transparent 26%),
     linear-gradient(135deg, #0f172a 0%, #111827 46%, #0f766e 100%);
   color: #e2e8f0;
   box-shadow: 0 28px 80px rgba(15, 23, 42, 0.22);
+}
+
+.graphics-hero__eyebrow {
+  margin: 0 0 0.8rem;
+  font-size: 0.76rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #7dd3fc;
 }
 
 .graphics-hero__copy h2 {
@@ -325,14 +758,6 @@ const sourceTimeline = computed(() => {
 .graphics-hero__copy p:last-child {
   margin-bottom: 0;
   color: rgba(226, 232, 240, 0.84);
-}
-
-.graphics-hero__eyebrow {
-  margin: 0 0 0.8rem;
-  font-size: 0.76rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #7dd3fc;
 }
 
 .graphics-hero__focus {
@@ -346,7 +771,7 @@ const sourceTimeline = computed(() => {
 }
 
 .graphics-hero__focus span {
-  color: rgba(226, 232, 240, 0.8);
+  color: rgba(226, 232, 240, 0.82);
 }
 
 .graphics-hero__focus strong {
@@ -360,14 +785,80 @@ const sourceTimeline = computed(() => {
   gap: 1rem;
 }
 
-.graphics-grid {
+.view-switcher {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.view-switcher__button {
+  display: grid;
+  gap: 0.3rem;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 1.15rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(241, 245, 249, 0.88));
+  color: #0f172a;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+
+.view-switcher__button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+}
+
+.view-switcher__button span {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.view-switcher__button--active {
+  border-color: rgba(45, 212, 191, 0.35);
+  background: linear-gradient(135deg, #0f172a 0%, #0f766e 100%);
+  color: #f8fafc;
+  box-shadow: 0 20px 42px rgba(15, 118, 110, 0.22);
+}
+
+.view-switcher__button--active span {
+  color: rgba(226, 232, 240, 0.84);
+}
+
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
 }
 
-.graphics-grid--secondary {
-  align-items: start;
+.insight-card {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1.1rem;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(240, 249, 255, 0.9));
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+}
+
+.insight-card strong {
+  color: #0f172a;
+  font-size: 1.02rem;
+}
+
+.insight-card span:last-child,
+.insight-card__title {
+  color: #64748b;
+}
+
+.chart-grid,
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .chart-caption {
@@ -375,16 +866,44 @@ const sourceTimeline = computed(() => {
   color: #64748b;
 }
 
-@media (max-width: 1100px) {
-  .graphics-kpis {
+.summary-box {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1rem;
+  border-radius: 1rem;
+}
+
+.summary-box strong {
+  color: #0f172a;
+}
+
+.summary-box span {
+  color: #475569;
+}
+
+.summary-box--good {
+  background: linear-gradient(180deg, rgba(236, 253, 245, 0.96), rgba(167, 243, 208, 0.78));
+}
+
+.summary-box--warn {
+  background: linear-gradient(180deg, rgba(255, 247, 237, 0.96), rgba(253, 186, 116, 0.76));
+}
+
+@media (max-width: 1200px) {
+  .graphics-kpis,
+  .insight-grid,
+  .view-switcher {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 900px) {
   .graphics-hero,
-  .graphics-grid,
-  .graphics-kpis {
+  .graphics-kpis,
+  .view-switcher,
+  .insight-grid,
+  .chart-grid,
+  .summary-grid {
     grid-template-columns: 1fr;
   }
 }

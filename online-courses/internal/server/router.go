@@ -162,7 +162,7 @@ func SetupRoutes(server *gin.Engine,
 		{
 			graphic.GET("/count", middleware.RoleProtecteMiddleware("worker"), graphicHandler.CountListenersOnProgram)
 			graphic.GET("/count/accurate", middleware.RoleProtecteMiddleware("worker"), graphicHandler.CountListenersOnProgramAccurate)
-			graphic.GET("/worth", middleware.RoleProtecteMiddleware("worker"), graphicHandler.WorthProgram)
+			graphic.GET("/popular", middleware.RoleProtecteMiddleware("worker"), graphicHandler.PopularProgramType)
 			graphic.GET("/worth/accurate", middleware.RoleProtecteMiddleware("worker"), graphicHandler.WorthProgramAccurate)
 			graphic.GET("/agediff", middleware.RoleProtecteMiddleware("worker"), graphicHandler.AgeDiff)
 			graphic.GET("/whoenrolled", middleware.RoleProtecteMiddleware("worker"), graphicHandler.WhoEnrolled)

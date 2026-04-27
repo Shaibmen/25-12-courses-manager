@@ -34,19 +34,20 @@ func (g *GraphicsService) CountListenersOnProgram(ctx context.Context) ([]dto.Co
 	return counts, nil
 }
 
-func (g *GraphicsService) WorthProgram(ctx context.Context) ([]dto.WorthProgramDTO, error) {
+func (g *GraphicsService) PopularProgramType(ctx context.Context) ([]dto.PopularProgramTypeDTO, error) {
 
-	entity, err := g.service.WorthProgram(ctx)
+	entity, err := g.service.PopularProgramType(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	var counts []dto.WorthProgramDTO
+	var counts []dto.PopularProgramTypeDTO
 
 	for _, i := range entity {
-		counts = append(counts, dto.WorthProgramDTO{
+		counts = append(counts, dto.PopularProgramTypeDTO{
 			NameProfEducation: i.NameProfEducation,
-			Totalrevenue:      i.Totalrevenue,
+			EducationType:     i.EducationType,
+			Listeners:         i.Listeners,
 		})
 
 	}
@@ -85,8 +86,9 @@ func (g *GraphicsService) WorthProgramAccurate(ctx context.Context) ([]dto.Worth
 
 	for _, i := range entity {
 		counts = append(counts, dto.WorthProgramDTO{
-			NameProfEducation: i.NameProfEducation,
-			Totalrevenue:      i.Totalrevenue,
+			NameProfEducation:    i.NameProfEducation,
+			EducationType:        i.EducationType,
+			TotalExpectedRevenue: i.Totalrevenue,
 		})
 
 	}

@@ -6,6 +6,7 @@ import type {
   GroupEnrollmentMetric,
   ProgramAgeMetric,
   ProgramListenersMetric,
+  ProgramPopularMetric,
   ProgramRevenueMetric
 } from '../../types/graphics'
 
@@ -21,10 +22,10 @@ export const getGraphicCountAccurate = async () => {
   return await api.core<ApiListResponse<ProgramListenersMetric>>('graphic/count/accurate')
 }
 
-export const getGraphicWorth = async () => {
+export const getGraphicPopular = async () => {
   const api = useApiClient()
 
-  return await api.core<ApiListResponse<ProgramRevenueMetric>>('graphic/worth')
+  return await api.core<ApiListResponse<ProgramPopularMetric>>('graphic/popular')
 }
 
 export const getGraphicWorthAccurate = async () => {
@@ -61,7 +62,7 @@ export const getGraphicsDashboard = async (): Promise<GraphicsDashboardResponse>
   const [
     count,
     countAccurate,
-    worth,
+    popular,
     worthAccurate,
     ageDiff,
     whoEnrolled,
@@ -70,7 +71,7 @@ export const getGraphicsDashboard = async (): Promise<GraphicsDashboardResponse>
   ] = await Promise.all([
     getGraphicCount(),
     getGraphicCountAccurate(),
-    getGraphicWorth(),
+    getGraphicPopular(),
     getGraphicWorthAccurate(),
     getGraphicAgeDiff(),
     getGraphicWhoEnrolled(),
@@ -81,7 +82,7 @@ export const getGraphicsDashboard = async (): Promise<GraphicsDashboardResponse>
   return {
     count: count.data,
     countAccurate: countAccurate.data,
-    worth: worth.data,
+    popular: popular.data,
     worthAccurate: worthAccurate.data,
     ageDiff: ageDiff.data,
     whoEnrolled: whoEnrolled.data,

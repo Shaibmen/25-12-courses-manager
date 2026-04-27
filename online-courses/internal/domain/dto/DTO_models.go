@@ -475,10 +475,16 @@ type CountListenersOnProgramDTO struct {
 	NameProfEducation string `json:"name_prof_education"`
 	Listeners         int    `json:"listeners"`
 }
+type PopularProgramTypeDTO struct {
+	NameProfEducation string `json:"name_prof_education"`
+	EducationType     string `json:"educationtype"`
+	Listeners         int    `json:"listeners"`
+}
 
 type WorthProgramDTO struct {
-	NameProfEducation string `json:"name_prof_education"`
-	Totalrevenue      int    `json:"total_revenue"`
+	NameProfEducation    string  `json:"name_prof_education"`
+	EducationType        string  `json:"educationtype"`
+	TotalExpectedRevenue float64 `json:"total_expected_revenue"`
 }
 
 type AgeDiffDTO struct {

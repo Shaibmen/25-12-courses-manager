@@ -38,19 +38,19 @@ func (g *GraphicsRepo) CountListenersOnProgram(ctx context.Context) ([]entity.Co
 	return data, nil
 }
 
-func (g GraphicsRepo) WorthProgram(ctx context.Context) ([]entity.WorthProgramStruct, error) {
+func (g GraphicsRepo) PopularProgramType(ctx context.Context) ([]entity.PopularProgramTypeStruct, error) {
 
-	var data []entity.WorthProgramStruct
+	var data []entity.PopularProgramTypeStruct
 
 	query :=
 		`
 		SELECT
-		p.name_prof_education,
-		SUM(p.price) AS total_revenue
-		FROM enrollmentlistener e
-		JOIN programeducation p ON e.id_programeducation = p.id_programeducation
-		GROUP BY p.name_prof_education
-		ORDER BY total_revenue DESC;
+		name_prof_education,
+		educationtype,
+		COUNT(*) AS listeners
+		FROM accurateprogram
+		GROUP BY name_prof_education, educationtype
+		ORDER BY listeners DESC;
 	`
 
 	if err := g.repo.SelectContext(ctx, &data, query); err != nil {
@@ -88,11 +88,12 @@ func (g GraphicsRepo) WorthProgramAccurate(ctx context.Context) ([]entity.WorthP
 	query :=
 		`
 		SELECT
-		name_prof_education,
-		SUM(price) AS total_expected_revenue
-		FROM accurateprogram
-		GROUP BY name_prof_education
-		ORDER BY total_expected_revenue DESC;
+    name_prof_education,
+    educationtype,
+    SUM(price) AS total_expected_revenue
+	FROM accurateprogram
+	GROUP BY name_prof_education, educationtype
+	ORDER BY total_expected_revenue DESC;
 
 	`
 

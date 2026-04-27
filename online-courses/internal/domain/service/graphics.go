@@ -7,7 +7,7 @@ import (
 
 type GraphicsService interface {
 	CountListenersOnProgram(ctx context.Context) ([]dto.CountListenersOnProgramDTO, error)
-	WorthProgram(ctx context.Context) ([]dto.WorthProgramDTO, error)
+	PopularProgramType(ctx context.Context) ([]dto.PopularProgramTypeDTO, error)
 	CountListenersOnProgramAccurate(ctx context.Context) ([]dto.CountListenersOnProgramDTO, error)
 	WorthProgramAccurate(ctx context.Context) ([]dto.WorthProgramDTO, error)
 	AgeDiff(ctx context.Context) ([]dto.AgeDiffDTO, error)

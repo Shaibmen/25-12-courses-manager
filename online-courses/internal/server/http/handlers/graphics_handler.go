@@ -33,12 +33,12 @@ func (g *GraphicsHandler) CountListenersOnProgram(c *gin.Context) {
 
 }
 
-func (g *GraphicsHandler) WorthProgram(c *gin.Context) {
+func (g *GraphicsHandler) PopularProgramType(c *gin.Context) {
 
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 4*time.Second)
 	defer cancel()
 
-	data, err := g.handler.WorthProgram(ctx)
+	data, err := g.handler.PopularProgramType(ctx)
 	if err != nil {
 		c.Error(err)
 		return
