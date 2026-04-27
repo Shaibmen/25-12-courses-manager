@@ -195,3 +195,8 @@ type GroupRequest struct {
 	NameGroup  string                   `json:"name_group"`
 	Raspisanie []map[string]interface{} `json:"raspisanie"`
 }
+
+type ScanDiplomRequest struct {
+	File []byte `json:"file"`
+	Name string `json:"name"`
+}

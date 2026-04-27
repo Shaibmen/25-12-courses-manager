@@ -11,8 +11,13 @@ defineProps<{
   details: ListenerDetailsResponse
   enrollments: EnrollmentProgramDetails[]
   files: string[]
+  scanDiplomFiles?: string[]
   filesLoading?: boolean
+  scanDiplomLoading?: boolean
   downloadLoading?: string
+  scanDownloadLoading?: string
+  scanDeleteLoading?: string
+  scanUploadLoading?: boolean
 }>()
 
 defineEmits<{
@@ -21,6 +26,9 @@ defineEmits<{
   enroll: []
   enrollments: []
   download: [fileName: string]
+  downloadScanDiplom: [fileName: string]
+  deleteScanDiplom: [fileName: string]
+  uploadScanDiplom: []
 }>()
 
 const renderValue = (value?: string | number | null) =>
@@ -129,6 +137,46 @@ const renderValue = (value?: string | number | null) =>
       </div>
     </AppCard>
 
+    <AppCard title="Скан диплома">
+      <div class="card-actions">
+        <p class="card-actions__hint">
+          Здесь будут находиться сканы дипломов слушателя.
+        </p>
+        <AppButton
+          variant="secondary"
+          :disabled="Boolean(scanUploadLoading)"
+          @click="$emit('uploadScanDiplom')"
+        >
+          {{ scanUploadLoading ? 'Загружаем...' : 'Загрузить' }}
+        </AppButton>
+      </div>
+
+      <p v-if="scanDiplomLoading" class="empty-state">Загрузка сканов диплома...</p>
+      <p v-else-if="!scanDiplomFiles?.length" class="empty-state">Сканы диплома пока не загружены.</p>
+
+      <div v-else class="file-list">
+        <div v-for="file in scanDiplomFiles" :key="file" class="file-row">
+          <span class="file-row__name">{{ file }}</span>
+          <div class="file-row__actions">
+            <AppButton
+              variant="ghost"
+              :disabled="scanDownloadLoading === file || scanDeleteLoading === file"
+              @click="$emit('downloadScanDiplom', file)"
+            >
+              {{ scanDownloadLoading === file ? 'Скачиваем...' : 'Скачать' }}
+            </AppButton>
+            <AppButton
+              variant="secondary"
+              :disabled="scanDeleteLoading === file || scanDownloadLoading === file"
+              @click="$emit('deleteScanDiplom', file)"
+            >
+              {{ scanDeleteLoading === file ? 'Удаляем...' : 'Удалить' }}
+            </AppButton>
+          </div>
+        </div>
+      </div>
+    </AppCard>
+
     <div class="details-actions">
       <AppButton variant="ghost" @click="$emit('back')">Назад</AppButton>
       <div class="details-actions__group">
@@ -197,7 +245,25 @@ const renderValue = (value?: string | number | null) =>
   white-space: nowrap;
 }
 
+.file-row__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
 .empty-state {
+  margin: 0;
+  color: #64748b;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.card-actions__hint {
   margin: 0;
   color: #64748b;
 }
@@ -222,8 +288,11 @@ const renderValue = (value?: string | number | null) =>
 
 @media (max-width: 720px) {
   .file-row,
+  .course-card,
+  .card-actions,
   .details-actions,
-  .details-actions__group {
+  .details-actions__group,
+  .file-row__actions {
     flex-direction: column;
     align-items: stretch;
   }

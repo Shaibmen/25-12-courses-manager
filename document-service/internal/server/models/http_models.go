@@ -90,15 +90,15 @@ type ExecutorRequest struct {
 	ExecutorName       string `json:"executor_name"`
 	ExecutorSurname    string `json:"executor_surname"`
 	ExecutorMiddlename string `json:"executor_middlename"`
-	Doverennost 	   string `json:"doverenost"`
+	Doverennost        string `json:"doverenost"`
 }
 
 type ZakazchikRequest struct {
-	Listeners   []ListenerRequest `json:"listeners"` 
+	Listeners   []ListenerRequest `json:"listeners"`
 	Address     RegAddressRequest `json:"reg_address"`
 	CompanyName string            `json:"company_name"`
 	FIO         string            `json:"zakazchikfio"`
-	Status      string            `json:"status"` 
+	Status      string            `json:"status"`
 	INN         string            `json:"inn"`
 	KPP         string            `json:"kpp"`
 	OGRN        string            `json:"ogrn"`
@@ -144,4 +144,9 @@ type FullRequest struct {
 	PersonalCardData FullListenerRequest `json:"personal_card"`
 	ZayavlenieData   ZayavlenieRequest   `json:"zayavlenie_card"`
 	DogovorData      DogovorRequest      `json:"dogovor_card"`
+}
+
+type ScanDiplomRequest struct {
+	File []byte `json:"file"`
+	Name string `json:"name"`
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func MustServerInit(r *gin.Engine, port string, personalCard *handler.PersonalCardHandler, zayavlenie *handler.ZayavlenieHandler, dogovor *handler.DogovoreHandler, cfg *config.Config) {
+func MustServerInit(r *gin.Engine, port string, personalCard *handler.PersonalCardHandler, zayavlenie *handler.ZayavlenieHandler, dogovor *handler.DogovoreHandler, scanDiplom *handler.ScanDiplomHandler, cfg *config.Config) {
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{cfg.SERVICE_FRONT + ":3000", "http://localhost:3000"},
@@ -44,6 +44,11 @@ func MustServerInit(r *gin.Engine, port string, personalCard *handler.PersonalCa
 		api.GET("zayavlenie-exists", zayavlenie.ExistsZayavlenie)
 		api.GET("zayavlenie-download", zayavlenie.DownloadZayavlenie)
 		api.DELETE("zayavlenie-delete", zayavlenie.DeleteZayavlenie)
+
+		api.POST("scan-diplom", scanDiplom.ScanDiplomCreate)
+		api.GET("scan-diplom-exists", scanDiplom.ScanDiplomExists)
+		api.GET("scan-diplom-download", scanDiplom.ScanDiplomDownload)
+		api.DELETE("scan-diplom-delete", scanDiplom.DeleteScanDiplom)
 	}
 
 	r.Run(port)

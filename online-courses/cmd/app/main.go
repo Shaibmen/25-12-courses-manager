@@ -101,6 +101,7 @@ func main() {
 	documentHandler := handlers.NewDocumentHandler(documentService, cfg)
 	groupHandler := handlers.NewGroupHandler(groupService)
 	graphicHandler := handlers.NewGraphicsHandler(graphicService)
+	ыфсcanDiplomHandler := handlers.NewScanDiplom(cfg)
 
 	r := gin.Default()
 
@@ -121,6 +122,7 @@ func main() {
 		documentHandler,
 		groupHandler,
 		graphicHandler,
+		ыфсcanDiplomHandler,
 		cfg,
 		Logger)
 

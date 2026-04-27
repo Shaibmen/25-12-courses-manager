@@ -27,6 +27,7 @@ func SetupRoutes(server *gin.Engine,
 	documentHandler *handlers.DocumentHandler,
 	groupHandler *handlers.GroupHandler,
 	graphicHandler *handlers.GraphicsHandler,
+	scanDiplomHandler *handlers.ScanDiplom,
 	cfg *config.Config,
 	Logger *slog.Logger) {
 
@@ -168,6 +169,10 @@ func SetupRoutes(server *gin.Engine,
 			graphic.GET("/whoenrolled", middleware.RoleProtecteMiddleware("worker"), graphicHandler.WhoEnrolled)
 			graphic.GET("/group", middleware.RoleProtecteMiddleware("worker"), graphicHandler.GroupMembers)
 			graphic.GET("/division", middleware.RoleProtecteMiddleware("worker"), graphicHandler.DivisionMember)
+		}
+		scanDiplom := api.Group("/scan")
+		{
+			scanDiplom.POST("/:name-scan", middleware.RoleProtecteMiddleware("worker"), scanDiplomHandler.ScanDiplomHandler)
 		}
 	}
 }
