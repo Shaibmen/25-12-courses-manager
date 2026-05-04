@@ -397,12 +397,21 @@ VALUES
 -- Level Education
 INSERT INTO leveleducation (id_leveleducation, education)
 VALUES
-(gen_random_uuid(), 'Бакалавр'),
-(gen_random_uuid(), 'Специалитет'),
-(gen_random_uuid(), 'Магистр'),
-(gen_random_uuid(), 'Кандидат наук'),
+(gen_random_uuid(), 'Начальное общее'),
+(gen_random_uuid(), 'Основнное общее'),
+(gen_random_uuid(), 'Среднее общее');
 (gen_random_uuid(), 'Среднее специальное'),
-(gen_random_uuid(), 'Среднее образование');
+(gen_random_uuid(), 'Высшее образование'),
+(gen_random_uuid(), 'Бакалавриат'),
+(gen_random_uuid(), 'Специалитет'),
+(gen_random_uuid(), 'Магистратура'),
+(gen_random_uuid(), 'Аспиранутра'),
+(gen_random_uuid(), 'Интернатура'),
+(gen_random_uuid(), 'Ординатура'),
+(gen_random_uuid(), 'Ассистентура-стажировка'),
+
+
+
 
 -- Education Listener
 INSERT INTO educationlistener (id_educationlistener, diplom_seria, diplom_number, date_given, city, region, educational_institution, speciality, level_education)
@@ -416,16 +425,19 @@ VALUES
 -- Place Work
 INSERT INTO placework (id_placework, name_company, job_title, all_experience, job_title_experience)
 VALUES
-(gen_random_uuid(), 'Компания1', 'Инженер', 10, 5),
-(gen_random_uuid(), 'Компания2', 'Менеджер', 12, 6),
-(gen_random_uuid(), 'Компания3', 'Разработчик', 8, 3),
-(gen_random_uuid(), 'Компания4', 'Аналитик', 15, 7),
-(gen_random_uuid(), 'Компания5', 'Дизайнер', 9, 4);
+(gen_random_uuid(), 'ООО "Астра"', 'Инженер', 10, 5),
+(gen_random_uuid(), 'ОАО "Ромашка"', 'Менеджер', 12, 6),
+(gen_random_uuid(), 'ООО "Пейзаж"', 'Разработчик', 8, 3),
+(gen_random_uuid(), 'ИП "Горизонт"', 'Аналитик', 15, 7),
+(gen_random_uuid(), 'ООО "Деловой центр"', 'Дизайнер', 9, 4);
 
 -- Divisions Education
 INSERT INTO divisionseducation (id_divisionseducation, divisions)
 VALUES
 (gen_random_uuid(), 'Лингвистический центр'),
+(gen_random_uuid(), 'Центр индивидуального обучения'),
+(gen_random_uuid(), 'Цифровой кампус'),
+(gen_random_uuid(), 'Центр разработки и цифровых решений'),
 (gen_random_uuid(), 'Центр прикладных технологий');
 
 -- Education Types
@@ -439,10 +451,10 @@ VALUES
 INSERT INTO programeducation (id_programeducation, name_prof_education, time_education, price, id_educationtype, id_divisionseducation)
 VALUES
 (gen_random_uuid(), 'Разработка игровых продуктов на Unity', 256, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 0), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 0)),
-(gen_random_uuid(), 'Разработка кроссплатформенных мобильных приложений на Flutter', 256, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 1), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
-(gen_random_uuid(), 'Разработка корпоративных приложений на Java', 256, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 2), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
-(gen_random_uuid(), 'Python: первые шаги в программировании', 256, 146000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 1), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
-(gen_random_uuid(), 'Математика для программистов Junior', 20, 20000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 0), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1));
+(gen_random_uuid(), 'Разработка кроссплатформенных мобильных приложений на Flutter', 256, 190000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 1), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
+(gen_random_uuid(), 'Разработка корпоративных приложений на Java', 144, 210000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 2), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
+(gen_random_uuid(), 'Python: первые шаги в программировании', 122, 290000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 1), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1)),
+(gen_random_uuid(), 'Математика для программистов Junior', 156, 200000, (SELECT id_educationtype FROM educationtypes LIMIT 1 OFFSET 0), (SELECT id_divisionseducation FROM divisionseducation LIMIT 1 OFFSET 1));
 
 -- Listener (частично без работы или образования)
 INSERT INTO listener (id_listener, first_name, second_name, middle_name, date_of_birth, snils, contact_phone, email, id_passport, id_regaddress, id_educationlistener, id_placework)
