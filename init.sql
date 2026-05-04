@@ -399,7 +399,7 @@ INSERT INTO leveleducation (id_leveleducation, education)
 VALUES
 (gen_random_uuid(), 'Начальное общее'),
 (gen_random_uuid(), 'Основнное общее'),
-(gen_random_uuid(), 'Среднее общее');
+(gen_random_uuid(), 'Среднее общее')
 (gen_random_uuid(), 'Среднее специальное'),
 (gen_random_uuid(), 'Высшее образование'),
 (gen_random_uuid(), 'Бакалавриат'),
@@ -408,7 +408,7 @@ VALUES
 (gen_random_uuid(), 'Аспиранутра'),
 (gen_random_uuid(), 'Интернатура'),
 (gen_random_uuid(), 'Ординатура'),
-(gen_random_uuid(), 'Ассистентура-стажировка'),
+(gen_random_uuid(), 'Ассистентура-стажировка');
 
 
 
