@@ -86,14 +86,18 @@ const formatValue = (value: number) =>
 .bars__meta {
   display: grid;
   gap: 0.18rem;
+  min-width: 0;
 }
 
 .bars__labels strong,
 .bars__meta strong {
   color: #0f172a;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .bars__meta {
+  flex: 0 0 min(11rem, 100%);
   text-align: right;
   justify-items: end;
 }

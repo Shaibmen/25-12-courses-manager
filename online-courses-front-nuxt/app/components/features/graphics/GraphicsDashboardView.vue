@@ -47,6 +47,58 @@ const formatNumber = (value: number) => numberFormatter.format(value)
 const formatMoney = (value: number) => moneyFormatter.format(value)
 const formatCompact = (value: number) => compactNumber.format(value)
 
+const wrapLabel = (value: string, maxLineLength = 18, maxLines = 3) => {
+  const source = String(value || '').trim()
+
+  if (!source) {
+    return ''
+  }
+
+  const words = source.split(/\s+/)
+  const lines: string[] = []
+  let currentLine = ''
+
+  for (const word of words) {
+    const nextLine = currentLine ? `${currentLine} ${word}` : word
+
+    if (nextLine.length <= maxLineLength) {
+      currentLine = nextLine
+      continue
+    }
+
+    if (currentLine) {
+      lines.push(currentLine)
+      currentLine = ''
+    }
+
+    if (word.length <= maxLineLength) {
+      currentLine = word
+      continue
+    }
+
+    const chunks = word.match(new RegExp(`.{1,${maxLineLength}}`, 'g')) || [word]
+
+    for (const chunk of chunks) {
+      if (lines.length < maxLines - 1) {
+        lines.push(chunk)
+      } else {
+        lines.push(`${chunk.slice(0, Math.max(maxLineLength - 1, 1))}…`)
+        return lines.join('\n')
+      }
+    }
+  }
+
+  if (currentLine) {
+    lines.push(currentLine)
+  }
+
+  if (lines.length <= maxLines) {
+    return lines.join('\n')
+  }
+
+  return `${lines.slice(0, maxLines).join('\n')}…`
+}
+
 const sumBy = <T>(items: T[], getter: (item: T) => number) =>
   items.reduce((total, item) => total + getter(item), 0)
 
@@ -207,9 +259,10 @@ const listenersComparisonOption = computed(() => {
     },
     grid: {
       top: 20,
-      left: 220,
-      right: 40,
-      bottom: 50
+      left: 250,
+      right: 60,
+      bottom: 50,
+      containLabel: false
     },
     xAxis: {
       type: 'value',
@@ -222,8 +275,9 @@ const listenersComparisonOption = computed(() => {
       data: labels,
       axisLabel: {
         color: '#334155',
-        width: 190,
-        overflow: 'truncate'
+        width: 220,
+        lineHeight: 18,
+        formatter: (value: string) => wrapLabel(value, 24, 3)
       }
     },
     series: [
@@ -262,9 +316,10 @@ const popularProgramsOption = computed(() => ({
   },
   grid: {
     top: 30,
-    left: 220,
-    right: 40,
-    bottom: 20
+    left: 250,
+    right: 150,
+    bottom: 24,
+    containLabel: false
   },
   xAxis: {
     type: 'value',
@@ -277,8 +332,9 @@ const popularProgramsOption = computed(() => ({
     data: popularSorted.value.map(item => item.name_prof_education),
     axisLabel: {
       color: '#334155',
-      width: 190,
-      overflow: 'truncate'
+      width: 220,
+      lineHeight: 18,
+      formatter: (value: string) => wrapLabel(value, 24, 3)
     }
   },
   series: [
@@ -295,6 +351,10 @@ const popularProgramsOption = computed(() => ({
       label: {
         show: true,
         position: 'right',
+        distance: 12,
+        width: 120,
+        overflow: 'break',
+        lineHeight: 18,
         formatter: (params: { dataIndex: number, value: number }) =>
           `${popularSorted.value[params.dataIndex]?.educationtype || ''} · ${formatNumber(params.value)}`
       }
@@ -319,9 +379,10 @@ const revenueProgramsOption = computed(() => ({
   },
   grid: {
     top: 20,
-    left: 220,
-    right: 40,
-    bottom: 20
+    left: 250,
+    right: 120,
+    bottom: 24,
+    containLabel: false
   },
   xAxis: {
     type: 'value',
@@ -335,8 +396,9 @@ const revenueProgramsOption = computed(() => ({
     data: revenueSorted.value.map(item => item.name_prof_education),
     axisLabel: {
       color: '#334155',
-      width: 190,
-      overflow: 'truncate'
+      width: 220,
+      lineHeight: 18,
+      formatter: (value: string) => wrapLabel(value, 24, 3)
     }
   },
   series: [
@@ -352,6 +414,9 @@ const revenueProgramsOption = computed(() => ({
       label: {
         show: true,
         position: 'right',
+        distance: 12,
+        width: 92,
+        overflow: 'break',
         formatter: (params: { value: number }) => formatCompact(params.value)
       }
     }
@@ -365,21 +430,39 @@ const educationTypeOption = computed(() => ({
       `${params.name}<br/>${formatNumber(params.value)} слушателей<br/>${params.percent}%`
   },
   legend: {
+    type: 'scroll',
     orient: 'vertical',
     right: 0,
-    top: 'center'
+    top: 20,
+    bottom: 20,
+    width: 180,
+    itemGap: 14,
+    formatter: (value: string) => wrapLabel(value, 18, 3)
   },
   series: [
     {
       type: 'pie',
       radius: ['45%', '72%'],
-      center: ['38%', '50%'],
+      center: ['30%', '50%'],
+      avoidLabelOverlap: true,
       itemStyle: {
         borderColor: '#ffffff',
         borderWidth: 2
       },
       label: {
-        formatter: '{b}\n{d}%'
+        show: false
+      },
+      labelLine: {
+        show: false
+      },
+      emphasis: {
+        label: {
+          show: true,
+          formatter: (params: { name: string, value: number, percent: number }) =>
+            `${wrapLabel(params.name, 16, 3)}\n${formatNumber(params.value)} · ${params.percent}%`,
+          lineHeight: 18,
+          fontWeight: 600
+        }
       },
       data: educationTypeBreakdown.value.map((item, index) => ({
         ...item,
@@ -496,9 +579,10 @@ function buildSingleSeriesOption<T>(
     },
     grid: {
       top: 20,
-      left: 180,
-      right: 30,
-      bottom: 20
+      left: 220,
+      right: 88,
+      bottom: 24,
+      containLabel: false
     },
     xAxis: {
       type: 'value',
@@ -511,8 +595,9 @@ function buildSingleSeriesOption<T>(
       data: items.map(labelGetter),
       axisLabel: {
         color: '#334155',
-        width: 150,
-        overflow: 'truncate'
+        width: 190,
+        lineHeight: 18,
+        formatter: (value: string) => wrapLabel(value, 22, 3)
       }
     },
     series: [
@@ -528,6 +613,9 @@ function buildSingleSeriesOption<T>(
         label: {
           show: true,
           position: 'right',
+          distance: 10,
+          width: 72,
+          overflow: 'break',
           formatter: (params: { value: number }) => formatNumber(params.value)
         }
       }
@@ -640,7 +728,7 @@ const insightCards = computed(() => [
       </div>
 
       <div class="chart-grid">
-        <AppCard title="Сравнение count и count/accurate">
+        <AppCard title="Сравнение записей текущих записей и записи за все время">
           <p class="chart-caption">
             Двойной горизонтальный график помогает быстро понять, где точный расчет заметно выше базового.
           </p>

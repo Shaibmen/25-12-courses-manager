@@ -12,7 +12,7 @@ const { data, status, error, refresh } = await useAsyncData(
 <template>
   <section class="stack">
     <AppCard v-if="status === 'pending'" title="Загрузка аналитики">
-      <p>Подтягиваю данные для аналитического модуля и построения графиков.</p>
+      <p>Загрузка данных для аналитического модуля и построения графиков.</p>
     </AppCard>
 
     <AppCard v-else-if="error" title="Не удалось загрузить аналитику">
