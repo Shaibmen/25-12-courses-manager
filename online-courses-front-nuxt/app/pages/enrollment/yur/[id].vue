@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DivisionItem, EducationTypeItem } from '../../../types/catalogs'
 import type { GroupItem } from '../../../types/group'
+import { getDateSortValue, normalizeApiDate } from '../../../utils/date'
 import {
   ageCategories,
   legalEntityEnrollmentContracts,
@@ -64,6 +65,16 @@ const selectedGroup = computed(() =>
   groupOptions.value.find((item) => item.group === selectedGroupId.value) || null
 )
 
+const selectedGroupSchedule = computed(() =>
+  [...(selectedGroup.value?.rapspisanie || [])]
+    .map((item) => ({
+      ...item,
+      date: normalizeApiDate(item.date)
+    }))
+    .filter((item) => item.date)
+    .sort((left, right) => getDateSortValue(left.date) - getDateSortValue(right.date))
+)
+
 const toggleListener = (listenerId: string) => {
   selectedListenerIds.value = selectedListenerIds.value.includes(listenerId)
     ? selectedListenerIds.value.filter((id) => id !== listenerId)
@@ -102,6 +113,8 @@ watch(filteredPrograms, (items) => {
 watch(selectedProgramId, () => {
   selectedGroupId.value = ''
   groupSearch.value = ''
+  startDate.value = ''
+  endDate.value = ''
 })
 
 const syncSelectedGroup = (groups: GroupItem[]) => {
@@ -153,6 +166,11 @@ watch(groupSearch, (value) => {
     void loadGroups(value)
   }, 300)
 })
+
+watch(selectedGroupSchedule, (schedule) => {
+  startDate.value = schedule[0]?.date || ''
+  endDate.value = schedule[schedule.length - 1]?.date || ''
+}, { immediate: true })
 
 const isFormValid = computed(() =>
   Boolean(
@@ -383,9 +401,9 @@ onMounted(() => {
           </AppSelect>
 
           <AppSelect v-model="paymentOption" label="Порядок оплаты" placeholder="Выберите порядок оплаты">
-            <option value="full">100% предоплата</option>
-            <option value="split">50/50</option>
-            <option value="halfsplit">Оплата после акта</option>
+             <option value="full">Оплата осуществляется в следующем порядке: 100% предоплата до начала обучения.</option>
+            <option value="split">Оплата осуществляется в следующем порядке: аванс 50%, оставшиеся 50% — в установленный срок</option>
+            <option value="halfsplit">Оплата подлежит перечислению на расчётный счёт Исполнителя в срок до 5 (пяти) рабочих дней, считая с момента (даты) подписания Сторонами Акта оказанных услуг.</option>
           </AppSelect>
 
           <AppInput
