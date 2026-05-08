@@ -91,7 +91,7 @@ onMounted(() => {
       <AppButton variant="secondary" @click="loadEnrollments">Повторить запрос</AppButton>
     </AppCard>
 
-    <AppCard v-else title="Каталог accurate записей">
+    <AppCard v-else title="Каталог записей на момент заключения договора">
       <div class="table-wrap">
         <table class="enrollments-table">
           <thead>
