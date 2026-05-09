@@ -34,7 +34,7 @@ func MustInitConfig() *Config {
 	SERVICE_CORE, SERVICE_DOC, SERVICE_AUTH, SERVICE_FRONT := "http://localhost", "http://localhost", "http://localhost", "http://localhost"
 
 	if Host != "LOCAL_HOST" {
-		SERVICE_CORE, SERVICE_DOC, SERVICE_AUTH, SERVICE_FRONT = "http://apicore", "http://apidoc", "http://apiauth", "http://frontend"
+		SERVICE_CORE, SERVICE_DOC, SERVICE_AUTH, SERVICE_FRONT = "http://176.108.244.99", "http://176.108.244.99", "http://176.108.244.99", "http://176.108.244.99"
 	}
 
 	return &Config{

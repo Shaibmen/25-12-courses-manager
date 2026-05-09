@@ -45,7 +45,7 @@ func MustLoadConfig() *Config {
 	SERVICE_CORE, SERVICE_DOC, SERVICE_AUTH, SERVICE_FRONT, DB_HOST := "http://localhost", "http://localhost", "http://localhost", "http://localhost", "localhost"
 
 	if Host != "LOCAL_HOST" {
-		SERVICE_CORE, SERVICE_DOC, SERVICE_AUTH, SERVICE_FRONT, DB_HOST = "http://apicore", "http://apidoc", "http://apiauth", "http://frontend", "db"
+		SERVICE_CORE, SERVICE_DOC, SERVICE_AUTH, SERVICE_FRONT, DB_HOST = "http://176.108.244.99", "http://176.108.244.99", "http://176.108.244.99", "http://176.108.244.99", "db"
 	}
 
 	dbStringConn := "host=" + DB_HOST + " " + "port=5432" + " " + "user=" + DBUser + " " + "password=" + DBPassword + " " + "dbname=" + DBName + " " + "sslmode=disable"
