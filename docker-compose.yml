@@ -84,9 +84,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NUXT_PUBLIC_API_URL_CORE: http://localhost:8080/api/v1
-      NUXT_PUBLIC_API_URL_AUTH: http://localhost:8081/auth/v1
-      NUXT_PUBLIC_API_URL_DOC: http://localhost:8082/v1/doc
+      NUXT_PUBLIC_API_URL_CORE: http://176.108.244.99:8080/api/v1
+      NUXT_PUBLIC_API_URL_AUTH: http://176.108.244.99:8081/auth/v1
+      NUXT_PUBLIC_API_URL_DOC: http://176.108.244.99:8082/v1/doc
       NUXT_API_URL_CORE_INTERNAL: http://apicore:8080/api/v1
       NUXT_API_URL_AUTH_INTERNAL: http://apiauth:8081/auth/v1
       NUXT_API_URL_DOC_INTERNAL: http://apidoc:8082/v1/doc
