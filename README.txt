@@ -26,17 +26,17 @@ Docker Compose
 Быстрый запуск:
 
 Скопировать и настроить файл .env
-для запуска локально необходимо указать LOCAL_HOST, для запуска в докере что угондон но не LOCAL_HOST
+для запуска локально необходимо указать LOCAL_HOST, для запуска в докере что угодно но не LOCAL_HOST
 
 Выполнить команду:
 
 docker compose up --build
 
 После запуска будут доступны:
-Frontend: http://localhost:3000
-Core API: http://localhost:8080
-Auth API: http://localhost:8081
-Document API: http://localhost:8082
+Frontend: http://176.108.244.99:3000
+для авторизации админа 
+логин - admin пароль - admin
+регистрацию пользователя произвести самостоятельно
 
 База данных: Используется PostgreSQL 17. Данные сохраняются в docker volume db_data.
 
