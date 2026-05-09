@@ -1,0 +1,50 @@
+Проект: Courses Manager
+
+Описание: Система для управления онлайн-курсами с разделением на несколько сервисов. В проект входят:
+
+Backend API (Go)
+Сервис авторизации
+Сервис документов
+Frontend на Nuxt
+PostgreSQL база данных
+Docker Compose для быстрого запуска
+
+Структура проекта:
+
+auth-service/ — сервис авторизации
+document-service/ — сервис документов
+online-courses/ — основной backend API
+online-courses-front-nuxt/ — frontend приложение
+docker-compose.yml — запуск всех сервисов
+init.sql — начальная инициализация базы данных
+
+Требования:
+
+Docker
+Docker Compose
+
+Быстрый запуск:
+
+Скопировать и настроить файл .env
+для запуска локально необходимо указать LOCAL_HOST, для запуска в докере что угондон но не LOCAL_HOST
+
+Выполнить команду:
+
+docker compose up --build
+
+После запуска будут доступны:
+Frontend: http://localhost:3000
+Core API: http://localhost:8080
+Auth API: http://localhost:8081
+Document API: http://localhost:8082
+
+База данных: Используется PostgreSQL 17. Данные сохраняются в docker volume db_data.
+
+Технологии:
+
+Go
+Nuxt 3
+PostgreSQL
+Docker
+
+Назначение: Проект предназначен для управления курсами, пользователями, авторизацией и документами в единой системе.
