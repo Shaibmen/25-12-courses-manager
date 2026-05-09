@@ -362,8 +362,8 @@ ORDER BY pg_database_size(d.datname) DESC;
 INSERT INTO role (id_role, role)
 VALUES 
 ('c7253f36-b89b-47df-b9e2-174eb4fbb227', 'admin'),
-('236e78b7-0988-471b-b366-11638036803e', 'worker'),
-('46ccb5d9-8f41-4677-a500-945154be25ef', 'accountant')
+('236e78b7-0988-471b-b366-11638036803e', 'worker')
+-- ('46ccb5d9-8f41-4677-a500-945154be25ef', 'accountant')
 ON CONFLICT (id_role) DO NOTHING;
 
 INSERT INTO "user" (user_name, password, role)
