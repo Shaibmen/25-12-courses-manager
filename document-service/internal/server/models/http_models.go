@@ -1,66 +1,152 @@
 package models
 
 type PassportRequest struct {
-	PlaceBirth    string `json:"place_birth" validate:"required,max=50"`
-	Citizenship   string `json:"citizenship" validate:"required,max=50"`
-	Gender        string `json:"gender" validate:"required,max=7"`
-	Seria         string `json:"seria" validate:"required,len=4,numeric"`
-	Number        string `json:"number" validate:"required,len=6,numeric"`
-	PassportGiven string `json:"passport_given" validate:"required,max=100"`
-	DateGiven     string `json:"date_given" validate:"required"`
-	Code          string `json:"code" validate:"required,len=7"`
+	PlaceBirth    string `json:"place_birth"`
+	Citizenship   string `json:"citizenship"`
+	Gender        string `json:"gender"`
+	Seria         string `json:"seria"`
+	Number        string `json:"number"`
+	PassportGiven string `json:"passport_given"`
+	Code          string `json:"code"`
+	DateGiven     string `json:"date_given"`
 }
 
 type RegAddressRequest struct {
-	MailIndex string `json:"mail_index" validate:"required,len=6"`
-	Region    string `json:"region" validate:"required,max=100"`
-	City      string `json:"city" validate:"required,max=100"`
-	Street    string `json:"street" validate:"required,max=100"`
-	House     string `json:"house" validate:"required,max=25"`
-	Building  string `json:"building" validate:"required,max=50"`
-	Apartment string `json:"apartment" validate:"required,max=50"`
+	MailIndex string `json:"mail_index"`
+	Region    string `json:"region"`
+	City      string `json:"city"`
+	Street    string `json:"street"`
+	House     string `json:"house"`
+	Building  string `json:"building"`
+	Apartment string `json:"apartment"`
 }
 
 type EducationListenerRequest struct {
-	DiplomSeria            string `json:"diplom_seria" validate:"required,len=6,numeric"`
-	DiplomNumber           string `json:"diplom_number" validate:"required,len=7,numeric"`
-	DateGiven              string `json:"date_given" validate:"required"`
-	City                   string `json:"city" validate:"required,max=50"`
-	Region                 string `json:"region" validate:"required,max=100"`
-	EducationalInstitution string `json:"educational_institution" validate:"required,max=100"`
-	Speciality             string `json:"speciality" validate:"required,max=100"`
-	LevelEducation         string `json:"level_education" validate:"required,max=50"`
+	DateGiven              string `json:"date_given"`
+	DiplomSeria            string `json:"diplom_seria"`
+	DiplomNumber           string `json:"diplom_number"`
+	City                   string `json:"city"`
+	Region                 string `json:"region"`
+	EducationalInstitution string `json:"educational_institution"`
+	Speciality             string `json:"speciality"`
+	LevelEducation         string `json:"level_education"`
 }
 
 type PlaceWorkRequest struct {
-	NameCompany        string `json:"name_company" validate:"required,max=100"`
-	JobTitle           string `json:"job_title" validate:"required,max=100"`
-	AllExperience      int    `json:"all_experience" validate:"required,max=20"`
-	JobTitleExpirience int    `json:"job_title_expirience" validate:"required,max=20"`
+	NameCompany        string `json:"name_company"`
+	JobTitle           string `json:"job_title"`
+	AllExperience      int    `json:"all_experience"`
+	JobTitleExpirience int    `json:"job_title_expirience"`
 }
 
 type ProgramEducationRequest struct {
-	NameProfEducation string `json:"name_prof_education" validate:"required,max=100"`
-	TimeEducation     int    `json:"time_education" validate:"required"`
-	DivisionEducation string `json:"divisions_education" validate:"required"`
-	EducationType     string `json:"education_type" validate:"required"`
+	NameProfEducation string `json:"name_prof_education"`
+	DivisionEducation string `json:"divisions_education"`
+	EducationType     string `json:"education_type"`
+	TimeEducation     int    `json:"time_education"`
 }
 
 type ListenerRequest struct {
-	FirstName    string `json:"first_name" validate:"required,max=50"`
-	SecondName   string `json:"second_name" validate:"required,max=50"`
-	MiddleName   string `json:"middle_name" validate:"max=50"`
-	DateOfBirth  string `json:"date_of_birth" validate:"required"`
-	SNILS        string `json:"snils" validate:"required,len=14"`
-	ContactPhone string `json:"contact_phone" validate:"required,len=12"`
-	Email        string `json:"email" validate:"required,max=50,email"`
+	FirstName    string `json:"first_name"`
+	SecondName   string `json:"second_name"`
+	MiddleName   string `json:"middle_name"`
+	SNILS        string `json:"snils"`
+	ContactPhone string `json:"contact_phone"`
+	Email        string `json:"email"`
+	DateOfBirth  string `json:"date_of_birth"`
+}
+
+type EnrollmentListenerRequest struct {
+	StartDate        string  `json:"start_date"`
+	EndDate          string  `json:"end_date"`
+	Group            string  `json:"group"`
+	TypeOfRetraining string  `json:"type_of_retraining"`
+	CurrentPrice     float32 `json:"current_price"`
+	Is_active        bool    `json:"is_active"`
 }
 
 type FullListenerRequest struct {
-	Listener            ListenerRequest          `json:"listener" validate:"required"`
-	Passport            PassportRequest          `json:"passport" validate:"required"`
-	RegistrationAddress RegAddressRequest        `json:"registration_address" validate:"required"`
-	EducationListener   EducationListenerRequest `json:"education" validate:"omitempty"`
-	PlaceWork           PlaceWorkRequest         `json:"placeWork" validate:"omitempty"`
-	ProgramEducation    ProgramEducationRequest  `json:"program_education" validate:"required"`
+	Listener            ListenerRequest           `json:"listener"`
+	Passport            PassportRequest           `json:"passport"`
+	RegistrationAddress RegAddressRequest         `json:"registration_address"`
+	EducationListener   EducationListenerRequest  `json:"education"`
+	PlaceWork           PlaceWorkRequest          `json:"placeWork"`
+	ProgramEducation    ProgramEducationRequest   `json:"program_education"`
+	EnrollmentListener  EnrollmentListenerRequest `json:"enrollment_listener"`
+}
+
+type ContractorRequest struct {
+	Passport            PassportRequest   `json:"passport"`
+	RegistrationAddress RegAddressRequest `json:"registration_address"`
+	FirstName           string            `json:"first_name"`
+	SecondName          string            `json:"second_name"`
+	MiddleName          string            `json:"middle_name"`
+	Contact_phone       string            `json:"contact_phone"`
+	Email               string            `json:"email"`
+}
+
+type ExecutorRequest struct {
+	Status             string `json:"status"`
+	ExecutorName       string `json:"executor_name"`
+	ExecutorSurname    string `json:"executor_surname"`
+	ExecutorMiddlename string `json:"executor_middlename"`
+	Doverennost        string `json:"doverenost"`
+}
+
+type ZakazchikRequest struct {
+	Listeners   []ListenerRequest `json:"listeners"`
+	Address     RegAddressRequest `json:"reg_address"`
+	CompanyName string            `json:"company_name"`
+	FIO         string            `json:"zakazchikfio"`
+	Status      string            `json:"status"`
+	INN         string            `json:"inn"`
+	KPP         string            `json:"kpp"`
+	OGRN        string            `json:"ogrn"`
+	Phone       string            `json:"phone"`
+	Email       string            `json:"email"`
+}
+
+type ZayavlenieRequest struct {
+	ProgramEducation   ProgramEducationRequest   `json:"program_education"`
+	Listener           ListenerRequest           `json:"listener"`
+	EnrollmentListener EnrollmentListenerRequest `json:"enrollment_listener"`
+	Contractor         ContractorRequest         `json:"contractor"`
+	Executor           ExecutorRequest           `json:"executor"`
+	Passport           PassportRequest           `json:"passport"`
+	Registration       RegAddressRequest         `json:"reg_address"`
+	DogovorAgeType     string                    `json:"dogovor_type"`
+	Variant            int                       `json:"variant"`
+}
+
+type DogovorRequest struct {
+	ZakazchikData    ZakazchikRequest          `json:"zakazchik"`
+	ProgramEducation ProgramEducationRequest   `json:"program_education"`
+	ListenerData     ListenerRequest           `json:"listener" validate:"omitempty"`
+	Contractor       ContractorRequest         `json:"contractor"`
+	Executor         ExecutorRequest           `json:"executor"`
+	Passport         PassportRequest           `json:"passport" validate:"omitempty"`
+	Registration     RegAddressRequest         `json:"reg_address" validate:"omitempty"`
+	Enrollment       EnrollmentListenerRequest `json:"enrollment_listener"`
+	OptionNagruzka   int                       `json:"opion_nagruz"`
+	OptionDocument   int                       `json:"opt_document"`
+	OptionPrice      string                    `json:"opt_price"`
+	DogovorType      string                    `json:"dogovor_type"`
+}
+
+/*
+когда отправляешь юрика, кидаешь только "dogovor_card": {}
+затем кидаешь на каждого пользователя "personal_card": {}, "zayavlenie_card": {}
+
+когда отправляешь просто слушателя, либо слушателя через третье лицо, кидаешь
+"personal_card": {}, "zayavlenie_card": {}, БЕЗ ZAKAZCHIK!!!!! "dogovor_card": {}
+*/
+type FullRequest struct {
+	PersonalCardData FullListenerRequest `json:"personal_card"`
+	ZayavlenieData   ZayavlenieRequest   `json:"zayavlenie_card"`
+	DogovorData      DogovorRequest      `json:"dogovor_card"`
+}
+
+type ScanDiplomRequest struct {
+	File []byte `json:"file"`
+	Name string `json:"name"`
 }

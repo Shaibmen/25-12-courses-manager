@@ -12,6 +12,8 @@ type DB interface {
 	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
 	BeginTx(ctx context.Context) (Tx, error)
 	Close() error
+	GetContext(ctx context.Context, dest any, query string, args ...any) error
+	SelectContext(ctx context.Context, dest any, query string, args ...any) error
 }
 
 type Tx interface {

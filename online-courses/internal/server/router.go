@@ -2,6 +2,7 @@ package server
 
 import (
 	"log/slog"
+	"online-courses/internal/config"
 	"online-courses/internal/server/http/handlers"
 	"online-courses/internal/server/http/middleware"
 	"time"
@@ -20,10 +21,18 @@ func SetupRoutes(server *gin.Engine,
 	dashboardHandler *handlers.DashboardHandler,
 	backupHandler *handlers.BackupHandler,
 	reportHandler *handlers.ReportHandler,
+	contractorHandler *handlers.ContractHandler,
+	legalEntityHandler *handlers.LegalEntityHandler,
+	executerHandler *handlers.ExecutorHandler,
+	documentHandler *handlers.DocumentHandler,
+	groupHandler *handlers.GroupHandler,
+	graphicHandler *handlers.GraphicsHandler,
+	scanDiplomHandler *handlers.ScanDiplom,
+	cfg *config.Config,
 	Logger *slog.Logger) {
 
 	server.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8081"},
+		AllowOrigins:     []string{cfg.SERVICE_FRONT + ":3000", "http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -36,7 +45,7 @@ func SetupRoutes(server *gin.Engine,
 	{
 
 		api.Use(middleware.LoggerMiddleware(Logger))
-		api.Use(middleware.AuthMiddleware())
+		api.Use(middleware.AuthMiddleware(cfg))
 
 		listener := api.Group("/listener")
 		{
@@ -46,6 +55,7 @@ func SetupRoutes(server *gin.Engine,
 			listener.GET("/", middleware.RoleProtecteMiddleware("worker"), listenerHandler.GetListener) // :page
 			listener.GET("/details/:id", middleware.RoleProtecteMiddleware("worker"), listenerHandler.GetFullListener)
 			listener.PUT("/:id", middleware.RoleProtecteMiddleware("worker"), listenerHandler.UpdateListener)
+			listener.GET("/legalentity/:id", middleware.RoleProtecteMiddleware("worker"), listenerHandler.FindByLegalEntity)
 		}
 
 		divisions := api.Group("/divisions")
@@ -88,7 +98,8 @@ func SetupRoutes(server *gin.Engine,
 			enrollment.DELETE("/:id_listener/:id_program", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.DeleteEnrollment)
 			enrollment.GET("/details/:id", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.ReadDetailListener)
 			enrollment.GET("/:id", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.ReadByProgram) // :page
-			enrollment.GET("/application-data-card", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.GetInfoToCreateCard)
+			// enrollment.GET("/application-data-card", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.GetInfoToCreateCard)
+			enrollment.GET("/accurate", middleware.RoleProtecteMiddleware("worker"), enrollmentHandler.GetAccurateEnrollment)
 		}
 
 		dashboard := api.Group("/dashboard")
@@ -108,6 +119,60 @@ func SetupRoutes(server *gin.Engine,
 		{
 			report.GET("/period", middleware.RoleProtecteMiddleware("accountant"), reportHandler.ReportPeriod)
 			report.GET("/expensive", middleware.RoleProtecteMiddleware("accountant"), reportHandler.MostExpensiveProgram)
+		}
+
+		contractor := api.Group("/contractor")
+		{
+
+			contractor.POST("/:id", middleware.RoleProtecteMiddleware("worker"), contractorHandler.CreateContract)
+			contractor.DELETE("/:id", middleware.RoleProtecteMiddleware("worker"), contractorHandler.Delete)
+			contractor.PUT("/:id", middleware.RoleProtecteMiddleware("worker"), contractorHandler.UpdateContractor)
+		}
+
+		legalEntity := api.Group("/legalentity")
+		{
+
+			legalEntity.POST("/", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.CreateLegalEntity)
+			legalEntity.DELETE("/:id", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.DeleteLegalEntity)
+			legalEntity.GET("/", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.ReadLegalEntity) // :page
+			legalEntity.GET("/details/:id", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.ReadFullData)
+			legalEntity.PUT("/:id", middleware.RoleProtecteMiddleware("worker"), legalEntityHandler.UpdateLegalEntity)
+		}
+
+		executer := api.Group("/executer")
+		{
+			executer.POST("/", middleware.RoleProtecteMiddleware("worker"), executerHandler.CreateExecutor)
+			executer.DELETE("/:id", middleware.RoleProtecteMiddleware("worker"), executerHandler.DeleteExecutor)
+			executer.GET("/", middleware.RoleProtecteMiddleware("worker"), executerHandler.ReadExecutor)
+		}
+		document := api.Group("/document")
+		{
+			document.POST("/", middleware.RoleProtecteMiddleware("worker"), documentHandler.DocumentDataDeliver)
+		}
+
+		group := api.Group("/group")
+		{
+			group.POST("/", middleware.RoleProtecteMiddleware("worker"), groupHandler.CreateGroup)
+			group.PUT("/:id", middleware.RoleProtecteMiddleware("worker"), groupHandler.UpdateGroup)
+			group.DELETE("/:id", middleware.RoleProtecteMiddleware("worker"), groupHandler.DeleteGroup)
+			group.GET("/", middleware.RoleProtecteMiddleware("worker"), groupHandler.ReadGroup)
+			group.GET("/details/:id", middleware.RoleProtecteMiddleware("worker"), groupHandler.ReadByIDGroup)
+			group.GET("/export/:id", middleware.RoleProtecteMiddleware("worker"), groupHandler.ExportExcel)
+		}
+		graphic := api.Group("/graphic")
+		{
+			graphic.GET("/count", middleware.RoleProtecteMiddleware("worker"), graphicHandler.CountListenersOnProgram)
+			graphic.GET("/count/accurate", middleware.RoleProtecteMiddleware("worker"), graphicHandler.CountListenersOnProgramAccurate)
+			graphic.GET("/popular", middleware.RoleProtecteMiddleware("worker"), graphicHandler.PopularProgramType)
+			graphic.GET("/worth/accurate", middleware.RoleProtecteMiddleware("worker"), graphicHandler.WorthProgramAccurate)
+			graphic.GET("/agediff", middleware.RoleProtecteMiddleware("worker"), graphicHandler.AgeDiff)
+			graphic.GET("/whoenrolled", middleware.RoleProtecteMiddleware("worker"), graphicHandler.WhoEnrolled)
+			graphic.GET("/group", middleware.RoleProtecteMiddleware("worker"), graphicHandler.GroupMembers)
+			graphic.GET("/division", middleware.RoleProtecteMiddleware("worker"), graphicHandler.DivisionMember)
+		}
+		scanDiplom := api.Group("/scan")
+		{
+			scanDiplom.POST("/:name-scan", middleware.RoleProtecteMiddleware("worker"), scanDiplomHandler.ScanDiplomHandler)
 		}
 	}
 }

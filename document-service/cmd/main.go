@@ -19,13 +19,20 @@ func main() {
 
 	r := gin.Default()
 
-	personalCardService := service.NewPersonalCardService()
+	s3Client := service.MustInitS3Client()
+	personalCardService := service.NewPersonalCardService(s3Client)
+	zayavlenieService := service.NewZayavlenieService(s3Client)
+	dogovorService := service.NewDogovorService(s3Client)
+	scanDiplomService := service.NewScanDiplomService(s3Client)
 
+	dogovorHandler := handler.NewDogovorHandler(dogovorService)
+	zayavlenieHandler := handler.NewZayavlenieHandler(zayavlenieService)
 	personalCardHandler := handler.NewPersonalCardHandler(personalCardService)
+	scanDiplomHandler := handler.NewScanDiplomHandler(scanDiplomService)
 
 	if _, err := os.Stat("./personal_card"); os.IsNotExist(err) {
 		os.MkdirAll("./personal_card", 0755)
 	}
 
-	server.MustServerInit(r, cfg.PORT, personalCardHandler)
+	server.MustServerInit(r, cfg.PORT, personalCardHandler, zayavlenieHandler, dogovorHandler, scanDiplomHandler, cfg)
 }

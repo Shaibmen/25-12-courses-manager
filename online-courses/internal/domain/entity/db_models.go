@@ -2,6 +2,7 @@ package entity
 
 import (
 	"database/sql"
+	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
@@ -99,9 +100,7 @@ type ProgramEducation struct {
 	ID_ProgramEducation   uuid.UUID
 	NameProfEducation     string
 	TimeEducation         int
-	IndividualPrice       float32
-	GroupPrice            float32
-	CampusPrice           float32
+	Price                 float64
 	ID_EducationType      uuid.UUID
 	EducationType         EducationTypes
 	ID_DivisionsEducation uuid.UUID
@@ -110,6 +109,65 @@ type ProgramEducation struct {
 
 func (ProgramEducation) TableName() string {
 	return "programeducation"
+}
+
+type AccurateProgram struct {
+	ID_Listener       uuid.UUID      `db:"id_listener"`
+	NameProfEducation string         `db:"name_prof_education"`
+	TimeEducation     int            `db:"time_education"`
+	Price             float64        `db:"price"`
+	EducationType     string         `db:"educationtype"`
+	Division          string         `db:"divisionseducation"`
+	NameGroup         sql.NullString `db:"name_group"`
+}
+
+type ProgramToAccurate struct {
+	NameProfEducation string  `db:"name_prof_education"`
+	TimeEducation     int     `db:"time_education"`
+	Price             float64 `db:"price"`
+	EducationType     string  `db:"type_name"`
+	Division          string  `db:"divisions"`
+}
+
+func (AccurateProgram) TableName() string {
+	return "accurateprogram"
+}
+
+type LegalEntity struct {
+	ID_Legalentity      uuid.UUID
+	NameCompany         string
+	Inn                 string
+	Kpp                 string
+	Ogrn                string
+	Phone               string
+	Email               string
+	FirstName           string
+	SecondName          string
+	MiddleName          string
+	ID_RegAddress       uuid.UUID
+	RegistrationAddress RegistrationAddress
+	Status              string
+}
+
+func (LegalEntity) TableName() string {
+	return "legal_entity"
+}
+
+type Contractor struct {
+	ID_Contractor       uuid.UUID
+	FirstName           string
+	SecondName          string
+	MiddleName          string
+	Contact_phone       string
+	Email               string
+	ID_Passport         *uuid.UUID
+	Passport            Passport
+	ID_RegAddress       uuid.UUID
+	RegistrationAddress RegistrationAddress
+}
+
+func (Contractor) TableName() string {
+	return "contractor"
 }
 
 type Listener struct {
@@ -121,7 +179,8 @@ type Listener struct {
 	SNILS                string
 	ContactPhone         string
 	Email                string
-	ID_Passport          uuid.UUID
+	LootingEducation     bool
+	ID_Passport          *uuid.UUID
 	Passport             Passport
 	ID_RegAddress        uuid.UUID
 	RegistrationAddress  RegistrationAddress
@@ -129,10 +188,37 @@ type Listener struct {
 	EducationListener    EducationListener
 	ID_PlaceWork         *uuid.UUID
 	PlaceWork            PlaceWork
+	ID_Legalentity       *uuid.UUID
+	LegalEntity          LegalEntity
+	ID_Contractor        *uuid.UUID
+	Contractor           Contractor
 }
 
 func (Listener) TableName() string {
 	return "listener"
+}
+
+type ListenerLegalEntity struct {
+	ID_Listener uuid.UUID
+	FirstName   string
+	SecondName  string
+	MiddleName  string
+	SNILS       string
+	DateOfBirth string
+	Email       string
+}
+
+type Executor struct {
+	ID_Executor uuid.UUID
+	Status      string `db:"status"`
+	FirstName   string `db:"first_name"`
+	SecondName  string `db:"second_name"`
+	MiddleName  string `db:"middle_name"`
+	Doverenost  string `db:"doverenost"`
+}
+
+func (Executor) TableName() string {
+	return "executor"
 }
 
 type EnrollmentListener struct {
@@ -140,8 +226,9 @@ type EnrollmentListener struct {
 	ID_ProgramEducation uuid.UUID
 	StartDate           time.Time
 	EndDate             time.Time
-	CurrentPrice        float32
 	Is_active           bool
+	TypeOfRetraining    string
+	ID_Group            uuid.UUID
 }
 
 func (EnrollmentListener) TableName() string {
@@ -156,7 +243,8 @@ type EnrollmentListenerDetails struct {
 	NameProfEducation string
 	StartDate         time.Time
 	EndDate           time.Time
-	CurrentPrice      float32
+	ID_Group          uuid.UUID
+	TypeOfRetraining  string
 }
 
 type EnrollmentProgramDetails struct {
@@ -164,60 +252,14 @@ type EnrollmentProgramDetails struct {
 	ID_ProgramEducation uuid.UUID
 	NameProfEducation   string
 	TimeEducation       int
-	IndividualPrice     float32
-	GroupPrice          float32
-	CampusPrice         float32
+	Price               float64
 	EducationType       string
 	DivisionEducation   string
 	StartDate           time.Time
 	EndDate             time.Time
 	CurrentPrice        float32
-}
-
-type PersonalCardInfo struct {
-	FirstName    string
-	SecondName   string
-	MiddleName   string
-	DateOfBirth  string
-	SNILS        string
-	ContactPhone string
-	Email        string
-
-	PlaceBirth    string
-	Citizenship   string
-	Gender        string
-	Seria         string
-	Number        string
-	PassportGiven string
-	DateGiven     string
-	Code          string
-
-	MailIndex string
-	RegRegion string
-	RegCity   string
-	RegStreet string
-	House     string
-	Building  string
-	Apartment string
-
-	DiplomSeria            sql.NullString
-	DiplomNumber           sql.NullString
-	DiplomDateGiven        sql.NullString
-	DiplomCity             sql.NullString
-	DiplomRegion           sql.NullString
-	EducationalInstitution sql.NullString
-	Speciality             sql.NullString
-	LevelEducation         sql.NullString
-
-	NameCompany        sql.NullString
-	JobTitle           sql.NullString
-	AllExperience      sql.NullInt32
-	JobTitleExpirience sql.NullInt32
-
-	NameProfEducation string
-	TimeEducation     int
-	DivisionEducation string
-	EducationType     string
+	ID_Group            uuid.UUID
+	TypeOfRetraining    string
 }
 
 type ListenerFIO struct {
@@ -282,4 +324,131 @@ type AdminDashboard struct {
 type Role struct {
 	ID   uuid.UUID
 	Role string
+}
+type PersonalCardInfo struct {
+	FirstName    string `db:"first_name"`
+	SecondName   string `db:"second_name"`
+	MiddleName   string `db:"middle_name"`
+	DateOfBirth  string `db:"date_of_birth"`
+	SNILS        string `db:"snils"`
+	ContactPhone string `db:"contact_phone"`
+	Email        string `db:"email"`
+
+	PlaceBirth    sql.NullString `db:"place_birth"`
+	Citizenship   sql.NullString `db:"citizenship"`
+	Gender        sql.NullString `db:"gender"`
+	Seria         sql.NullString `db:"seria"`
+	Number        sql.NullString `db:"number"`
+	PassportGiven sql.NullString `db:"passport_given"`
+	DateGiven     sql.NullString `db:"date_given"`
+	Code          sql.NullString `db:"code"`
+
+	MailIndex string `db:"mail_index"`
+	RegRegion string `db:"region"`
+	RegCity   string `db:"city"`
+	RegStreet string `db:"street"`
+	House     string `db:"house"`
+	Building  string `db:"building"`
+	Apartment string `db:"apartment"`
+
+	DiplomSeria            sql.NullString `db:"diplom_seria"`
+	DiplomNumber           sql.NullString `db:"diplom_number"`
+	City                   sql.NullString `db:"educ_city"`
+	Region                 sql.NullString `db:"educ_region"`
+	EducationalInstitution sql.NullString `db:"educational_institution"`
+	Speciality             sql.NullString `db:"speciality"`
+	LevelEducation         sql.NullString `db:"education"`
+
+	NameCompany        sql.NullString `db:"name_company"`
+	JobTitle           sql.NullString `db:"job_title"`
+	AllExperience      sql.NullInt32  `db:"all_experience"`
+	JobTitleExpirience sql.NullInt32  `db:"job_title_experience"`
+
+	NameProfEducation string  `db:"name_prof_education"`
+	TimeEducation     int     `db:"time_education"`
+	CurrentPrice      float32 `db:"price"`
+	DivisionEducation string  `db:"divisions"`
+	EducationType     string  `db:"type_name"`
+
+	StartDate        string `db:"start_date"`
+	EndDate          string `db:"end_date"`
+	Is_active        bool   `db:"is_active"`
+	Group            string `db:"group_number"`
+	TypeOfRetraining string `db:"type_of_retraining"`
+}
+
+type ContractorDoc struct {
+	FirstName    sql.NullString `db:"first_name"`
+	SecondName   sql.NullString `db:"second_name"`
+	MiddleName   sql.NullString `db:"middle_name"`
+	ContactPhone sql.NullString `db:"contact_phone"`
+	Email        sql.NullString `db:"email"`
+
+	PlaceBirth    sql.NullString `db:"place_birth"`
+	Citizenship   sql.NullString `db:"citizenship"`
+	Gender        sql.NullString `db:"gender"`
+	Seria         sql.NullString `db:"seria"`
+	Number        sql.NullString `db:"number"`
+	PassportGiven sql.NullString `db:"passport_given"`
+	DateGiven     sql.NullString `db:"date_given"`
+	Code          sql.NullString `db:"code"`
+
+	MailIndex sql.NullString `db:"mail_index"`
+	RegRegion sql.NullString `db:"city"`
+	RegCity   sql.NullString `db:"region"`
+	RegStreet sql.NullString `db:"street"`
+	House     sql.NullString `db:"house"`
+	Building  sql.NullString `db:"building"`
+	Apartment sql.NullString `db:"apartment"`
+}
+
+type Group struct {
+	ID_Group   uuid.UUID       `db:"id_groups"`
+	NameGroup  string          `db:"name_group"`
+	Raspisanie json.RawMessage `db:"raspisanie"`
+}
+
+type FullDocument struct {
+	PersonalInfo PersonalCardInfo
+	Executor     Executor
+	Contractor   ContractorDoc
+}
+
+type CountListenersOnProgramStruct struct {
+	NameProfEducation string `db:"name_prof_education"`
+	Listeners         int    `db:"listeners"`
+}
+
+type PopularProgramTypeStruct struct {
+	NameProfEducation string `db:"name_prof_education"`
+	EducationType     string `db:"educationtype"`
+	Listeners         int    `db:"listeners"`
+}
+
+type WorthProgramAccurateStruct struct {
+	NameProfEducation string  `db:"name_prof_education"`
+	EducationType     string  `db:"educationtype"`
+	Totalrevenue      float64 `db:"total_expected_revenue"`
+}
+
+type AgeDiffStruct struct {
+	NameProfEducation string `db:"name_prof_education"`
+	AgeRange          string `db:"age_range"`
+	Listeners         int    `db:"listeners"`
+}
+
+type WhoEnrolledStruct struct {
+	Month  time.Time `db:"month"`
+	Source string    `db:"source"`
+	Cnt    int       `db:"cnt"`
+}
+
+type GroupMembersStruct struct {
+	NameGroup      string `db:"name_group"`
+	ActiveEnrolled int    `db:"active_enrolled"`
+}
+
+type DivisionMemberStruct struct {
+	Divisioneducation string `db:"divisionseducation"`
+	Listeners         int    `db:"listeners"`
 }

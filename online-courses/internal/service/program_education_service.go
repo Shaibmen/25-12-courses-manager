@@ -25,9 +25,7 @@ func (p *programEducationService) CreateProgram(ctx context.Context, dto dto.Pro
 		ID_ProgramEducation:   id,
 		NameProfEducation:     dto.NameProfEducation,
 		TimeEducation:         dto.TimeEducation,
-		IndividualPrice:       dto.IndividualPrice,
-		GroupPrice:            dto.GroupPrice,
-		CampusPrice:           dto.CampusPrice,
+		Price:                 dto.Price,
 		ID_EducationType:      dto.ID_EducationType,
 		ID_DivisionsEducation: dto.ID_DivisionsEducation,
 	}
@@ -52,9 +50,7 @@ func (p *programEducationService) ReadProgram(ctx context.Context, page int, fil
 			ID_ProgramEducation:   prog.ID_ProgramEducation,
 			NameProfEducation:     prog.NameProfEducation,
 			TimeEducation:         prog.TimeEducation,
-			IndividualPrice:       prog.IndividualPrice,
-			GroupPrice:            prog.GroupPrice,
-			CampusPrice:           prog.CampusPrice,
+			Price:                 prog.Price,
 			ID_EducationType:      prog.ID_EducationType,
 			ID_DivisionsEducation: prog.ID_DivisionsEducation,
 		})
@@ -74,9 +70,7 @@ func (p *programEducationService) ReadByID(ctx context.Context, id uuid.UUID) (*
 		ID_ProgramEducation:   data.ID_ProgramEducation,
 		NameProfEducation:     data.NameProfEducation,
 		TimeEducation:         data.TimeEducation,
-		IndividualPrice:       data.IndividualPrice,
-		GroupPrice:            data.GroupPrice,
-		CampusPrice:           data.CampusPrice,
+		Price:                 data.Price,
 		ID_EducationType:      data.ID_EducationType,
 		ID_DivisionsEducation: data.ID_DivisionsEducation,
 	}
@@ -90,9 +84,7 @@ func (p *programEducationService) UpdateProgram(ctx context.Context, dto dto.Pro
 		ID_ProgramEducation:   dto.ID_ProgramEducation,
 		NameProfEducation:     dto.NameProfEducation,
 		TimeEducation:         dto.TimeEducation,
-		IndividualPrice:       dto.IndividualPrice,
-		GroupPrice:            dto.GroupPrice,
-		CampusPrice:           dto.CampusPrice,
+		Price:                 dto.Price,
 		ID_EducationType:      dto.ID_EducationType,
 		ID_DivisionsEducation: dto.ID_DivisionsEducation,
 	}

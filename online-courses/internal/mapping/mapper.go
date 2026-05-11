@@ -81,14 +81,15 @@ func MapListenerToEntity(dto dto.ListenerDTO, id uuid.UUID) (*entity.Listener, e
 	}
 
 	return &entity.Listener{
-		ID_Listener:  id,
-		FirstName:    dto.FirstName,
-		SecondName:   dto.SecondName,
-		MiddleName:   dto.MiddleName,
-		DateOfBirth:  *DateOfBirth,
-		SNILS:        dto.SNILS,
-		ContactPhone: dto.ContactPhone,
-		Email:        dto.Email,
+		ID_Listener:      id,
+		FirstName:        dto.FirstName,
+		SecondName:       dto.SecondName,
+		MiddleName:       dto.MiddleName,
+		DateOfBirth:      *DateOfBirth,
+		SNILS:            dto.SNILS,
+		ContactPhone:     dto.ContactPhone,
+		Email:            dto.Email,
+		LootingEducation: dto.LootingEducation,
 	}, nil
 }
 
@@ -107,17 +108,21 @@ func MapListenerEntityToDTO(entity *entity.Listener) *dto.FullListenerDataDTO {
 		ID_RegAddress:        entity.ID_RegAddress,
 		ID_EducationListener: entity.ID_EducationListener,
 		ID_PlaceWork:         entity.ID_PlaceWork,
+		Looting_education:    entity.LootingEducation,
 	}
 
-	passport := dto.PassportDTO{
-		PlaceBirth:    entity.Passport.PlaceBirth,
-		Citizenship:   entity.Passport.Citizenship,
-		Gender:        entity.Passport.Gender,
-		Seria:         entity.Passport.Seria,
-		Number:        entity.Passport.Number,
-		PassportGiven: entity.Passport.PassportGiven,
-		DateGiven:     entity.Passport.DateGiven.String(),
-		Code:          entity.Passport.Code,
+	var passport *dto.PassportDTO
+	if entity.ID_Passport != nil {
+		passport = &dto.PassportDTO{
+			PlaceBirth:    entity.Passport.PlaceBirth,
+			Citizenship:   entity.Passport.Citizenship,
+			Gender:        entity.Passport.Gender,
+			Seria:         entity.Passport.Seria,
+			Number:        entity.Passport.Number,
+			PassportGiven: entity.Passport.PassportGiven,
+			DateGiven:     entity.Passport.DateGiven.String(),
+			Code:          entity.Passport.Code,
+		}
 	}
 
 	registratoinAddress := dto.RegistrationAddressDTO{
@@ -165,14 +170,18 @@ func MapListenerEntityToDTO(entity *entity.Listener) *dto.FullListenerDataDTO {
 
 func MapListenerReqToDto(request request.FullListenerRequest) (*dto.CreateListenerDTO, error) {
 
-	seriaPassport, err := strconv.Atoi(request.Passport.Seria)
-	if err != nil {
-		return &dto.CreateListenerDTO{}, err
-	}
+	var err error
+	var seriaPassport, numberPassport int
+	if request.Passport.Seria != "" {
+		seriaPassport, err = strconv.Atoi(request.Passport.Seria)
+		if err != nil {
+			return &dto.CreateListenerDTO{}, err
+		}
 
-	numberPassport, err := strconv.Atoi(request.Passport.Number)
-	if err != nil {
-		return &dto.CreateListenerDTO{}, err
+		numberPassport, err = strconv.Atoi(request.Passport.Number)
+		if err != nil {
+			return &dto.CreateListenerDTO{}, err
+		}
 	}
 
 	passport := dto.PassportDTO{
@@ -225,12 +234,101 @@ func MapListenerReqToDto(request request.FullListenerRequest) (*dto.CreateListen
 	}
 
 	return &dto.CreateListenerDTO{
-		Listener:            dto.ListenerDTO(request.Listener),
+		Listener: dto.ListenerDTO{
+			FirstName:        request.Listener.FirstName,
+			SecondName:       request.Listener.SecondName,
+			MiddleName:       request.Listener.MiddleName,
+			DateOfBirth:      request.Listener.DateOfBirth,
+			SNILS:            request.Listener.SNILS,
+			ContactPhone:     request.Listener.ContactPhone,
+			Email:            request.Listener.Email,
+			LootingEducation: request.Listener.LootingEducation,
+		},
 		Passport:            passport,
 		RegistrationAddress: regAddress,
 		EducationListener:   educaitonListener,
 		PlaceWork:           dto.PlaceWorkDTO(request.PlaceWork),
 	}, err
+}
+
+func MapContcratorReqToDTO(request request.FullContractorRequest) (*dto.ContractorCreateDTO, error) {
+	passportSeria, err := strconv.Atoi(request.Passport.Seria)
+	if err != nil {
+		return nil, err
+	}
+
+	passportNumber, err := strconv.Atoi(request.Passport.Number)
+	if err != nil {
+		return nil, err
+	}
+
+	mainIndex, err := strconv.Atoi(request.RegAddress.MailIndex)
+	if err != nil {
+		return nil, err
+	}
+
+	dto := &dto.ContractorCreateDTO{
+		Contractor: dto.ContractorDTO{
+			FirstName:     request.Contractor.FirstName,
+			SecondName:    request.Contractor.SecondName,
+			MiddleName:    request.Contractor.MiddleName,
+			Contact_phone: request.Contractor.Contact_phone,
+			Email:         request.Contractor.Email,
+		},
+		Passport: dto.PassportDTO{
+			PlaceBirth:    request.Passport.PlaceBirth,
+			Citizenship:   request.Passport.Citizenship,
+			Gender:        request.Passport.Gender,
+			Seria:         passportSeria,
+			Number:        passportNumber,
+			PassportGiven: request.Passport.PassportGiven,
+			DateGiven:     request.Passport.DateGiven,
+			Code:          request.Passport.Code,
+		},
+		RegAddress: dto.RegistrationAddressDTO{
+			MailIndex: mainIndex,
+			Region:    request.RegAddress.Region,
+			City:      request.RegAddress.City,
+			Street:    request.RegAddress.Street,
+			House:     request.RegAddress.House,
+			Building:  request.RegAddress.Building,
+			Apartment: request.RegAddress.Apartment,
+		},
+	}
+
+	return dto, nil
+}
+
+func LegalEntityFullMappping(request request.FullLegalEntityRequest) (*dto.LegalEntityFullDTO, error) {
+	mailIndex, err := strconv.Atoi(request.RegAddress.MailIndex)
+	if err != nil {
+		return nil, err
+	}
+
+	data := &dto.LegalEntityFullDTO{
+		LegalEntity: dto.LegalEntityDTO{
+			NameCompany: request.LegalEntity.NameCompany,
+			Inn:         request.LegalEntity.Inn,
+			Kpp:         request.LegalEntity.Kpp,
+			Ogrn:        request.LegalEntity.Ogrn,
+			Phone:       request.LegalEntity.Phone,
+			Email:       request.LegalEntity.Email,
+			FirstName:   request.LegalEntity.FirstName,
+			SecondName:  request.LegalEntity.SecondName,
+			MiddleName:  request.LegalEntity.MiddleName,
+			Status:      request.LegalEntity.Status,
+		},
+		RegAddress: dto.RegistrationAddressDTO{
+			MailIndex: mailIndex,
+			Region:    request.RegAddress.Region,
+			City:      request.RegAddress.City,
+			Street:    request.RegAddress.Street,
+			House:     request.RegAddress.House,
+			Building:  request.RegAddress.Building,
+			Apartment: request.RegAddress.Apartment,
+		},
+	}
+	return data, nil
 }
 
 // func MapUpdateListenerReqToDto(request request.FullListenerRequest) (*dto.CreateListenerDTO, error) {

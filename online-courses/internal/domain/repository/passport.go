@@ -10,6 +10,7 @@ import (
 
 type PassportRepository interface {
 	CreateInTx(ctx context.Context, tx database.Tx, m entity.Passport) error
+	Read(ctx context.Context, id uuid.UUID) (*entity.Passport, error)
 	DeleteInTx(ctx context.Context, tx database.Tx, id uuid.UUID) error
 	UpdateInTx(ctx context.Context, tx database.Tx, passport entity.Passport) error
 }

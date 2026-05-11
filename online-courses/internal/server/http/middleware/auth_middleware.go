@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"online-courses/internal/config"
 	"online-courses/internal/server/http/models"
 	"strings"
 
@@ -16,7 +17,7 @@ type RequestClaims struct {
 	Role     string `json:"role"`
 }
 
-func AuthMiddleware() gin.HandlerFunc {
+func AuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
 
@@ -37,7 +38,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		requestBody, _ := json.Marshal(map[string]string{"token": token})
 
-		resp, err := http.Post("http://apiauth:8081/auth/v1/valid", "application/json", bytes.NewBuffer(requestBody))
+		resp, err := http.Post(cfg.SERVICE_AUTH+":8081/auth/v1/valid", "application/json", bytes.NewBuffer(requestBody))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, models.HttpResponse{Message: "invalid serivce"})
 			c.Abort()

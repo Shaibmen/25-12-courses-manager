@@ -1,5 +1,9 @@
 package dto
 
+import (
+	"time"
+)
+
 type ListenerDTO struct {
 	FirstName    string
 	SecondName   string
@@ -51,9 +55,18 @@ type PlaceWorkDTO struct {
 
 type ProgramEducationDTO struct {
 	NameProfEducation string
-	TimeEducation     int
 	DivisionEducation string
 	EducationType     string
+	TimeEducation     int
+}
+
+type EnrollmentListenerDTO struct {
+	StartDate        time.Time
+	EndDate          time.Time
+	Group            string
+	TypeOfRetraining string
+	CurrentPrice     float32
+	Is_active        bool
 }
 
 type FullListenerDataDTO struct {
@@ -63,4 +76,71 @@ type FullListenerDataDTO struct {
 	EducationListener   EducationListenerDTO
 	PlaceWork           PlaceWorkDTO
 	ProgramEducation    ProgramEducationDTO
+	EnrollmentListener  EnrollmentListenerDTO
+}
+
+type ContractorDTO struct {
+	Passport            PassportDTO
+	RegistrationAddress RegistrationAddressDTO
+	FirstName           string
+	SecondName          string
+	MiddleName          string
+	Contact_phone       string
+	Email               string
+}
+
+type ExecutorDTO struct {
+	Status             string
+	ExecutorName       string
+	ExecutorSurname    string
+	ExecutorMiddlename string
+	Doverennost        string
+}
+
+type ZayavlenieDTO struct {
+	ProgramEducation   ProgramEducationDTO
+	ListenerData       ListenerDTO
+	Contractor         ContractorDTO
+	Executor           ExecutorDTO
+	Passport           PassportDTO
+	Registration       RegistrationAddressDTO
+	EnrollmentListener EnrollmentListenerDTO
+	Variant            int
+}
+
+type DogovorDTO struct {
+	Zakazchik        ZakazchikDTO
+	ProgramEducation ProgramEducationDTO
+	ListenerData     ListenerDTO
+	Contractor       ContractorDTO
+	Executor         ExecutorDTO
+	Passport         PassportDTO
+	Registration     RegistrationAddressDTO
+	Enrollment       EnrollmentListenerDTO
+	OptionNagruzka   int
+	OptionDocument   int
+	OptionPrice      string
+}
+
+type ZakazchikDTO struct {
+	Listeners   []ListenerDTO
+	Address     RegistrationAddressDTO
+	CompanyName string
+	FIO         string
+	Status      string
+	INN         string
+	KPP         string
+	OGRN        string
+	Phone       string
+	Email       string
+}
+
+type Centers struct {
+	CPK  int `json:"Center prikladnih technologiy"`
+	CIO  int `json:"Center individualnogo obuchenia"`
+	LC   int `json:"Lingvisticheskiy center"`
+	CK   int `json:"Cifrovoy kampus"`
+	CRCR int `json:"Center razrabotki i cifrovih resheniy"`
+	CABA int `json:"Center avtomatizacii i biznes-analiza"`
+	Year int `json:"Year"`
 }

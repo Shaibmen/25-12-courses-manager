@@ -1,6 +1,7 @@
 package server
 
 import (
+	"auth-service/internal/config"
 	"auth-service/internal/server/handler"
 	"time"
 
@@ -8,11 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitSever(AuthHandler *handler.AuthHandler, RegisterHandler *handler.RegisterHandler, Middleware *handler.Middleware) {
+func InitSever(AuthHandler *handler.AuthHandler, RegisterHandler *handler.RegisterHandler, Middleware *handler.Middleware, config *config.Config) {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowOrigins:     []string{config.SERVICE_FRONT + ":3000", "http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},

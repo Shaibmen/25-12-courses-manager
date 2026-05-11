@@ -12,7 +12,6 @@ import (
 	"online-courses/internal/service"
 	"online-courses/internal/validate"
 	"os"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,7 +25,7 @@ func main() {
 	Logger := logger.MustInitLogger(cfg.Logger)
 	Logger.Info("логгер инициализирован без ошибок")
 
-	db := postgres.MustNewConnectionPostgresSQL(cfg.DB, Logger)
+	db := postgres.MustNewConnectionPostgresSQL(cfg.DB_STRING_CONN, Logger)
 
 	validate.InitValid()
 	repoutils.InitRepoLogger(Logger)
@@ -42,20 +41,26 @@ func main() {
 	programEducationRepo := pg.NewProgramEducationRepo(db, Logger)
 	enrollmentRepo := pg.NewEnrollmentListenerRepo(db, Logger)
 	dashboardRepo := pg.NewDashboardRepo(db, Logger)
-	backupRepo := pg.NewBackupRepo(db, cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.Host, Logger)
+	backupRepo := pg.NewBackupRepo(db, cfg.DBUSER, cfg.DBPASSWORD, cfg.DBNAME, cfg.DBHOST, Logger)
 	reportRepo := pg.NewReportRepo(db, Logger)
-	procedureRepo := pg.NewProcedureRepo(db, Logger)
+	// procedureRepo := pg.NewProcedureRepo(db, Logger)
+	contractorRepo := pg.NewContractorRepo(db, Logger)
+	legalEntityRepo := pg.NewLegalEntity(db, Logger)
+	executerRepo := pg.NewExecutorRepo(db, Logger)
+	documentRepo := pg.NewDocumentsRepo(db, Logger)
+	groupRepo := pg.NewGroupDB(db, Logger)
+	graphicRepo := pg.NewGraphicsRepo(db, Logger)
 
-	go func() {
-		for {
-			procedureRepo.DeactivationNoValidEnrollment()
-			procedureRepo.ShuffleLevelEducation()
-			procedureRepo.ShuffleProgram()
-
-			time.Sleep(1 * time.Hour)
-		}
-
-	}()
+	// go func() {
+	// 	for {
+	// 		procedureRepo.DeactivationNoValidEnrollment()
+	// 		procedureRepo.ShuffleLevelEducation()
+	// 		procedureRepo.ShuffleProgram()
+	//
+	// 		time.Sleep(1 * time.Hour)
+	// 	}
+	//
+	// }()
 
 	if _, err := os.Stat("reports/excel/"); os.IsNotExist(err) {
 		os.MkdirAll("reports/excel/", 0755)
@@ -74,6 +79,12 @@ func main() {
 	dashboardService := service.NewDashboardService(dashboardRepo)
 	backupService := service.NewBackupService(backupRepo)
 	reportService := service.NewRepostService(reportRepo)
+	contractorService := service.NewContractorService(db, contractorRepo, listenerRepo, passportRepo, registrationAddressRepo)
+	legalEntityService := service.NewLegalEntityService(db, legalEntityRepo, registrationAddressRepo, listenerRepo)
+	executerService := service.NewExecutorService(executerRepo)
+	documentService := service.NewDocumentService(documentRepo)
+	groupService := service.NewGroupService(groupRepo)
+	graphicService := service.NewGraphicsService(graphicRepo)
 
 	listenerHanlder := handlers.NewListenerHandler(listenerSevice)
 	divisionsHandler := handlers.NewDivisionsEducationHandler(divisionsService)
@@ -84,6 +95,13 @@ func main() {
 	dashboardHandler := handlers.NewDashboardHandler(dashboardService)
 	backupHandler := handlers.NewBackupHandler(backupService)
 	reportHandler := handlers.NewReportHandler(reportService)
+	contractorHandler := handlers.NewContractHandler(contractorService)
+	legalEntityHandler := handlers.NewLegalEntityHandler(legalEntityService)
+	executerHandler := handlers.NewExecutorHandler(executerService)
+	documentHandler := handlers.NewDocumentHandler(documentService, cfg)
+	groupHandler := handlers.NewGroupHandler(groupService)
+	graphicHandler := handlers.NewGraphicsHandler(graphicService)
+	ыфсcanDiplomHandler := handlers.NewScanDiplom(cfg)
 
 	r := gin.Default()
 
@@ -98,6 +116,14 @@ func main() {
 		dashboardHandler,
 		backupHandler,
 		reportHandler,
+		contractorHandler,
+		legalEntityHandler,
+		executerHandler,
+		documentHandler,
+		groupHandler,
+		graphicHandler,
+		ыфсcanDiplomHandler,
+		cfg,
 		Logger)
 
 	r.Run(":8080")

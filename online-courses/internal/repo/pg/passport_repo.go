@@ -2,6 +2,7 @@ package pg
 
 import (
 	"context"
+	"database/sql"
 	"log/slog"
 	"online-courses/internal/apperrors"
 	"online-courses/internal/database"
@@ -38,6 +39,66 @@ func (p *PassportRepo) CreateInTx(ctx context.Context, tx database.Tx, m entity.
 	}
 
 	return nil
+}
+
+func (p *PassportRepo) Read(ctx context.Context, id uuid.UUID) (*entity.Passport, error) {
+
+	exists, err := repoutils.Exists(ctx, p.repo, "passport", "id_passport", id)
+	if err != nil {
+		return nil, repoutils.HandleRepoErr(err)
+	}
+
+	if !exists {
+		return nil, repoutils.HandleRepoErr(sql.ErrNoRows)
+	}
+
+	query :=
+		`
+	select
+	p.place_birth, p.citizenship, p.gender, p.seria, p.number, p.passport_given, p.date_given, p.code
+	from passport as p
+	where id_passport = $1
+	`
+
+	rows, err := p.repo.QueryContext(ctx, query, id)
+	if err != nil {
+
+		p.logger.Error("database error",
+			"operation", "read_passport",
+			"id_listener", id,
+			"type", "query",
+			"err", err,
+		)
+
+		return nil, repoutils.HandleRepoErr(err)
+	}
+	defer rows.Close()
+
+	var data entity.Passport
+
+	for rows.Next() {
+		if err = rows.Scan(
+			&data.PlaceBirth,
+			&data.Citizenship,
+			&data.Gender,
+			&data.Seria,
+			&data.Number,
+			&data.PassportGiven,
+			&data.DateGiven,
+			&data.Code,
+		); err != nil {
+
+			p.logger.Error("database error",
+				"operation", "read_mapping_passport",
+				"id_listener", id,
+				"type", "query",
+				"err", err,
+			)
+
+			return nil, repoutils.HandleRepoErr(err)
+		}
+	}
+	return &data, nil
 }
 
 func (p *PassportRepo) DeleteInTx(ctx context.Context, tx database.Tx, id uuid.UUID) error {

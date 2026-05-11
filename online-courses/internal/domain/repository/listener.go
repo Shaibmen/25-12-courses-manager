@@ -16,4 +16,6 @@ type ListenerRepository interface {
 	FindIdById(ctx context.Context, id uuid.UUID) (*entity.Listener, error)
 	DeleteInTx(ctx context.Context, x database.Tx, id uuid.UUID) error
 	UpdateInTx(ctx context.Context, tx database.Tx, listener entity.Listener) error
+	UpdateContractor(ctx context.Context, tx database.Tx, idListener uuid.UUID, idContractor *uuid.UUID) error
+	FindByLegalEntity(ctx context.Context, id uuid.UUID) ([]entity.ListenerLegalEntity, error)
 }

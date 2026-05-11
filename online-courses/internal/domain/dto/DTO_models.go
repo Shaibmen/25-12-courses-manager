@@ -8,20 +8,23 @@ import (
 
 type ListenerIDDTO struct {
 	ID_Listener          uuid.UUID  `json:"id_listener"`
-	ID_Passport          uuid.UUID  `json:"id_passport"`
+	ID_Passport          *uuid.UUID `json:"id_passport"`
 	ID_RegAddress        uuid.UUID  `json:"id_reg_address"`
 	ID_EducationListener *uuid.UUID `json:"id_education_listener"`
 	ID_PlaceWork         *uuid.UUID `json:"id_placework"`
+	ID_LegalEntity       *uuid.UUID `json:"id_legalentity"`
+	ID_Contractor        *uuid.UUID `json:"id_contractor"`
 }
 
 type ListenerDTO struct {
-	FirstName    string `json:"first_name"`
-	SecondName   string `json:"second_name"`
-	MiddleName   string `json:"middle_name"`
-	DateOfBirth  string `json:"date_of_birth"`
-	SNILS        string `json:"snils"`
-	ContactPhone string `json:"contact_phone"`
-	Email        string `json:"email"`
+	FirstName        string `json:"first_name"`
+	SecondName       string `json:"second_name"`
+	MiddleName       string `json:"middle_name"`
+	DateOfBirth      string `json:"date_of_birth"`
+	SNILS            string `json:"snils"`
+	ContactPhone     string `json:"contact_phone"`
+	Email            string `json:"email"`
+	LootingEducation bool   `json:"looting_education"`
 }
 
 type ListenerDTOWithID struct {
@@ -44,10 +47,11 @@ type RawOnlyListener struct {
 	SNILS                string     `json:"snils"`
 	ContactPhone         string     `json:"contact_phone"`
 	Email                string     `json:"email"`
-	ID_Passport          uuid.UUID  `json:"id_passport"`
+	ID_Passport          *uuid.UUID `json:"id_passport"`
 	ID_RegAddress        uuid.UUID  `json:"id_reg_address"`
 	ID_EducationListener *uuid.UUID `json:"id_education_listener"`
 	ID_PlaceWork         *uuid.UUID `json:"id_placework"`
+	Looting_education    bool
 }
 
 type PassportDTO struct {
@@ -96,10 +100,11 @@ type PlaceWorkDTO struct {
 
 type FullListenerDataDTO struct {
 	Listener            RawOnlyListener        `json:"listener"`
-	Passport            PassportDTO            `json:"passport"`
+	Passport            *PassportDTO           `json:"passport,omitempty"`
 	RegistrationAddress RegistrationAddressDTO `json:"regaddress"`
 	EducationListener   *EducationListenerDTO  `json:"education_listener,omitempty"`
 	PlaceWork           *PlaceWorkDTO          `json:"placework,omitempty"`
+	Contractor          *ContractorCreateDTO   `json:"contractor,omitempty"`
 }
 
 type CreateListenerDTO struct {
@@ -108,6 +113,13 @@ type CreateListenerDTO struct {
 	RegistrationAddress RegistrationAddressDTO `json:"reg_address"`
 	EducationListener   EducationListenerDTO   `json:"education_listener"`
 	PlaceWork           PlaceWorkDTO           `json:"placework"`
+}
+type ListenerLegalEntity struct {
+	ID_Listener uuid.UUID `json:"id_listener"`
+	FirstName   string    `json:"first_name"`
+	SecondName  string    `json:"second_name"`
+	MiddleName  string    `json:"middle_name"`
+	SNILS       string    `json:"snils"`
 }
 
 type DivisionsDTO struct {
@@ -124,20 +136,29 @@ type ProgramEducationDTO struct {
 	ID_ProgramEducation   uuid.UUID `json:"id_program_education"`
 	NameProfEducation     string    `json:"name_prof_education"`
 	TimeEducation         int       `json:"time_education"`
-	IndividualPrice       float32   `json:"individual_price"`
-	GroupPrice            float32   `json:"group_price"`
-	CampusPrice           float32   `json:"campus_price"`
+	Price                 float64   `json:"price"`
 	ID_EducationType      uuid.UUID `json:"id_education_type"`
 	ID_DivisionsEducation uuid.UUID `json:"id_divisions_education"`
 }
 
 type EnrollmentListenerDTO struct {
-	ID_Listener  uuid.UUID `json:"id_distener"`
-	ID_Program   uuid.UUID `json:"id_drogram"`
-	StartDate    string    `json:"start_date"`
-	EndDate      string    `json:"end_date"`
-	CurrentPrice float32   `json:"current_price"`
-	Is_active    bool      `json:"is_active"`
+	ID_Listener      uuid.UUID `json:"id_distener"`
+	ID_Program       uuid.UUID `json:"id_drogram"`
+	StartDate        string    `json:"start_date"`
+	EndDate          string    `json:"end_date"`
+	Is_active        bool      `json:"is_active"`
+	ID_Group         uuid.UUID `json:"id_group"`
+	TypeOfRetraining string    `json:"type_of_retraining"`
+}
+
+type AccurateProgramDTO struct {
+	ID_Listener       uuid.UUID `json:"id_listener"`
+	NameProfEducation string    `json:"name_prof_education"`
+	TimeEducation     int       `json:"time_education"`
+	Price             float64   `json:"price"`
+	EducationType     string    `json:"education_type"`
+	Division          string    `json:"division"`
+	NameGroup         string    `json:"name_group"`
 }
 
 type EnrollmentListenerDetailsDTO struct {
@@ -148,7 +169,8 @@ type EnrollmentListenerDetailsDTO struct {
 	NameProfEducation string    `json:"name_prof_education"`
 	StartDate         string    `json:"start_date"`
 	EndDate           string    `json:"end_date"`
-	CurrentPrice      float32   `json:"current_price"`
+	ID_Group          uuid.UUID `json:"id_group"`
+	TypeOfRetraining  string    `json:"type_of_retraining"`
 }
 
 type EnrollmentProgramDetailsDTO struct {
@@ -156,16 +178,16 @@ type EnrollmentProgramDetailsDTO struct {
 	ID_ProgramEducation uuid.UUID `json:"id_program_education"`
 	NameProfEducation   string    `json:"name_prof_education"`
 	TimeEducation       int       `json:"time_education"`
-	IndividualPrice     float32   `json:"individual_price"`
-	GroupPrice          float32   `json:"group_price"`
-	CampusPrice         float32   `json:"campus_price"`
+	Price               float64   `json:"price"`
 	EducationType       string    `json:"education_type"`
 	DivisionEducation   string    `json:"division_education"`
 	StartDate           string    `json:"start_date"`
 	EndDate             string    `json:"end_date"`
-	CurrentPrice        float32   `json:"current_price"`
+	ID_Group            uuid.UUID `json:"id_group"`
+	TypeOfRetraining    string    `json:"type_of_retraining"`
 }
 
+// card
 type ProgramEducationToCardDTO struct {
 	NameProfEducation string `json:"name_prof_education"`
 	TimeEducation     int    `json:"time_education"`
@@ -195,14 +217,24 @@ type RegistrationAddressCardDTO struct {
 }
 
 type EducationListenerCardDTO struct {
+	DateGiven              string `json:"date_given"`
 	DiplomSeria            string `json:"diplom_seria"`
 	DiplomNumber           string `json:"diplom_number"`
-	DateGiven              string `json:"date_given"`
 	City                   string `json:"city"`
 	Region                 string `json:"region"`
 	EducationalInstitution string `json:"educational_institution"`
 	Speciality             string `json:"speciality"`
 	LevelEducation         string `json:"level_education"`
+}
+
+type EnrollmentListenerToCard struct {
+	NameProfEducation string  `json:"name_prof_education"`
+	StartDate         string  `json:"start_date"`
+	EndDate           string  `json:"end_date"`
+	CurrentPrice      float32 `json:"current_price"`
+	Is_active         bool    `json:"is_active"`
+	Group             string  `json:"group"`
+	TypeOfRetraining  string  `json:"type_of_retraining"`
 }
 
 type PersonalCardInfoDTO struct {
@@ -212,7 +244,103 @@ type PersonalCardInfoDTO struct {
 	EducationListener   EducationListenerCardDTO   `json:"education"`
 	PlaceWork           PlaceWorkDTO               `json:"placeWork"`
 	ProgramEducation    ProgramEducationToCardDTO  `json:"program_education"`
+	EnrollmentListener  EnrollmentListenerToCard   `json:"enrollment_listener"`
 }
+
+type ContractorCardInfo struct {
+	Passport            PassportCardDTO            `json:"passport"`
+	RegistrationAddress RegistrationAddressCardDTO `json:"registration_address"`
+	FirstName           string                     `json:"first_name"`
+	SecondName          string                     `json:"second_name"`
+	MiddleName          string                     `json:"middle_name"`
+	Contact_phone       string                     `json:"contact_phone"`
+	Email               string                     `json:"email"`
+}
+
+type ExecutorCardInfo struct {
+	Status             string `json:"status"`
+	ExecutorName       string `json:"executor_name"`
+	ExecutorSurname    string `json:"executor_surname"`
+	ExecutorMiddlename string `json:"executor_middlename"`
+	Doverenost         string `json:"doverenost"`
+}
+
+type ZayavlenieCardInfo struct {
+	ProgramEducation   ProgramEducationToCardDTO  `json:"program_education"`
+	Listener           ListenerDTO                `json:"listener"`
+	EnrollmentListener EnrollmentListenerToCard   `json:"enrollment_listener"`
+	Contractor         ContractorCardInfo         `json:"contractor"`
+	Executor           ExecutorCardInfo           `json:"executor"`
+	Passport           PassportCardDTO            `json:"passport"`
+	Registration       RegistrationAddressCardDTO `json:"reg_address"`
+	Variant            int                        `json:"variant"`
+	DogovorType        string                     `json:"dogovor_type"`
+}
+
+type ListenerInLegalEntity struct {
+	FirstName   string `json:"first_name"`
+	SecondName  string `json:"second_name"`
+	MiddleName  string `json:"middle_name"`
+	SNILS       string `json:"snils"`
+	DateOfBirth string `json:"date_of_birth"`
+	Email       string `json:"email"`
+}
+
+type RegistrationAddressLegalEntity struct {
+	MailIndex string `json:"mail_index"`
+	Region    string `json:"region"`
+	City      string `json:"city"`
+	Street    string `json:"street"`
+	House     string `json:"house"`
+	Building  string `json:"building"`
+	Apartment string `json:"apartment"`
+}
+
+type LegalEntity struct {
+	Listeners   []ListenerInLegalEntity        `json:"listeners"`
+	Address     RegistrationAddressLegalEntity `json:"reg_address"`
+	CompanyName string                         `json:"company_name"`
+	FIO         string                         `json:"zakazchikfio"`
+	Status      string                         `json:"status"`
+	INN         string                         `json:"inn"`
+	KPP         string                         `json:"kpp"`
+	OGRN        string                         `json:"ogrn"`
+	Phone       string                         `json:"phone"`
+	Email       string                         `json:"email"`
+}
+
+type DogovorCardInfo struct {
+	LegalEntity      LegalEntity                `json:"zakazchik"`
+	ProgramEducation ProgramEducationToCardDTO  `json:"program_education"`
+	ListenerData     ListenerDTO                `json:"listener"`
+	Contractor       ContractorCardInfo         `json:"contractor"`
+	Executor         ExecutorCardInfo           `json:"executor"`
+	Passport         PassportCardDTO            `json:"passport"`
+	Registration     RegistrationAddressCardDTO `json:"reg_address"`
+	Enrollment       EnrollmentListenerToCard   `json:"enrollment_listener"`
+	OptionNagruzka   int                        `json:"opion_nagruz"`
+	OptionDocument   int                        `json:"opt_document"`
+	OptionPrice      string                     `json:"opt_price"`
+	DogovorType      string                     `json:"dogovor_type"`
+}
+
+type FullDocumentInfoDTO struct {
+	PersonalCardInfo   PersonalCardInfoDTO `json:"personal_card"`
+	ZayavlenieCardInfo ZayavlenieCardInfo  `json:"zayavlenie_card"`
+	DogovorRequest     DogovorCardInfo     `json:"dogovor_card"`
+}
+
+type FrontDataDeliver struct {
+	LegalEntity    LegalEntity `json:"legal_entity"`
+	Variant        int         `json:"variant"`
+	DogovorType    string      `json:"dogovor_type"`
+	OptionNagruzka int         `json:"opion_nagruz"`
+	OptionDocument int         `json:"opt_document"`
+	DogovorAgeType string      `json:"dogovor_age"`
+	OptionPrice    string      `json:"opt_price"`
+}
+
+//card dto over
 
 type ListenerFIODTO struct {
 	FirstName  string `json:"first_name"`
@@ -224,6 +352,65 @@ type ProgramEndingSoonDTO struct {
 	NameProfEducation string    `json:"name_prof_education"`
 	EndDate           time.Time `json:"end_date"`
 	TotalListeners    int       `json:"total_listeners"`
+}
+
+type ContractorDTO struct {
+	ID_Contractor uuid.UUID `json:"id_contractor"`
+	FirstName     string    `json:"first_name"`
+	SecondName    string    `json:"second_name"`
+	MiddleName    string    `json:"middle_name"`
+	Contact_phone string    `json:"contact_phone"`
+	Email         string    `json:"email"`
+}
+
+type ContractorCreateDTO struct {
+	Contractor ContractorDTO          `json:"contractor"`
+	Passport   PassportDTO            `json:"passport"`
+	RegAddress RegistrationAddressDTO `json:"reg_address"`
+}
+
+type LegalEntityDTO struct {
+	Listeners      []ListenerForLegalEntity `json:"listeners"`
+	ID_Legalentity uuid.UUID                `json:"id_legalentity"`
+	NameCompany    string                   `json:"name_company"`
+	Inn            string                   `json:"inn"`
+	Kpp            string                   `json:"kpp"`
+	Ogrn           string                   `json:"ogrn"`
+	Phone          string                   `json:"phone"`
+	Email          string                   `json:"email"`
+	FirstName      string                   `json:"first_name"`
+	SecondName     string                   `json:"second_name"`
+	MiddleName     string                   `json:"middle_name"`
+	ID_RegAddress  uuid.UUID                `json:"id_regaddress"`
+	Status         string                   `json:"status"`
+}
+
+type LegalEntityFullDTO struct {
+	LegalEntity LegalEntityDTO         `json:"legal_entity"`
+	RegAddress  RegistrationAddressDTO `json:"reg_address"`
+}
+
+type ListenerForLegalEntity struct {
+	ID_Listener uuid.UUID `json:"id_listener"`
+	FirstName   string    `json:"first_name"`
+	SecondName  string    `json:"second_name"`
+	MiddleName  string    `json:"middle_name"`
+	SNILS       string    `json:"snils"`
+	DateOfBirth string    `json:"date_of_birth"`
+	Email       string    `json:"email"`
+}
+type LegalEntityWithListenersDTO struct {
+	LegalEntity LegalEntityDTO         `json:"legal_entity"`
+	RegAddress  RegistrationAddressDTO `json:"reg_address"`
+}
+
+type ExecutorDTO struct {
+	ID_Executor uuid.UUID `json:"id_executor"`
+	Status      string    `json:"status"`
+	FirstName   string    `json:"first_name"`
+	SecondName  string    `json:"second_name"`
+	MiddleName  string    `json:"middle_name"`
+	Doverenost  string    `json:"doverenost"`
 }
 
 type UserDashBoardDTO struct {
@@ -276,4 +463,48 @@ type AdminDashboardDTO struct {
 type RoleDTO struct {
 	ID   uuid.UUID `json:"id"`
 	Role string    `json:"role"`
+}
+
+type GroupDTO struct {
+	ID_Group   uuid.UUID                `json:"group"`
+	NameGroup  string                   `json:"name_group"`
+	Raspisanie []map[string]interface{} `json:"rapspisanie"`
+}
+
+type CountListenersOnProgramDTO struct {
+	NameProfEducation string `json:"name_prof_education"`
+	Listeners         int    `json:"listeners"`
+}
+type PopularProgramTypeDTO struct {
+	NameProfEducation string `json:"name_prof_education"`
+	EducationType     string `json:"educationtype"`
+	Listeners         int    `json:"listeners"`
+}
+
+type WorthProgramDTO struct {
+	NameProfEducation    string  `json:"name_prof_education"`
+	EducationType        string  `json:"educationtype"`
+	TotalExpectedRevenue float64 `json:"total_expected_revenue"`
+}
+
+type AgeDiffDTO struct {
+	NameProfEducation string `json:"name_prof_education"`
+	AgeRange          string `json:"age_range"`
+	Listeners         int    `json:"listeners"`
+}
+
+type WhoEnrolledDTO struct {
+	Month  time.Time `json:"month"`
+	Source string    `json:"source"`
+	Cnt    int       `json:"cnt"`
+}
+
+type GroupMembersDTO struct {
+	NameGroup      string `json:"name_group"`
+	ActiveEnrolled int    `json:"active_enrolled"`
+}
+
+type DivisionMemberDTO struct {
+	Divisioneducation string `json:"divisioneducation"`
+	Listeners         int    `json:"listeners"`
 }

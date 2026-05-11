@@ -30,20 +30,62 @@ func (e *enrollmentListenerService) Create(ctx context.Context, model dto.Enroll
 		return err
 	}
 
-	entity := entity.EnrollmentListener{
+	entityModel := entity.EnrollmentListener{
 		ID_Listener:         model.ID_Listener,
 		ID_ProgramEducation: model.ID_Program,
 		StartDate:           *startDate,
 		EndDate:             *endDate,
-		CurrentPrice:        model.CurrentPrice,
 		Is_active:           model.Is_active,
+		ID_Group:            model.ID_Group,
+		TypeOfRetraining:    model.TypeOfRetraining,
 	}
 
-	if err := e.service.Create(ctx, entity); err != nil {
+	if err := e.service.Create(ctx, entityModel); err != nil {
+		return err
+	}
+
+	program, err := e.service.GetProgram(ctx, model.ID_Program)
+	if err != nil {
+		return nil
+	}
+	AccurateProgram := entity.AccurateProgram{
+		ID_Listener:       model.ID_Listener,
+		NameProfEducation: program.NameProfEducation,
+		TimeEducation:     program.TimeEducation,
+		Price:             program.Price,
+		EducationType:     program.EducationType,
+		Division:          program.Division,
+	}
+
+	if err = e.service.SaveInfo(ctx, AccurateProgram); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (e *enrollmentListenerService) GetAccurateEnrollment(ctx context.Context) ([]dto.AccurateProgramDTO, error) {
+
+	data, err := e.service.GetAccurateEnrollment(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var datas []dto.AccurateProgramDTO
+
+	for _, i := range data {
+		datas = append(datas, dto.AccurateProgramDTO{
+			ID_Listener:       i.ID_Listener,
+			NameProfEducation: i.NameProfEducation,
+			TimeEducation:     i.TimeEducation,
+			Price:             i.Price,
+			EducationType:     i.EducationType,
+			Division:          i.Division,
+			NameGroup:         i.NameGroup.String,
+		})
+	}
+
+	return datas, nil
 }
 
 func (e *enrollmentListenerService) Read(ctx context.Context, page int, filter string) ([]dto.EnrollmentListenerDetailsDTO, error) {
@@ -64,7 +106,8 @@ func (e *enrollmentListenerService) Read(ctx context.Context, page int, filter s
 			NameProfEducation: i.NameProfEducation,
 			StartDate:         i.StartDate.String(),
 			EndDate:           i.EndDate.String(),
-			CurrentPrice:      i.CurrentPrice,
+			ID_Group:          i.ID_Group,
+			TypeOfRetraining:  i.TypeOfRetraining,
 		})
 	}
 
@@ -88,7 +131,8 @@ func (e *enrollmentListenerService) Update(ctx context.Context, idListener, idPr
 		ID_ProgramEducation: model.ID_Program,
 		StartDate:           *startDate,
 		EndDate:             *endDate,
-		CurrentPrice:        model.CurrentPrice,
+		ID_Group:            model.ID_Group,
+		TypeOfRetraining:    model.TypeOfRetraining,
 	}
 
 	if err := e.service.Update(ctx, idListener, idProgram, entity); err != nil {
@@ -121,14 +165,13 @@ func (e *enrollmentListenerService) ReadDetailListener(ctx context.Context, id u
 			ID_ProgramEducation: i.ID_ProgramEducation,
 			NameProfEducation:   i.NameProfEducation,
 			TimeEducation:       i.TimeEducation,
-			IndividualPrice:     i.IndividualPrice,
-			GroupPrice:          i.GroupPrice,
-			CampusPrice:         i.CampusPrice,
+			Price:               i.Price,
 			EducationType:       i.DivisionEducation,
 			DivisionEducation:   i.DivisionEducation,
 			StartDate:           i.StartDate.String(),
 			EndDate:             i.EndDate.String(),
-			CurrentPrice:        i.CurrentPrice,
+			ID_Group:            i.ID_Group,
+			TypeOfRetraining:    i.TypeOfRetraining,
 		})
 
 	}
@@ -154,73 +197,12 @@ func (e *enrollmentListenerService) ReadByProgram(ctx context.Context, id uuid.U
 			NameProfEducation: i.NameProfEducation,
 			StartDate:         i.StartDate.String(),
 			EndDate:           i.EndDate.String(),
-			CurrentPrice:      i.CurrentPrice,
+			ID_Group:          i.ID_Group,
+			TypeOfRetraining:  i.TypeOfRetraining,
 		})
 	}
 
 	return enrollments, nil
-}
-
-func (e *enrollmentListenerService) InfoToPersonalCard(ctx context.Context, listenerID, programID uuid.UUID) (*dto.PersonalCardInfoDTO, error) {
-	data, err := e.service.InfoToPersonalCard(ctx, listenerID, programID)
-	if err != nil {
-		return nil, err
-	}
-
-	dto := &dto.PersonalCardInfoDTO{
-		Listener: dto.ListenerDTO{
-			FirstName:    data.FirstName,
-			SecondName:   data.SecondName,
-			MiddleName:   data.MiddleName,
-			DateOfBirth:  data.DateOfBirth,
-			SNILS:        data.SNILS,
-			ContactPhone: data.ContactPhone,
-			Email:        data.Email,
-		},
-		Passport: dto.PassportCardDTO{
-			PlaceBirth:    data.PlaceBirth,
-			Citizenship:   data.Citizenship,
-			Gender:        data.Gender,
-			Seria:         data.Seria,
-			Number:        data.Number,
-			PassportGiven: data.PassportGiven,
-			DateGiven:     data.DateGiven,
-			Code:          data.Code,
-		},
-		RegistrationAddress: dto.RegistrationAddressCardDTO{
-			MailIndex: data.MailIndex,
-			Region:    data.RegRegion,
-			City:      data.RegCity,
-			Street:    data.RegStreet,
-			House:     data.House,
-			Building:  data.Building,
-			Apartment: data.Apartment,
-		},
-		EducationListener: dto.EducationListenerCardDTO{
-			DiplomSeria:            data.DiplomSeria.String,
-			DiplomNumber:           data.DiplomNumber.String,
-			DateGiven:              data.DiplomDateGiven.String,
-			City:                   data.DiplomCity.String,
-			Region:                 data.DiplomRegion.String,
-			EducationalInstitution: data.EducationalInstitution.String,
-			Speciality:             data.Speciality.String,
-			LevelEducation:         data.LevelEducation.String,
-		},
-		PlaceWork: dto.PlaceWorkDTO{
-			NameCompany:        data.NameCompany.String,
-			JobTitle:           data.JobTitle.String,
-			AllExperience:      int(data.AllExperience.Int32),
-			JobTitleExpirience: int(data.JobTitleExpirience.Int32),
-		},
-		ProgramEducation: dto.ProgramEducationToCardDTO{
-			NameProfEducation: data.NameProfEducation,
-			TimeEducation:     data.TimeEducation,
-			DivisionEducation: data.DivisionEducation,
-			EducationType:     data.EducationType,
-		},
-	}
-
-	return dto, nil
 }
 
 func (e *enrollmentListenerService) GetListenerFIO(ctx context.Context, listenerID uuid.UUID) (*dto.ListenerFIODTO, error) {
